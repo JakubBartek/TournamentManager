@@ -1,0 +1,229 @@
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+async function main() {
+  // Clear existing data
+  await prisma.game.deleteMany({})
+  await prisma.player.deleteMany({})
+  await prisma.team.deleteMany({})
+  await prisma.tournament.deleteMany({})
+  await prisma.sponsor.deleteMany({})
+
+  // Create a tournament
+  const tournament = await prisma.tournament.create({
+    data: {
+      name: 'Winter Hockey Cup',
+      location: 'Ice Arena Central',
+      startDate: new Date('2025-01-15'),
+      endDate: new Date('2025-01-17'),
+    },
+  })
+
+  // Create Teams
+  const teamA = await prisma.team.create({
+    data: {
+      name: 'Ice Wolves',
+      city: 'Northville',
+      tournamentId: tournament.id,
+    },
+  })
+
+  const teamB = await prisma.team.create({
+    data: {
+      name: 'Frost Giants',
+      city: 'Southport',
+      tournamentId: tournament.id,
+    },
+  })
+
+  const teamC = await prisma.team.create({
+    data: {
+      name: 'Snow Leopards',
+      city: 'Eastwood',
+      tournamentId: tournament.id,
+    },
+  })
+
+  const teamD = await prisma.team.create({
+    data: {
+      name: 'Glacier Bears',
+      city: 'Westfield',
+      tournamentId: tournament.id,
+    },
+  })
+
+  // Create Players
+  await prisma.player.createMany({
+    data: [
+      // Team A - Ice Wolves
+      {
+        name: 'Jack Frost',
+        position: 'Forward',
+        teamId: teamA.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Liam Chill',
+        position: 'Goalie',
+        teamId: teamA.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Ethan Snow',
+        position: 'Defense',
+        teamId: teamA.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Mason Freeze',
+        position: 'Forward',
+        teamId: teamA.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Lucas Iceberg',
+        position: 'Defense',
+        teamId: teamA.id,
+        tournamentId: tournament.id,
+      },
+
+      // Team B - Frost Giants
+      {
+        name: 'Noah Ice',
+        position: 'Defense',
+        teamId: teamB.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Oliver Frost',
+        position: 'Forward',
+        teamId: teamB.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Elijah Glacier',
+        position: 'Goalie',
+        teamId: teamB.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'William Polar',
+        position: 'Forward',
+        teamId: teamB.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'James Arctic',
+        position: 'Defense',
+        teamId: teamB.id,
+        tournamentId: tournament.id,
+      },
+
+      // Team C - Snow Leopards
+      {
+        name: 'Benjamin Snow',
+        position: 'Forward',
+        teamId: teamC.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Henry White',
+        position: 'Goalie',
+        teamId: teamC.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Alexander Chill',
+        position: 'Defense',
+        teamId: teamC.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Sebastian Frost',
+        position: 'Forward',
+        teamId: teamC.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Daniel Ice',
+        position: 'Defense',
+        teamId: teamC.id,
+        tournamentId: tournament.id,
+      },
+
+      // Team D - Glacier Bears
+      {
+        name: 'Matthew Glacier',
+        position: 'Forward',
+        teamId: teamD.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Joseph Polar',
+        position: 'Goalie',
+        teamId: teamD.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Samuel Arctic',
+        position: 'Defense',
+        teamId: teamD.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'David Frost',
+        position: 'Forward',
+        teamId: teamD.id,
+        tournamentId: tournament.id,
+      },
+      {
+        name: 'Carter Ice',
+        position: 'Defense',
+        teamId: teamD.id,
+        tournamentId: tournament.id,
+      },
+    ],
+  })
+
+  // Create Games for each team (each team plays every other team once)
+  const teams = [teamA, teamB, teamC, teamD]
+  let gameCount = 1
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = i + 1; j < teams.length; j++) {
+      await prisma.game.create({
+        data: {
+          team1: teams[i].name,
+          team2: teams[j].name,
+          score1: Math.floor(Math.random() * 6), // random score for demo
+          score2: Math.floor(Math.random() * 6),
+          rink: `Rink ${String.fromCharCode(65 + ((gameCount - 1) % 2))}`,
+          date: new Date(
+            `2025-01-1${5 + Math.floor((gameCount - 1) / 2)}T${
+              10 + ((gameCount - 1) % 2) * 2
+            }:00:00`,
+          ),
+          tournamentId: tournament.id,
+        },
+      })
+      gameCount++
+    }
+  }
+
+  // Create Sponsor
+  await prisma.sponsor.create({
+    data: {
+      name: 'CoolDrink Corp',
+      amount: 1000.0,
+      tournamentId: tournament.id,
+    },
+  })
+
+  console.log('✅ Seed completed')
+}
+
+main()
+  .then(async () => await prisma.$disconnect())
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+  })

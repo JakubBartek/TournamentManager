@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  password     String
+  name         String?
+  role         Role           @default(USER)
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @updatedAt
+  Tournament   Tournament?    @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  RefreshToken RefreshToken[]
+}
+
+model RefreshToken {
+  id          String  @id @default(cuid())
+  hashedToken String
+  userId      String
+  User        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean @default(false)
+}
+
+model Game {
+  id           String      @id @default(uuid())
+  team1        String
+  team2        String
+  score1       Int
+  score2       Int
+  rink         String
+  date         DateTime
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+}
+
+model Team {
+  id           String      @id @default(uuid())
+  name         String
+  city         String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Player       Player[]
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+}
+
+model Player {
+  id           String      @id @default(uuid())
+  name         String
+  position     String
+  teamId       String
+  team         Team        @relation(fields: [teamId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+}
+
+model Tournament {
+  id        String    @id @default(uuid())
+  name      String
+  location  String
+  startDate DateTime
+  endDate   DateTime
+  teams     Team[]
+  games     Game[]
+  sponsors  Sponsor[]
+  Player    Player[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  User      User[]
+}
+
+model Sponsor {
+  id           String      @id @default(uuid())
+  name         String
+  amount       Float
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+}
