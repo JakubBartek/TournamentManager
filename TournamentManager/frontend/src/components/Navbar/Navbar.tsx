@@ -1,42 +1,18 @@
 import React from 'react'
-import { Navbar, IconButton } from '@material-tailwind/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Navbar } from '@material-tailwind/react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-
-function NavList({ collapsed }: { collapsed: boolean }) {
-  const user = true
-
-  const links = [
-    { to: '/', label: 'Home' },
-    { to: '/map', label: 'Map' },
-    { to: '/schedule', label: 'Schedule' },
-    { to: '/teams', label: 'Teams' },
-  ]
-
-  return (
-    <ul className=' flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6'>
-      {user &&
-        links.map(({ to, label }) => (
-          <Link
-            key={to}
-            to={to}
-            className='flex items-center hover:text-blue-500 transition-colors'
-          >
-            {/* Show text only if NOT collapsed or on desktop */}
-            <span className={`${collapsed ? 'hidden' : 'inline'} lg:inline`}>
-              {label}
-            </span>
-          </Link>
-        ))}
-    </ul>
-  )
-}
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faBars,
+  faCalendarDays,
+  faCircleInfo,
+  faHouse,
+  faMapLocationDot,
+} from '@fortawesome/free-solid-svg-icons'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 export function NavbarSimple() {
-  const [openNav, setOpenNav] = React.useState(false)
-
-  const handleWindowResize = () => window.innerWidth >= 960 && setOpenNav(false)
+  const handleWindowResize = () => window.innerWidth >= 960
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
@@ -45,7 +21,7 @@ export function NavbarSimple() {
 
   return (
     <Navbar
-      className='fixed top-2 left-2 right-2 z-50 bg-white shadow-md px-6 py-3 w-auto'
+      className='fixed bottom-0 left-0 right-0 z-50 bg-white shadow-md px-6 py-3 w-auto rounded-b-none border-gray-400'
       placeholder={undefined}
       onResize={undefined}
       onResizeCapture={undefined}
@@ -53,53 +29,60 @@ export function NavbarSimple() {
       onPointerLeaveCapture={undefined}
     >
       <div className='flex items-center justify-between text-blue-gray-900'>
-        <Link to='/' className='text-2xl mr-4 cursor-pointer'>
-          Turnajuj
-        </Link>
-
         {/* Desktop Nav List (always visible) */}
         <div className='hidden lg:block'>
-          <NavList collapsed={false} />
+          <Link to='/' className='text-2xl mr-4 cursor-pointer'>
+            Turnajuj
+          </Link>
         </div>
 
         {/* Mobile IconButton (hidden on desktop) */}
-        <div className='lg:hidden'>
-          <IconButton
-            variant='text'
-            className='flex items-center justify-center h-8 w-8 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent'
-            ripple={false}
-            onClick={() => setOpenNav(!openNav)}
-            placeholder={undefined}
-            onResize={undefined}
-            onResizeCapture={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            {openNav ? (
-              <XMarkIcon className='h-6 w-6' strokeWidth={2} />
-            ) : (
-              <Bars3Icon className='h-6 w-6' strokeWidth={2} />
-            )}
-          </IconButton>
+        <div className='lg:hidden flex justify-between w-full px-2 gap-12 py-2 grow z-51 text-3xl'>
+          <Link to='/teams' className='flex-1 flex justify-center'>
+            <FontAwesomeIcon icon={faCircleInfo} />
+          </Link>
+          <Link to='/map' className='flex-1 flex justify-center'>
+            <FontAwesomeIcon icon={faMapLocationDot} />
+          </Link>
+          <Link to='/' className='flex-1 flex justify-center'></Link>
+          <Link to='/schedule' className='flex-1 flex justify-center'>
+            <FontAwesomeIcon icon={faCalendarDays} />
+          </Link>
+          <div className='flex-1 flex justify-center'>
+            <Sheet>
+              <SheetTrigger asChild>
+                <FontAwesomeIcon
+                  icon={faBars}
+                  className='flex-1 flex justify-center text-[#646cff]'
+                />
+              </SheetTrigger>
+              <SheetContent>
+                <div className='flex flex-col gap-4 p-4'>
+                  <Link to='/teams' className='text-lg'>
+                    Tímy
+                  </Link>
+                  <Link to='/map' className='text-lg'>
+                    Mapa
+                  </Link>
+                  <Link to='/schedule' className='text-lg'>
+                    Rozpis
+                  </Link>
+                </div>
+                {/* Môžeš sem doplniť obsah podľa potreby */}
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
-      </div>
-
-      {/* Mobile nav menu (only visible on small screens) */}
-      <div className='lg:hidden'>
-        <AnimatePresence initial={false}>
-          {openNav && (
-            <motion.div
-              key='mobile-nav'
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className='overflow-hidden'
+        <div className='lg:hidden fixed bottom-4 left-0 right-0 flex justify-center'>
+          <Link to='/'>
+            <span
+              className='flex items-center justify-center w-18 h-18 rounded-full'
+              style={{ backgroundColor: '#646cff' }}
             >
-              <NavList collapsed={false} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <FontAwesomeIcon icon={faHouse} className='text-2xl text-white' />
+            </span>
+          </Link>
+        </div>
       </div>
     </Navbar>
   )
