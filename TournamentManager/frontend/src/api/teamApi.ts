@@ -2,35 +2,45 @@ import BaseApi from './baseApi'
 import { Team, TeamCreate, TeamQuery } from '../types/team'
 import { PaginatedResponse } from '@/types/api'
 
-const TEAM_PREFIX = '/team'
+const TEAM_PREFIX = '/teams'
 
-async function getAll() {
-  return BaseApi.getAll<Team>(`${TEAM_PREFIX}`)
+async function getAll(tournamentId: string) {
+  return BaseApi.getAll<Team>(`/tournaments/${tournamentId}${TEAM_PREFIX}`)
 }
 
-async function getPaginated(opts: TeamQuery) {
-  const params = new URLSearchParams(opts)
+async function getPaginated(tournamentId: string, opts: TeamQuery) {
+  const params = new URLSearchParams(opts as Record<string, string>)
   params.append('page', '1')
 
   return BaseApi.getAllPaginated<PaginatedResponse<Team>>(
-    `${TEAM_PREFIX}?` + params.toString(),
+    `/tournaments/${tournamentId}${TEAM_PREFIX}?` + params.toString(),
   )
 }
 
-async function getDetail(id: string) {
-  return BaseApi.getDetail<Team>(`${TEAM_PREFIX}/${id}`)
+async function getDetail(tournamentId: string, id: string) {
+  return BaseApi.getDetail<Team>(
+    `/tournaments/${tournamentId}${TEAM_PREFIX}/${id}`,
+  )
 }
 
-async function create(data: TeamCreate) {
-  return BaseApi.create<Team>(`${TEAM_PREFIX}`, data)
+async function create(tournamentId: string, data: TeamCreate) {
+  return BaseApi.create<Team>(
+    `/tournaments/${tournamentId}${TEAM_PREFIX}`,
+    data,
+  )
 }
 
-async function deleteTeam(id: string) {
-  return BaseApi.deleteResource<void>(`${TEAM_PREFIX}/${id}`)
+async function deleteTeam(tournamentId: string, id: string) {
+  return BaseApi.deleteResource<void>(
+    `/tournaments/${tournamentId}${TEAM_PREFIX}/${id}`,
+  )
 }
 
-async function update(data: Team) {
-  return BaseApi.update<Team>(`${TEAM_PREFIX}/${data.id}`, data)
+async function update(tournamentId: string, data: Team) {
+  return BaseApi.update<Team>(
+    `/tournaments/${tournamentId}${TEAM_PREFIX}/${data.id}`,
+    data,
+  )
 }
 
 export default {
