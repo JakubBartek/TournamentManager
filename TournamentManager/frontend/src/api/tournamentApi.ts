@@ -9,7 +9,7 @@ import { PaginatedResponse } from '@/types/api'
 const TOURNAMENT_PREFIX = '/tournaments'
 
 async function getAll() {
-  return BaseApi.getAll<Tournament>(`${TOURNAMENT_PREFIX}`)
+  return BaseApi.getAll<Tournament>(`${TOURNAMENT_PREFIX}/all`)
 }
 
 async function getPaginated(opts: TournamentQuery) {

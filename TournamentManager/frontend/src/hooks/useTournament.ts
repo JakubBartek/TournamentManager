@@ -4,7 +4,7 @@ import { Tournament, TournamentCreate } from '@/types/tournament'
 
 export const useTournaments = () => {
   return useQuery({
-    queryKey: ['tournamentsHome'],
+    queryKey: ['tournaments'],
     queryFn: () => tournamentApi.getAll(),
   })
 }
