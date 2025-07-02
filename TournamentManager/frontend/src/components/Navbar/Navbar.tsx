@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '@material-tailwind/react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBars,
@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 export function NavbarSimple() {
   const handleWindowResize = () => window.innerWidth >= 960
+  const { tournamentId } = useParams<{ tournamentId: string }>()
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
@@ -31,21 +32,36 @@ export function NavbarSimple() {
       <div className='flex items-center justify-between text-blue-gray-900'>
         {/* Desktop Nav List (always visible) */}
         <div className='hidden lg:block'>
-          <Link to='/' className='text-2xl mr-4 cursor-pointer'>
+          <Link
+            to={`/${tournamentId}/home`}
+            className='text-2xl mr-4 cursor-pointer'
+          >
             Turnajuj
           </Link>
         </div>
 
         {/* Mobile IconButton (hidden on desktop) */}
         <div className='lg:hidden flex justify-between w-full px-2 gap-12 py-2 grow z-51 text-3xl'>
-          <Link to='/teams' className='flex-1 flex justify-center'>
+          <Link
+            to={`/${tournamentId}/teams`}
+            className='flex-1 flex justify-center'
+          >
             <FontAwesomeIcon icon={faCircleInfo} />
           </Link>
-          <Link to='/map' className='flex-1 flex justify-center'>
+          <Link
+            to={`/${tournamentId}/map`}
+            className='flex-1 flex justify-center'
+          >
             <FontAwesomeIcon icon={faMapLocationDot} />
           </Link>
-          <Link to='/' className='flex-1 flex justify-center'></Link>
-          <Link to='/schedule' className='flex-1 flex justify-center'>
+          <Link
+            to={`/${tournamentId}/home`}
+            className='flex-1 flex justify-center'
+          ></Link>
+          <Link
+            to={`/${tournamentId}/schedule`}
+            className='flex-1 flex justify-center'
+          >
             <FontAwesomeIcon icon={faCalendarDays} />
           </Link>
           <div className='flex-1 flex justify-center'>
@@ -58,23 +74,16 @@ export function NavbarSimple() {
               </SheetTrigger>
               <SheetContent>
                 <div className='flex flex-col gap-4 p-4'>
-                  <Link to='/teams' className='text-lg'>
-                    Tímy
-                  </Link>
-                  <Link to='/map' className='text-lg'>
-                    Mapa
-                  </Link>
-                  <Link to='/schedule' className='text-lg'>
-                    Rozpis
+                  <Link to={`/select`} className='text-lg'>
+                    Choose a Tournament
                   </Link>
                 </div>
-                {/* Môžeš sem doplniť obsah podľa potreby */}
               </SheetContent>
             </Sheet>
           </div>
         </div>
         <div className='lg:hidden fixed bottom-4 left-0 right-0 flex justify-center'>
-          <Link to='/'>
+          <Link to={`/${tournamentId}/home`}>
             <span
               className='flex items-center justify-center w-18 h-18 rounded-full'
               style={{ backgroundColor: '#646cff' }}
