@@ -3,11 +3,11 @@ import { Navbar } from '@material-tailwind/react'
 import { Link, useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faBars,
   faCalendarDays,
-  faCircleInfo,
   faHouse,
-  faMapLocationDot,
+  faListOl,
+  faInfoCircle,
+  faAnglesLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
@@ -41,34 +41,34 @@ export function NavbarSimple() {
         </div>
 
         {/* Mobile IconButton (hidden on desktop) */}
-        <div className='lg:hidden flex justify-between w-full px-2 gap-12 py-2 grow z-51 text-3xl'>
+        <div className='lg:hidden flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl z-51'>
           <Link
-            to={`/${tournamentId}/teams`}
+            to={`/${tournamentId}/info`}
             className='flex-1 flex justify-center'
           >
-            <FontAwesomeIcon icon={faCircleInfo} />
+            <FontAwesomeIcon icon={faInfoCircle} />
           </Link>
-          <Link
-            to={`/${tournamentId}/map`}
-            className='flex-1 flex justify-center'
-          >
-            <FontAwesomeIcon icon={faMapLocationDot} />
-          </Link>
-          <Link
-            to={`/${tournamentId}/home`}
-            className='flex-1 flex justify-center'
-          ></Link>
           <Link
             to={`/${tournamentId}/schedule`}
             className='flex-1 flex justify-center'
           >
             <FontAwesomeIcon icon={faCalendarDays} />
           </Link>
+          <Link
+            to={`/${tournamentId}/home`}
+            className='flex-1 flex justify-center'
+          ></Link>
+          <Link
+            to={`/${tournamentId}/standings`}
+            className='flex-1 flex justify-center'
+          >
+            <FontAwesomeIcon icon={faListOl} />
+          </Link>
           <div className='flex-1 flex justify-center'>
             <Sheet>
               <SheetTrigger asChild>
                 <FontAwesomeIcon
-                  icon={faBars}
+                  icon={faAnglesLeft}
                   className='flex-1 flex justify-center text-[#646cff]'
                 />
               </SheetTrigger>
@@ -82,13 +82,16 @@ export function NavbarSimple() {
             </Sheet>
           </div>
         </div>
-        <div className='lg:hidden fixed bottom-4 left-0 right-0 flex justify-center'>
-          <Link to={`/${tournamentId}/home`}>
+        <div className='lg:hidden fixed bottom-4 left-43 flex justify-center w-min z-52'>
+          <Link to={`/${tournamentId}/home`} className='z-52'>
             <span
-              className='flex items-center justify-center w-18 h-18 rounded-full'
+              className='flex items-center justify-center w-18 h-18 rounded-full z-52'
               style={{ backgroundColor: '#646cff' }}
             >
-              <FontAwesomeIcon icon={faHouse} className='text-2xl text-white' />
+              <FontAwesomeIcon
+                icon={faHouse}
+                className='text-2xl text-white z-52'
+              />
             </span>
           </Link>
         </div>
