@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { useGames } from '@/hooks/useGame'
 import { useParams } from 'react-router-dom'
 import { useTournament } from '@/hooks/useTournament.ts'
+import { useTeams } from '@/hooks/useTeam.ts'
 
 export default function Home() {
   const now = new Date()
@@ -11,6 +12,7 @@ export default function Home() {
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: games, isLoading, error } = useGames(tournamentId ?? '')
   const { data: tournament } = useTournament(tournamentId ?? '')
+  const { data: teams } = useTeams(tournamentId ?? '')
 
   if (!tournamentId) {
     return <div>Error: Tournament ID is missing</div>
@@ -54,37 +56,50 @@ export default function Home() {
   return (
     <div className='flex flex-col gap-2 mb-16'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
-      {playingGames.map((game) => (
-        <Card key={game.id} className='w-full'>
-          <CardContent>
-            <p className='font-semibold text-blue-600'>Now Playing</p>
-            <p>
-              {game.team1} vs {game.team2}
-            </p>
-            {game.score1 !== undefined && (
-              <p className='text-xl font-bold'>
-                {game.score1} : {game.score2}
+      {playingGames.map((game) => {
+        const team1 =
+          teams?.find((t) => t.id === game.team1Id)?.name || game.team1Id
+        const team2 =
+          teams?.find((t) => t.id === game.team2Id)?.name || game.team2Id
+        return (
+          <Card key={game.id} className='w-full'>
+            <CardContent>
+              <p className='font-semibold text-blue-600'>Now Playing</p>
+              <p>
+                {team1} vs {team2}
               </p>
-            )}
-            <p className='text-sm text-gray-600'>
-              {format(new Date(game.date), 'HH:mm')} @ {game.rink}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
-      {nextGames.map((game) => (
-        <Card key={game.id} className='w-full'>
-          <CardContent>
-            <p className='font-semibold text-gray-800'>Next Game</p>
-            <p>
-              {game.team1} vs {game.team2}
-            </p>
-            <p className='text-sm text-gray-600'>
-              {format(new Date(game.date), 'HH:mm')} @ {game.rink}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
+              {game.score1 !== undefined && (
+                <p className='text-xl font-bold'>
+                  {game.score1} : {game.score2}
+                </p>
+              )}
+              <p className='text-sm text-gray-600'>
+                {format(new Date(game.date), 'HH:mm')} @ {game.rink}
+              </p>
+            </CardContent>
+          </Card>
+        )
+      })}
+
+      {nextGames.map((game) => {
+        const team1 =
+          teams?.find((t) => t.id === game.team1Id)?.name || game.team1Id
+        const team2 =
+          teams?.find((t) => t.id === game.team2Id)?.name || game.team2Id
+        return (
+          <Card key={game.id} className='w-full'>
+            <CardContent>
+              <p className='font-semibold text-gray-800'>Next Game</p>
+              <p>
+                {team1} vs {team2}
+              </p>
+              <p className='text-sm text-gray-600'>
+                {format(new Date(game.date), 'HH:mm')} @ {game.rink}
+              </p>
+            </CardContent>
+          </Card>
+        )
+      })}
     </div>
   )
 }
