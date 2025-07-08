@@ -185,27 +185,43 @@ async function main() {
     ],
   })
 
-  // Create Games for each team (each team plays every other team once)
+  // Create Games for each team (some in the past, some now, some in the future)
+  const now = new Date()
+  const pastBase = new Date(now.getTime() - 48 * 60 * 60 * 1000) // 48 hours ago
+  const futureBase = new Date(now.getTime() + 2 * 60 * 60 * 1000) // 2 hours from now
+
   const teams = [teamA, teamB, teamC, teamD]
   let gameCount = 1
   for (let i = 0; i < teams.length; i++) {
-    for (let j = i + 1; j < teams.length; j++) {
-      await prisma.game.create({
-        data: {
-          team1: teams[i].name,
-          team2: teams[j].name,
-          score1: Math.floor(Math.random() * 6), // random score for demo
-          score2: Math.floor(Math.random() * 6),
-          rink: `Rink ${String.fromCharCode(65 + ((gameCount - 1) % 2))}`,
-          date: new Date(
-            `2025-01-1${5 + Math.floor((gameCount - 1) / 2)}T${
-              10 + ((gameCount - 1) % 2) * 2
-            }:00:00`,
-          ),
-          tournamentId: tournament.id,
-        },
-      })
-      gameCount++
+    for (let j = 0; j < teams.length; j++) {
+      if (i !== j) {
+        let date: Date
+        if (gameCount % 3 === 1) {
+          // Past
+          date = new Date(pastBase.getTime() + (gameCount - 1) * 60 * 60 * 1000)
+        } else if (gameCount % 3 === 2) {
+          // Now
+          date = new Date(now.getTime())
+        } else {
+          // Future
+          date = new Date(
+            futureBase.getTime() + (gameCount - 1) * 60 * 60 * 1000,
+          )
+        }
+
+        await prisma.game.create({
+          data: {
+            team1: teams[i].name,
+            team2: teams[j].name,
+            score1: Math.floor(Math.random() * 6),
+            score2: Math.floor(Math.random() * 6),
+            rink: `Rink ${String.fromCharCode(65 + ((gameCount - 1) % 2))}`,
+            date,
+            tournamentId: tournament.id,
+          },
+        })
+        gameCount++
+      }
     }
   }
 
