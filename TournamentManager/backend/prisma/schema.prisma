@@ -41,8 +41,10 @@ model RefreshToken {
 
 model Game {
   id           String      @id @default(uuid())
-  team1        String
-  team2        String
+  team1Id      String
+  team2Id      String
+  team1        Team        @relation("Team1Games", fields: [team1Id], references: [id])
+  team2        Team        @relation("Team2Games", fields: [team2Id], references: [id])
   score1       Int
   score2       Int
   rink         String
@@ -51,17 +53,24 @@ model Game {
   updatedAt    DateTime    @updatedAt
   Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
   tournamentId String?
+  Team         Team?       @relation(fields: [teamId], references: [id])
+  teamId       String?
 }
 
 model Team {
   id           String      @id @default(uuid())
   name         String
   city         String
+  logoUrl      String?
+  description  String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   Player       Player[]
   Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
   tournamentId String?
+  team1Games   Game[]      @relation("Team1Games")
+  team2Games   Game[]      @relation("Team2Games")
+  Game         Game[]
 }
 
 model Player {
