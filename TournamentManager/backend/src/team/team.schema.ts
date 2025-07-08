@@ -1,28 +1,19 @@
 import { z } from 'zod'
 
-/*
-model Team {
-  id           String      @id @default(uuid())
-  name         String
-  city         String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Player       Player[]
-  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-  tournamentId String?
-}
-*/
-
 export const teamSchema = z.object({
   name: z.string().min(1, 'Team name is required'),
   city: z.string().min(1, 'City is required'),
   tournamentId: z.string(),
+  logoUrl: z.string().url('Invalid URL format').optional(),
+  description: z.string().optional(),
 })
 
 export const teamEditSchema = z.object({
   name: z.string().min(1, 'Team name is required'),
   city: z.string().min(1, 'City is required'),
   tournamentId: z.string(),
+  logoUrl: z.string().url('Invalid URL format').optional(),
+  description: z.string().optional(),
 })
 
 export const teamPaginationQuerySchema = z.object({
@@ -50,4 +41,6 @@ export const teamWithPlayersSchema = z.object({
     }),
   ),
   tournamentId: z.string(),
+  logoUrl: z.string().url('Invalid URL format').optional(),
+  description: z.string().optional(),
 })

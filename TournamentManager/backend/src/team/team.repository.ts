@@ -6,7 +6,6 @@ import {
   GetTeamDetailsOptions,
 } from './team.types'
 import { Player } from '../player/player.types'
-import { TeamWithPlayers } from './team.types'
 
 const TEAMS_PER_PAGE = 20
 

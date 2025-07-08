@@ -54,8 +54,8 @@ const getAllGames = async () => {
   const rawData = await db.game.findMany({
     select: {
       id: true,
-      team1: true,
-      team2: true,
+      team1Id: true,
+      team2Id: true,
       score1: true,
       score2: true,
       rink: true,
@@ -76,8 +76,8 @@ const getSingleGame = async (id: string, options: GetGameDeatilsOptions) => {
   return db.game.findFirst({
     select: {
       id: true,
-      team1: true,
-      team2: true,
+      team1Id: true,
+      team2Id: true,
       score1: true,
       score2: true,
       rink: true,
@@ -101,8 +101,8 @@ const getPaginatedGames = async (options: GetGamesOptions) => {
   const data = await db.game.findMany({
     select: {
       id: true,
-      team1: true,
-      team2: true,
+      team1Id: true,
+      team2Id: true,
       score1: true,
       score2: true,
       rink: true,
