@@ -211,8 +211,8 @@ async function main() {
 
         await prisma.game.create({
           data: {
-            team1: teams[i].name,
-            team2: teams[j].name,
+            team1Id: teams[i].id,
+            team2Id: teams[j].id,
             score1: Math.floor(Math.random() * 6),
             score2: Math.floor(Math.random() * 6),
             rink: `Rink ${String.fromCharCode(65 + ((gameCount - 1) % 2))}`,
