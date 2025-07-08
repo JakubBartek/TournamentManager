@@ -3,12 +3,16 @@ export type Team = {
   name: string
   city: string
   tournamentId: string
+  logoUrl?: string
+  description?: string
 }
 
 export type TeamCreate = {
   name: string
   city: string
   tournamentId: string
+  logoUrl?: string
+  description?: string
 }
 
 export type TeamQuery = {

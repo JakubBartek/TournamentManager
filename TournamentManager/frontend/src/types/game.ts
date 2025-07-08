@@ -1,7 +1,7 @@
 export type Game = {
   id: number
-  team1: string
-  team2: string
+  team1Id: string
+  team2Id: string
   date: string // ISO format
   rink: string
   score1: number
@@ -10,8 +10,8 @@ export type Game = {
 }
 
 export type GameCreate = {
-  team1: string
-  team2: string
+  team1Id: string
+  team2Id: string
   date: string // ISO format
   rink: string
   score1: number
