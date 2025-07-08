@@ -6,6 +6,8 @@ import { BaseLayout } from './pages/BaseLayout'
 import './App.css'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import SelectTournament from './pages/SelectTournament'
+import Info from './pages/Info'
+import Standings from './pages/Standings'
 
 const router = createBrowserRouter([
   {
@@ -17,7 +19,7 @@ const router = createBrowserRouter([
     Component: BaseLayout,
     children: [
       {
-        path: 'home', // toto je cesta /:tournamentId
+        path: 'home',
         Component: Home,
       },
       {
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
       {
         path: 'teams',
         Component: Teams,
+      },
+      {
+        path: 'info',
+        Component: Info,
+      },
+      {
+        path: 'standings',
+        Component: Standings,
       },
     ],
   },
