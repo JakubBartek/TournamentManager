@@ -20,9 +20,6 @@ export default function Home() {
     return <div>Loading tournament...</div>
   }
 
-  let currentGame: Game | null = null
-  let nextGame: Game | null = null
-
   if (isLoading) return <div>Loading games...</div>
   if (error) return <div>Error: {(error as Error).message}</div>
 
@@ -43,9 +40,7 @@ export default function Home() {
     .filter((date) => date > now)
 
   let nextGames: Game[] = []
-  if (nextGameTimes.length === 0) {
-    /* empty */
-  } else {
+  if (nextGameTimes.length !== 0) {
     const earliestNextGameTime = new Date(
       Math.min(...nextGameTimes.map((d) => d.getTime())),
     )
@@ -56,50 +51,9 @@ export default function Home() {
     })
   }
 
-  // TODO: REMOVE--- THIS IS ONLY TO SHOW SOMETHING IN THE UI
-  for (let i = 0; i < games.length; i++) {
-    const game = games[i]
-    currentGame = game
-    nextGame = games[i + 1] ?? null
-    break
-  }
-
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 mb-16'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
-      {/* TODO: REMOVE ----------THIS IS ONLY FOR TESTING-------------------*/}
-      {currentGame && (
-        <Card className='w-full'>
-          <CardContent>
-            <p className='font-semibold text-blue-600'>Now Playing</p>
-            <p>
-              {currentGame.team1} vs {currentGame.team2}
-            </p>
-            {currentGame.score1 && (
-              <p className='text-xl font-bold'>
-                {currentGame.score1} : {currentGame.score2}
-              </p>
-            )}
-            <p className='text-sm text-gray-600'>
-              {format(new Date(currentGame.date), 'HH:mm')} @ {currentGame.rink}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-      {nextGame && (
-        <Card className='w-full'>
-          <CardContent>
-            <p className='font-semibold text-gray-800'>Next Game</p>
-            <p>
-              {nextGame.team1} vs {nextGame.team2}
-            </p>
-            <p className='text-sm text-gray-600'>
-              {format(new Date(nextGame.date), 'HH:mm')} @ {nextGame.rink}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-      {/* TODO: END REMOVE ----------------------------------------------*/}
       {playingGames.map((game) => (
         <Card key={game.id} className='w-full'>
           <CardContent>
@@ -107,7 +61,7 @@ export default function Home() {
             <p>
               {game.team1} vs {game.team2}
             </p>
-            {game.score1 && (
+            {game.score1 !== undefined && (
               <p className='text-xl font-bold'>
                 {game.score1} : {game.score2}
               </p>
