@@ -82,16 +82,10 @@ export function NavbarSimple() {
             </Sheet>
           </div>
         </div>
-        <div className='lg:hidden fixed bottom-4 left-43 flex justify-center w-min z-52'>
-          <Link to={`/${tournamentId}/home`} className='z-52'>
-            <span
-              className='flex items-center justify-center w-18 h-18 rounded-full z-52'
-              style={{ backgroundColor: '#646cff' }}
-            >
-              <FontAwesomeIcon
-                icon={faHouse}
-                className='text-2xl text-white z-52'
-              />
+        <div className='lg:hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-60'>
+          <Link to={`/${tournamentId}/home`} className='block'>
+            <span className='w-18 h-18 bg-[#646cff] rounded-full flex items-center justify-center shadow-lg'>
+              <FontAwesomeIcon icon={faHouse} className='text-white text-3xl' />
             </span>
           </Link>
         </div>
