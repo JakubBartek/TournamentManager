@@ -40,21 +40,22 @@ model RefreshToken {
 }
 
 model Game {
-  id           String      @id @default(uuid())
+  id           String         @id @default(uuid())
   team1Id      String
   team2Id      String
-  team1        Team        @relation("Team1Games", fields: [team1Id], references: [id])
-  team2        Team        @relation("Team2Games", fields: [team2Id], references: [id])
+  team1        Team           @relation("Team1Games", fields: [team1Id], references: [id])
+  team2        Team           @relation("Team2Games", fields: [team2Id], references: [id])
   score1       Int
   score2       Int
   rink         String
   date         DateTime
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Tournament   Tournament?    @relation(fields: [tournamentId], references: [id])
   tournamentId String?
-  Team         Team?       @relation(fields: [teamId], references: [id])
+  Team         Team?          @relation(fields: [teamId], references: [id])
   teamId       String?
+  PlayoffRound PlayoffRound[]
 }
 
 model Team {
@@ -71,6 +72,9 @@ model Team {
   team1Games   Game[]      @relation("Team1Games")
   team2Games   Game[]      @relation("Team2Games")
   Game         Game[]
+  Standing     Standing[]
+  Group        Group?      @relation(fields: [groupId], references: [id])
+  groupId      String?
 }
 
 model Player {
@@ -85,19 +89,73 @@ model Player {
   tournamentId String?
 }
 
+enum TournamentType {
+  ROUND_ROBIN
+  PLAYOFF
+  GROUP_STAGE
+  MIXED
+}
+
+enum PlayoffStage {
+  ROUND_OF_16
+  QUARTERFINAL
+  SEMIFINAL
+  FINAL
+}
+
+model Standing {
+  id           String     @id @default(uuid())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  team         Team       @relation(fields: [teamId], references: [id])
+  teamId       String
+
+  wins         Int @default(0)
+  draws        Int @default(0)
+  losses       Int @default(0)
+  goalsFor     Int @default(0)
+  goalsAgainst Int @default(0)
+  points       Int @default(0)
+  position     Int @default(0)
+}
+
+model PlayoffRound {
+  id           String       @id @default(uuid())
+  tournament   Tournament   @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  game         Game         @relation(fields: [gameId], references: [id])
+  gameId       String
+  stage        PlayoffStage
+  roundNumber  Int
+}
+
+model Group {
+  id           String     @id @default(uuid())
+  name         String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  teams        Team[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
 model Tournament {
-  id        String    @id @default(uuid())
-  name      String
-  location  String
-  startDate DateTime
-  endDate   DateTime
-  teams     Team[]
-  games     Game[]
-  sponsors  Sponsor[]
-  Player    Player[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  User      User[]
+  id            String         @id @default(uuid())
+  name          String
+  location      String
+  startDate     DateTime
+  endDate       DateTime
+  type          TournamentType @default(ROUND_ROBIN)
+  teams         Team[]
+  games         Game[]
+  sponsors      Sponsor[]
+  Player        Player[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  User          User[]
+  standings     Standing[]
+  playoffRounds PlayoffRound[]
+  groups        Group[]
 }
 
 model Sponsor {
