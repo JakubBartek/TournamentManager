@@ -1,3 +1,6 @@
+import { Group } from './group'
+import { Standings } from './standings'
+
 export type Team = {
   id: string
   name: string
@@ -5,6 +8,9 @@ export type Team = {
   tournamentId: string
   logoUrl?: string
   description?: string
+  standing: Standings | null
+  groupId?: string
+  group?: Group
 }
 
 export type TeamCreate = {

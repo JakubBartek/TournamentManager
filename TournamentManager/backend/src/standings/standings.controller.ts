@@ -4,8 +4,10 @@ import {
   standingsQuerySchema,
   standingsEditSchema,
   standingSchema,
+  standingsGroupQuerySchema,
 } from './standings.schema'
 import { NotFound } from 'http-errors'
+import { recalculateStandingsForGroup } from './standings.service'
 
 export const getStandings: ControllerFn = async (req, res, next) => {
   try {
@@ -66,13 +68,63 @@ export const deleteStandings: ControllerFn = async (req, res, next) => {
   }
 }
 
-export const calculateStandings: ControllerFn = async (req, res, next) => {
+export const recalculateGroupStandings: ControllerFn = async (
+  req,
+  res,
+  next,
+) => {
+  const { groupId } = req.params
+
   try {
-    const { tournamentId } = req.params
-    await StandingsRepository.calculateStandings(tournamentId)
-    res.json({ message: 'Standings updated successfully' })
+    const result = await recalculateStandingsForGroup(groupId)
+    return res.status(200).json(result)
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Failed to calculate standings' })
+    next(error)
+    return res.status(500).json({ error: 'Failed to recalculate standings' })
+  }
+}
+
+export const calculateStandings: ControllerFn = async (req, res, next) => {
+  const { tournamentId } = req.params
+
+  try {
+    await StandingsRepository.calculateStandings(tournamentId)
+    res.status(200).send({ message: 'Standings recalculated successfully' })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getTournamentStandings: ControllerFn = async (req, res, next) => {
+  const { tournamentId } = req.params
+
+  try {
+    const standings = await StandingsRepository.getStandings(tournamentId)
+
+    if (!standings) {
+      throw new NotFound('Standings not found')
+    }
+
+    res.status(200).send(standings)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getGroupStandings: ControllerFn = async (req, res, next) => {
+  const params = await parseRequest(standingsGroupQuerySchema, req.params)
+  try {
+    const standings = await StandingsRepository.getGroupStandings(
+      params.groupId,
+      params.tournamentId,
+    )
+
+    if (!standings) {
+      throw new NotFound('Group standings not found')
+    }
+
+    res.status(200).send(standings)
+  } catch (error) {
+    next(error)
   }
 }

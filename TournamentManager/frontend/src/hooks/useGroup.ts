@@ -6,7 +6,7 @@ export const useGroups = (tournamentId: string) => {
   return useQuery({
     queryKey: ['groups', tournamentId],
     queryFn: () => groupApi.getAll(tournamentId),
-    enabled: !!tournamentId, // prevents fetching if tournamentId is undefined
+    enabled: !!tournamentId,
   })
 }
 
@@ -60,5 +60,25 @@ export const useGroupUpdate = (tournamentId: string, groupId: string) => {
         .getAll(tournamentId)
         .then((groups) => groups.find((group) => group.id === groupId)),
     enabled: !!tournamentId && !!groupId, // prevents fetching if either is undefined
+  })
+}
+
+export const useCalculateGroupStandings = (
+  tournamentId: string,
+  groupId: string,
+) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationKey: ['groups', tournamentId, groupId, 'calculate'],
+    mutationFn: () => groupApi.calculateStandings(tournamentId, groupId),
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['groups', tournamentId],
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ['standings', tournamentId],
+      })
+    },
   })
 }

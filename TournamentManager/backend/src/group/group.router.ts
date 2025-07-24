@@ -6,6 +6,7 @@ import {
   getSingleGroup,
   getAllGroups,
 } from './group.controller'
+import { recalculateGroupStandings } from '../standings/standings.controller'
 import { isAdmin } from '../middlewares'
 
 const router = Router({ mergeParams: true })
@@ -14,5 +15,6 @@ router.get('/', getAllGroups)
 router.get('/:id', getSingleGroup)
 router.put('/:id', isAdmin, updateGroup)
 router.delete('/:id', isAdmin, deleteGroup)
+router.post('/:id/calculate', recalculateGroupStandings)
 
 export default router

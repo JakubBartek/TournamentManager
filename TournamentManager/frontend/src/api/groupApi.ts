@@ -27,9 +27,17 @@ async function deleteGroup(tournamentId: string, id: string) {
   )
 }
 
+async function calculateGroupStandings(tournamentId: string, groupId: string) {
+  return baseApi.create<void>(
+    `/tournaments/${tournamentId}${GROUP_PREFIX}/${groupId}/calculate`,
+    {},
+  )
+}
+
 export default {
   getAll,
   create,
   update,
   delete: deleteGroup,
+  calculateStandings: calculateGroupStandings,
 }

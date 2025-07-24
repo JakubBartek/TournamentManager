@@ -6,6 +6,8 @@ async function main() {
   await prisma.game.deleteMany({})
   await prisma.player.deleteMany({})
   await prisma.team.deleteMany({})
+  await prisma.group.deleteMany({})
+  await prisma.standing.deleteMany({})
   await prisma.tournament.deleteMany({})
   await prisma.sponsor.deleteMany({})
 
@@ -19,12 +21,28 @@ async function main() {
     },
   })
 
-  // Create Teams
+  // Create Groups
+  const groupA = await prisma.group.create({
+    data: {
+      name: 'Group A',
+      tournamentId: tournament.id,
+    },
+  })
+
+  const groupB = await prisma.group.create({
+    data: {
+      name: 'Group B',
+      tournamentId: tournament.id,
+    },
+  })
+
+  // Create Teams and assign them to groups
   const teamA = await prisma.team.create({
     data: {
       name: 'Ice Wolves',
       city: 'Northville',
       tournamentId: tournament.id,
+      groupId: groupA.id,
     },
   })
 
@@ -33,6 +51,7 @@ async function main() {
       name: 'Frost Giants',
       city: 'Southport',
       tournamentId: tournament.id,
+      groupId: groupA.id,
     },
   })
 
@@ -41,6 +60,7 @@ async function main() {
       name: 'Snow Leopards',
       city: 'Eastwood',
       tournamentId: tournament.id,
+      groupId: groupB.id,
     },
   })
 
@@ -49,6 +69,7 @@ async function main() {
       name: 'Glacier Bears',
       city: 'Westfield',
       tournamentId: tournament.id,
+      groupId: groupB.id,
     },
   })
 

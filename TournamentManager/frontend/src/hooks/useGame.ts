@@ -6,7 +6,7 @@ export const useGames = (tournamentId: string) => {
   return useQuery({
     queryKey: ['games', tournamentId],
     queryFn: () => gameApi.getAll(tournamentId),
-    enabled: !!tournamentId, // zabráni načítaniu ak je undefined
+    enabled: !!tournamentId,
   })
 }
 

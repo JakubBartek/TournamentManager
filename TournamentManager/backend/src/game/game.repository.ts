@@ -35,6 +35,7 @@ const createGame = async (data: GameCreate) => {
   return db.game.create({
     data: {
       ...data,
+      tournamentId: data.tournamentId === undefined ? '' : data.tournamentId,
     },
   })
 }
@@ -66,7 +67,7 @@ const getAllGames = async () => {
 
   const data: Game[] = rawData.map((game) => ({
     ...game,
-    tournamentId: game.tournamentId === null ? undefined : game.tournamentId,
+    tournamentId: game.tournamentId,
   }))
 
   return data

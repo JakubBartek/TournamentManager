@@ -2,10 +2,28 @@ import db from '../db'
 import { Standings, StandingsCreate, StandingsEdit } from './standings.types'
 
 const getStandings = async (tournamentId: string) => {
-  return db.standing.findMany({
+  const groups = await db.group.findMany({
     where: { tournamentId },
-    orderBy: { position: 'asc' },
+    include: {
+      teams: {
+        include: { Standing: true },
+      },
+    },
   })
+
+  const standings = groups.map((group) => ({
+    group,
+    teams: group.teams
+      .map((team) => ({
+        teamId: team.id,
+        name: team.name,
+        points: team.Standing?.points ?? 0,
+        position: team.Standing?.position ?? 0,
+      }))
+      .sort((a, b) => a.position - b.position),
+  }))
+
+  return standings
 }
 
 const createStanding = async (data: StandingsCreate) => {
@@ -31,29 +49,36 @@ const deleteStanding = async (id: string) => {
   })
 }
 
+const getGroupStandings = async (groupId: string, tournamentId: string) => {
+  const teams = await db.team.findMany({
+    where: { groupId, tournamentId },
+    include: {
+      Standing: true,
+    },
+  })
+
+  const standings = teams
+    .map((team) => ({
+      name: team.name,
+      city: team.city,
+      ...team.Standing,
+    }))
+    .filter((t) => t.points !== undefined)
+    .sort((a, b) => a.position! - b.position!)
+
+  return standings
+}
+
 async function calculateStandings(tournamentId: string) {
   const games = await db.game.findMany({
-    where: {
-      tournamentId,
-    },
+    where: { tournamentId },
     include: {
       team1: true,
       team2: true,
     },
   })
 
-  const standingsMap = new Map<
-    string,
-    {
-      teamId: string
-      wins: number
-      draws: number
-      losses: number
-      goalsFor: number
-      goalsAgainst: number
-      points: number
-    }
-  >()
+  const standingsMap = new Map<string, Standings>()
 
   for (const game of games) {
     const { team1Id, team2Id, score1, score2 } = game
@@ -67,8 +92,14 @@ async function calculateStandings(tournamentId: string) {
         goalsFor: 0,
         goalsAgainst: 0,
         points: 0,
+        groupId: game.team1.groupId || '',
+        id: '',
+        tournamentId,
+        position: 0,
+        teamName: '',
       })
     }
+
     if (!standingsMap.has(team2Id)) {
       standingsMap.set(team2Id, {
         teamId: team2Id,
@@ -78,6 +109,11 @@ async function calculateStandings(tournamentId: string) {
         goalsFor: 0,
         goalsAgainst: 0,
         points: 0,
+        groupId: game.team2.groupId || '',
+        id: '',
+        tournamentId,
+        position: 0,
+        teamName: '',
       })
     }
 
@@ -90,35 +126,53 @@ async function calculateStandings(tournamentId: string) {
     team2Stats.goalsAgainst += score1
 
     if (score1 > score2) {
-      team1Stats.wins += 1
+      team1Stats.wins++
       team1Stats.points += 3
-      team2Stats.losses += 1
+      team2Stats.losses++
     } else if (score2 > score1) {
-      team2Stats.wins += 1
+      team2Stats.wins++
       team2Stats.points += 3
-      team1Stats.losses += 1
+      team1Stats.losses++
     } else {
-      team1Stats.draws += 1
-      team2Stats.draws += 1
-      team1Stats.points += 1
-      team2Stats.points += 1
+      team1Stats.draws++
+      team2Stats.draws++
+      team1Stats.points++
+      team2Stats.points++
     }
   }
 
-  const standingsArray = Array.from(standingsMap.values())
-
-  standingsArray.sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points
-    const goalDiffA = a.goalsFor - a.goalsAgainst
-    const goalDiffB = b.goalsFor - b.goalsAgainst
-    return goalDiffB - goalDiffA
-  })
-
   await db.standing.deleteMany({ where: { tournamentId } })
 
-  await Promise.all(
-    standingsArray.map((s, i) =>
-      db.standing.create({
+  const groupStandingsMap = new Map<string, Standings[]>()
+
+  for (const stat of standingsMap.values()) {
+    if (!groupStandingsMap.has(stat.groupId)) {
+      groupStandingsMap.set(stat.groupId, [])
+    }
+    groupStandingsMap.get(stat.groupId)!.push(stat)
+  }
+
+  for (const [groupId, standings] of groupStandingsMap.entries()) {
+    standings.sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points
+      const goalDiffA = a.goalsFor - a.goalsAgainst
+      const goalDiffB = b.goalsFor - b.goalsAgainst
+      return goalDiffB - goalDiffA
+    })
+
+    for (let i = 0; i < standings.length; i++) {
+      const s = standings[i]
+      let teamName = s.teamName
+
+      if (!teamName) {
+        const team = await db.team.findUnique({
+          where: { id: s.teamId },
+          select: { name: true },
+        })
+        teamName = team?.name || ''
+      }
+
+      await db.standing.create({
         data: {
           tournamentId,
           teamId: s.teamId,
@@ -129,10 +183,12 @@ async function calculateStandings(tournamentId: string) {
           goalsAgainst: s.goalsAgainst,
           points: s.points,
           position: i + 1,
+          groupId,
+          teamName,
         },
-      }),
-    ),
-  )
+      })
+    }
+  }
 }
 
 export default {
@@ -141,4 +197,5 @@ export default {
   updateStanding,
   deleteStanding,
   calculateStandings,
+  getGroupStandings,
 }

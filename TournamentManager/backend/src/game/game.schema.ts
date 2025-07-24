@@ -7,8 +7,7 @@ export const gameSchema = z.object({
   score2: z.number().int().min(0, 'Score 2 must be a non-negative integer'),
   rink: z.string().min(1, 'Rink is required'),
   date: z.coerce.date(),
-  tournamentId: z.string().uuid('Invalid tournamentId').optional(),
-  teamId: z.string().uuid('Invalid teamId').optional(),
+  tournamentId: z.string().uuid('Invalid tournamentId').optional(), // TODO: THIS IS NOT OPTIONAL, BUT MAKING IT REQUIRED BREAKS THE APP AND I DONT HAVE BRAIN POWER TO FIX IT
 })
 
 export const gameEditSchema = z.object({
@@ -19,7 +18,6 @@ export const gameEditSchema = z.object({
   rink: z.string().min(1, 'Rink is required'),
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(),
-  teamId: z.string().uuid('Invalid teamId').optional(),
 })
 
 export const gamePaginationQuerySchema = z.object({

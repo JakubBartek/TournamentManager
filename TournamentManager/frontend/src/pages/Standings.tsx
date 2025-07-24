@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
-import { useTeams } from '@/hooks/useTeam'
+import { useGroups } from '@/hooks/useGroup'
+import { useCalculateStandings } from '@/hooks/useStandings'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -10,19 +11,37 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
+import React from 'react'
 
 export default function Standings() {
   const { tournamentId } = useParams<{ tournamentId: string }>()
-  const { data: teams, isLoading, error } = useTeams(tournamentId ?? '')
+  const { mutate: calculateStandings } = useCalculateStandings(
+    tournamentId || '',
+  )
+  const {
+    data: groups,
+    isLoading: loadingGroups,
+    error: errorGroups,
+  } = useGroups(tournamentId || '')
+
+  const [hasCalculated, setHasCalculated] = React.useState(false)
+
+  // TODO: Calculate only when change happens (move this somewhere else)
+  React.useEffect(() => {
+    if (tournamentId && !hasCalculated) {
+      calculateStandings()
+      setHasCalculated(true)
+    }
+  }, [tournamentId, calculateStandings, hasCalculated])
 
   if (!tournamentId) {
     return <div className='text-red-500 text-lg'>Missing tournament ID</div>
   }
 
-  if (isLoading) {
+  if (loadingGroups) {
     return (
       <div className='p-4'>
-        <h2 className='text-2xl font-bold mb-4'>Teams</h2>
+        <h2 className='text-2xl font-bold mb-4'>Standings</h2>
         <Skeleton className='h-10 w-full mb-2' />
         <Skeleton className='h-10 w-full mb-2' />
         <Skeleton className='h-10 w-full' />
@@ -30,39 +49,48 @@ export default function Standings() {
     )
   }
 
-  if (error) {
+  if (errorGroups) {
     return (
-      <div className='text-red-500 text-lg'>
-        Error: {(error as Error).message}
-      </div>
+      <div className='text-red-500 text-lg'>Error: {errorGroups?.message}</div>
     )
   }
 
   return (
     <div className='p-4'>
       <h2 className='text-3xl font-bold mb-6'>Standings</h2>
-      <Card>
-        <CardContent className='p-4'>
-          <Table className='w-64'>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Points</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teams?.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className='font-medium text-left'>
-                    {team.name}
-                  </TableCell>
-                  <TableCell>0</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {groups?.map((group) => (
+        <div key={group.id} className='mb-8'>
+          <h3 className='text-xl font-semibold mb-2'>{group.name}</h3>
+          <Card>
+            <CardContent className='p-4'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className='text-left'>Position</TableHead>
+                    <TableHead className='text-center'>Name</TableHead>
+                    <TableHead className='text-left'>Points</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {group.Standings?.map((standing) => (
+                    <TableRow key={standing.teamId}>
+                      <TableCell className='text-center'>
+                        {standing.position}
+                      </TableCell>
+                      <TableCell className='font-medium text-left'>
+                        {standing.teamName}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {standing.points}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      ))}
     </div>
   )
 }

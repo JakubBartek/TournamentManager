@@ -25,13 +25,34 @@ const deleteGroup = async (id: string) => {
 }
 
 const getAllGroups = async () => {
-  return db.group.findMany({
+  const groups = await db.group.findMany({
     select: {
       id: true,
       name: true,
       tournamentId: true,
+      Standing: {
+        select: {
+          id: true,
+          points: true,
+          position: true,
+          draws: true,
+          losses: true,
+          wins: true,
+          goalsFor: true,
+          goalsAgainst: true,
+          teamName: true,
+          teamId: true,
+          groupId: true,
+          tournamentId: true,
+        },
+      },
     },
   })
+
+  return groups.map((group) => ({
+    ...group,
+    Standings: group.Standing,
+  }))
 }
 
 const getSingleGroup = async (id: string) => {
