@@ -21,13 +21,12 @@ export function NavbarSimple() {
   }, [])
 
   return (
+    // @ts-expect-error Suppress missing props warning
     <Navbar
       className='fixed bottom-0 left-0 right-0 z-50 bg-white shadow-md px-6 py-3 w-auto rounded-b-none border-gray-400'
       placeholder={undefined}
       onResize={undefined}
       onResizeCapture={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
     >
       <div className='flex items-center justify-between text-blue-gray-900'>
         {/* Desktop Nav List (always visible) */}
