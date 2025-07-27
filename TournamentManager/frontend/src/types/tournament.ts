@@ -1,20 +1,25 @@
+import { User } from './auth'
+
 export type Tournament = {
   id: string
   name: string
-  startDate: string
-  endDate: string
+  startDate: Date
+  endDate: Date
   location: string
+  tournamentManagers?: User[]
+  adminPassword?: string
 }
 
 export type TournamentCreate = {
   name: string
-  startDate: string
-  endDate: string
+  startDate: Date
+  endDate: Date
   location: string
+  adminPassword: string
 }
 
 export type TournamentQuery = {
   name?: string
-  startDate?: string // ISO format
-  endDate?: string // ISO format
+  startDate?: Date // ISO format
+  endDate?: Date // ISO format
 }

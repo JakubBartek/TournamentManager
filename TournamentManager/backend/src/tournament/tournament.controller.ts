@@ -6,12 +6,13 @@ import {
   tournamentIdQuerySchema,
   tournamentQuerySchema,
   tournamentSchema,
+  tournamentCreateSchema,
 } from './tournament.schema'
 import { NotFound } from 'http-errors'
 
 export const addNewTournament: ControllerFn = async (req, res, next) => {
   try {
-    const data = await parseRequest(tournamentSchema, req.body)
+    const data = await parseRequest(tournamentCreateSchema, req.body)
     const tournament = await TournamentRepository.createTournament(data)
 
     res.status(201).send(tournament)

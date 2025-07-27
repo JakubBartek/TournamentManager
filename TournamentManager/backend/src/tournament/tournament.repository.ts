@@ -7,6 +7,7 @@ import {
   GetTournamentDetailsOptions,
   TournamentPaginationQuery,
 } from './tournament.types'
+import bcrypt from 'bcryptjs'
 
 const TOURNAMENTS_PER_PAGE = 20
 
@@ -16,9 +17,12 @@ const getPages = async () => {
 }
 
 const createTournament = async (data: TournamentCreate) => {
+  const hashedPassword = await bcrypt.hash(data.adminPassword, 10)
+
   return db.tournament.create({
     data: {
       ...data,
+      adminPasswordHash: hashedPassword,
     },
   })
 }
@@ -55,6 +59,7 @@ const getSingleTournament = async (id: string) => {
       location: true,
       startDate: true,
       endDate: true,
+      TournamentManagers: true,
     },
     where: {
       id: id,

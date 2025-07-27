@@ -8,6 +8,8 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import SelectTournament from './pages/SelectTournament'
 import Info from './pages/Info'
 import Standings from './pages/Standings'
+import TournamentCreate from './pages/TournamentCreate'
+import EditTournament from './pages/EditTournament'
 
 const router = createBrowserRouter([
   {
@@ -42,7 +44,15 @@ const router = createBrowserRouter([
         path: 'standings',
         Component: Standings,
       },
+      {
+        path: 'editTournament',
+        Component: EditTournament,
+      },
     ],
+  },
+  {
+    path: '/tournament/create',
+    Component: TournamentCreate,
   },
   {
     path: '/',

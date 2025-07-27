@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Select,
   SelectContent,
@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTournaments } from '@/hooks/useTournament'
+import { Button } from '@/components/ui/button'
 
 export default function TournamentSelectPage() {
   const navigate = useNavigate()
@@ -37,13 +38,14 @@ export default function TournamentSelectPage() {
     navigate(`/${value}/home`)
   }
 
+  // TODO: Remake this page
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50'>
-      <h1 className='text-3xl font-extrabold text-gray-800 mb-8'>
-        Choose a Tournament
-      </h1>
+    <div className='flex flex-col items-center justify-center min-h-screen p-4'>
+      <h1 className='text-3xl font-extrabold text-gray-800 mb-2'>Choose</h1>
+      <h2 className='text-3xl font-extrabold text-gray-800'>a</h2>
+      <h1 className='text-3xl font-extrabold text-gray-800 mb-8'>Tournament</h1>
       <Select onValueChange={handleChange}>
-        <SelectTrigger className='w-[300px] h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
+        <SelectTrigger className='w-[300px] mb-32 h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
           <SelectValue placeholder='Choose a tournament' />
         </SelectTrigger>
         <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
@@ -58,6 +60,9 @@ export default function TournamentSelectPage() {
           ))}
         </SelectContent>
       </Select>
+      <Link to='/tournament/create'>
+        <Button className='mt-32'>Create a new tournament</Button>
+      </Link>
     </div>
   )
 }

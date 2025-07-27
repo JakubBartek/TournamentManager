@@ -76,6 +76,12 @@ export function NavbarSimple() {
                   <Link to={`/select`} className='text-lg'>
                     Choose a Tournament
                   </Link>
+                  <Link
+                    to={`/${tournamentId}/editTournament`}
+                    className='text-lg'
+                  >
+                    Edit Tournament
+                  </Link>
                 </div>
               </SheetContent>
             </Sheet>

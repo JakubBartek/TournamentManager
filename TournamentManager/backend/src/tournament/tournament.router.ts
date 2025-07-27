@@ -11,7 +11,7 @@ import { isAdmin } from '../middlewares'
 
 const router = Router({ mergeParams: true })
 
-router.post('/', isAdmin, addNewTournament)
+router.post('/', addNewTournament)
 router.get('/', getPaginatedTournaments)
 router.get('/all', getAllTournaments)
 router.get('/:id', getSingleTournament)

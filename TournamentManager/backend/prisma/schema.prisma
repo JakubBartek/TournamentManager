@@ -171,6 +171,7 @@ model Tournament {
   standings          Standing[]
   playoffRounds      PlayoffRound[]
   groups             Group[]
+  adminPasswordHash  String?
 }
 
 model Sponsor {

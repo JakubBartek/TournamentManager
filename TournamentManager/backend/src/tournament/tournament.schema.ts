@@ -1,40 +1,26 @@
 import { z } from 'zod'
 
-/*
-model Tournament {
-  id        String    @id @default(uuid())
-  name      String
-  location  String
-  startDate DateTime
-  endDate   DateTime
-  teams     Team[]
-  games     Game[]
-  sponsors  Sponsor[]
-  Player    Player[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-*/
-
 export const tournamentSchema = z.object({
   name: z.string().min(1, 'Tournament name is required'),
   location: z.string().min(1, 'Location is required'),
-  startDate: z
-    .date()
-    .refine((date) => date > new Date(), 'Start date must be in the future'),
-  endDate: z
-    .date()
-    .refine((date) => date > new Date(), 'End date must be in the future'),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
 })
 export const tournamentEditSchema = z.object({
   name: z.string().min(1, 'Tournament name is required'),
   location: z.string().min(1, 'Location is required'),
-  startDate: z
-    .date()
-    .refine((date) => date > new Date(), 'Start date must be in the future'),
-  endDate: z
-    .date()
-    .refine((date) => date > new Date(), 'End date must be in the future'),
+  startDate: z.coerce.date(), // Accepts string or Date and coerces to Date
+  endDate: z.coerce.date(),
+})
+
+export const tournamentCreateSchema = z.object({
+  name: z.string().min(1, 'Tournament name is required'),
+  location: z.string().min(1, 'Location is required'),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  adminPassword: z
+    .string()
+    .min(8, 'Admin password must be at least 8 characters long'),
 })
 
 export const tournamentIdQuerySchema = z.object({
