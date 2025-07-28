@@ -14,11 +14,14 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 export function NavbarSimple() {
   const handleWindowResize = () => window.innerWidth >= 960
   const { tournamentId } = useParams<{ tournamentId: string }>()
+  const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [])
+
+  const handleLinkClickInSheet = () => setOpen(false)
 
   return (
     // @ts-expect-error Suppress missing props warning
@@ -32,7 +35,7 @@ export function NavbarSimple() {
         {/* Desktop Nav List (always visible) */}
         <div className='hidden lg:block'>
           <Link
-            to={`/${tournamentId}/home`}
+            to={`/${tournamentId}`}
             className='text-2xl mr-4 cursor-pointer'
           >
             Turnajuj
@@ -54,7 +57,7 @@ export function NavbarSimple() {
             <FontAwesomeIcon icon={faCalendarDays} />
           </Link>
           <Link
-            to={`/${tournamentId}/home`}
+            to={`/${tournamentId}`}
             className='flex-1 flex justify-center'
           ></Link>
           <Link
@@ -64,7 +67,7 @@ export function NavbarSimple() {
             <FontAwesomeIcon icon={faListOl} />
           </Link>
           <div className='flex-1 flex justify-center'>
-            <Sheet>
+            <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <FontAwesomeIcon
                   icon={faAnglesLeft}
@@ -73,12 +76,17 @@ export function NavbarSimple() {
               </SheetTrigger>
               <SheetContent>
                 <div className='flex flex-col gap-4 p-4'>
-                  <Link to={`/select`} className='text-lg'>
+                  <Link
+                    to='/select'
+                    className='text-lg'
+                    onClick={handleLinkClickInSheet}
+                  >
                     Choose a Tournament
                   </Link>
                   <Link
-                    to={`/${tournamentId}/editTournament`}
+                    to={`/${tournamentId}/edit`}
                     className='text-lg'
+                    onClick={handleLinkClickInSheet}
                   >
                     Edit Tournament
                   </Link>
@@ -88,7 +96,7 @@ export function NavbarSimple() {
           </div>
         </div>
         <div className='lg:hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-60'>
-          <Link to={`/${tournamentId}/home`} className='block'>
+          <Link to={`/${tournamentId}`} className='block'>
             <span className='w-18 h-18 bg-[#646cff] rounded-full flex items-center justify-center shadow-lg'>
               <FontAwesomeIcon icon={faHouse} className='text-white text-3xl' />
             </span>

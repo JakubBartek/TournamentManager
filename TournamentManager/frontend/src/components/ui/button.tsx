@@ -20,12 +20,17 @@ const buttonVariants = cva(
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
+        white:
+          'bg-white text-black font-semibold hover:bg-white/90 dark:bg-white',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-9',
+        wideXXL: 'h-16 w-48 px-6 text-lg has-[>svg]:px-4',
+        wide3XL: 'h-16 w-full px-8 text-xl has-[>svg]:px-6 rounded-xl',
+        full: 'w-full',
       },
     },
     defaultVariants: {
@@ -46,7 +51,6 @@ function Button({
     asChild?: boolean
   }) {
   const Comp = asChild ? Slot : 'button'
-
   return (
     <Comp
       data-slot='button'
