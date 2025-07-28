@@ -35,6 +35,7 @@ const createGame = async (data: GameCreate) => {
   return db.game.create({
     data: {
       ...data,
+      rinkId: data.rinkId === undefined ? '' : data.rinkId,
       tournamentId: data.tournamentId === undefined ? '' : data.tournamentId,
     },
   })
@@ -59,14 +60,15 @@ const getAllGames = async () => {
       team2Id: true,
       score1: true,
       score2: true,
-      rink: true,
       date: true,
       tournamentId: true,
+      rinkId: true,
     },
   })
 
   const data: Game[] = rawData.map((game) => ({
     ...game,
+    rinkId: game.rinkId ?? '',
     tournamentId: game.tournamentId,
   }))
 
@@ -81,7 +83,7 @@ const getSingleGame = async (id: string, options: GetGameDeatilsOptions) => {
       team2Id: true,
       score1: true,
       score2: true,
-      rink: true,
+      rinkId: true,
       date: true,
       tournamentId: true,
     },
@@ -106,7 +108,7 @@ const getPaginatedGames = async (options: GetGamesOptions) => {
       team2Id: true,
       score1: true,
       score2: true,
-      rink: true,
+      rinkId: true,
       date: true,
       tournamentId: true,
     },

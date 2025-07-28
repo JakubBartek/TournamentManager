@@ -7,6 +7,7 @@ import {
   teamQuerySchema,
   teamSchema,
   teamWithPlayersSchema,
+  teamIdWithTournamentIdSchema,
 } from './team.schema'
 import { NotFound } from 'http-errors'
 
@@ -23,10 +24,11 @@ export const addNewTeam: ControllerFn = async (req, res, next) => {
 
 export const getSingleTeam: ControllerFn = async (req, res, next) => {
   try {
-    const params = await parseRequest(teamIdQuerySchema, req.params)
-    const options = await parseRequest(teamQuerySchema, req.query)
+    const params = await parseRequest(teamIdWithTournamentIdSchema, req.params)
 
-    const data = await TeamRepository.getSingleTeam(params.id, options)
+    const data = await TeamRepository.getSingleTeam(params.id, {
+      tournamentId: params.tournamentId,
+    })
 
     if (!data) {
       throw new NotFound('Team not found')

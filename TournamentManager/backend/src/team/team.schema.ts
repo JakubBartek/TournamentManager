@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const teamSchema = z.object({
   name: z.string().min(1, 'Team name is required'),
   city: z.string().min(1, 'City is required'),
-  tournamentId: z.string(),
+  tournamentId: z.string().uuid('Invalid tournament ID format'),
   logoUrl: z.string().url('Invalid URL format').optional(),
   description: z.string().optional(),
 })
@@ -27,6 +27,11 @@ export const teamQuerySchema = z.object({
 
 export const teamIdQuerySchema = z.object({
   id: z.string().uuid('Invalid team ID format'),
+})
+
+export const teamIdWithTournamentIdSchema = z.object({
+  tournamentId: z.string().uuid(),
+  id: z.string().uuid(),
 })
 
 export const teamWithPlayersSchema = z.object({

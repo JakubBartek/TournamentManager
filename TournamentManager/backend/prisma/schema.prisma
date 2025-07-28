@@ -68,7 +68,7 @@ model Game {
   team2        Team           @relation("Team2Games", fields: [team2Id], references: [id])
   score1       Int
   score2       Int
-  rink         String
+  rinkId       String?
   date         DateTime
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -172,6 +172,20 @@ model Tournament {
   playoffRounds      PlayoffRound[]
   groups             Group[]
   adminPasswordHash  String?
+  Rinks              Rink[]
+  gameDuration       Int?           @default(60) // Duration in minutes
+  breakDuration      Int?           @default(15) // Break duration in minutes
+  zamboniDuration    Int?           @default(10) // Zamboni duration in minutes
+  zamboniInterval    Int?           @default(60) // Interval in minutes
+}
+
+model Rink {
+  id           String      @id @default(uuid())
+  name         String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
 }
 
 model Sponsor {

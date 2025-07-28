@@ -6,14 +6,13 @@ import {
   updateTeam,
   getSingleTeam,
 } from './team.controller'
-import { isAdmin } from '../middlewares'
 
 const router = Router({ mergeParams: true })
 
-router.post('/', isAdmin, addNewTeam)
+router.post('/', addNewTeam)
 router.get('/', getAllTeams)
 router.get('/:id', getSingleTeam)
-router.put('/:id', isAdmin, updateTeam)
-router.delete('/:id', isAdmin, deleteTeam)
+router.put('/:id', updateTeam)
+router.delete('/:id', deleteTeam)
 
 export default router

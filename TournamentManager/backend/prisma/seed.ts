@@ -5,9 +5,9 @@ async function main() {
   // Clear existing data
   await prisma.game.deleteMany({})
   await prisma.player.deleteMany({})
+  await prisma.standing.deleteMany({})
   await prisma.team.deleteMany({})
   await prisma.group.deleteMany({})
-  await prisma.standing.deleteMany({})
   await prisma.tournament.deleteMany({})
   await prisma.sponsor.deleteMany({})
 
@@ -236,7 +236,6 @@ async function main() {
             team2Id: teams[j].id,
             score1: Math.floor(Math.random() * 6),
             score2: Math.floor(Math.random() * 6),
-            rink: `Rink ${String.fromCharCode(65 + ((gameCount - 1) % 2))}`,
             date,
             tournamentId: tournament.id,
           },
