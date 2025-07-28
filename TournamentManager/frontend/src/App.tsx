@@ -10,6 +10,8 @@ import Info from './pages/Info'
 import Standings from './pages/Standings'
 import TournamentCreate from './pages/TournamentCreate'
 import EditTournament from './pages/EditTournament'
+import EditTeams from './pages/EditTeams'
+import EditTeam from './pages/EditTeam'
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,7 @@ const router = createBrowserRouter([
     Component: BaseLayout,
     children: [
       {
-        path: 'home',
+        path: '',
         Component: Home,
       },
       {
@@ -45,8 +47,16 @@ const router = createBrowserRouter([
         Component: Standings,
       },
       {
-        path: 'editTournament',
+        path: 'edit',
         Component: EditTournament,
+      },
+      {
+        path: 'edit/teams',
+        Component: EditTeams,
+      },
+      {
+        path: 'edit/teams/:teamId',
+        Component: EditTeam,
       },
     ],
   },

@@ -33,7 +33,7 @@ export default function TournamentCreate() {
   }
 
   return (
-    <div className='max-w-xl mx-auto mt-10'>
+    <div className='max-w-xl mx-auto mt-10 flex flex-col items-center'>
       <Card className='mt-6 shadow-lg'>
         <CardHeader>
           <CardTitle>Create Tournament</CardTitle>
@@ -88,7 +88,6 @@ export default function TournamentCreate() {
             <div className='flex gap-4 mt-4'>
               <Button
                 type='button'
-                variant='secondary'
                 onClick={() => navigate('/select')}
                 className='text-white w-32'
               >
