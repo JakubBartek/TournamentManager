@@ -33,15 +33,15 @@ export const useTeamCreate = (tournamentId: string) => {
   })
 }
 
-export const useTeamDelete = (tournamentId: string) => {
+export const useTeamDelete = (teamId: string) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationKey: ['team', tournamentId], // Include tournamentId in mutationKey
-    mutationFn: (teamId: string) => teamApi.delete(tournamentId, teamId), // Pass tournamentId
+    mutationKey: ['team', teamId], // Include tournamentId in mutationKey
+    mutationFn: (teamId: string) => teamApi.delete(teamId, teamId), // Pass tournamentId
     onSettled: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['teams', tournamentId], // Invalidate with tournamentId
+        queryKey: ['teams', teamId], // Invalidate with tournamentId
       })
     },
   })

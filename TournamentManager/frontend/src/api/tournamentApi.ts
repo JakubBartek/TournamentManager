@@ -13,7 +13,16 @@ async function getAll() {
 }
 
 async function getPaginated(opts: TournamentQuery) {
-  const params = new URLSearchParams(opts)
+  // Convert Date properties to ISO strings
+  const serializedOpts: Record<string, string> = {}
+  Object.entries(opts).forEach(([key, value]) => {
+    if (value instanceof Date) {
+      serializedOpts[key] = value.toISOString()
+    } else if (value !== undefined && value !== null) {
+      serializedOpts[key] = String(value)
+    }
+  })
+  const params = new URLSearchParams(serializedOpts)
   params.append('page', '1')
 
   return BaseApi.getAllPaginated<PaginatedResponse<Tournament>>(
