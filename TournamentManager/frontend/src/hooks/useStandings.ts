@@ -52,7 +52,10 @@ export const useStandingsDelete = (tournamentId: string) => {
   })
 }
 
-export const useCalculateStandings = (tournamentId: string) => {
+export const useCalculateStandings = (
+  tournamentId: string,
+  p0: { onSuccess: () => void },
+) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -62,6 +65,9 @@ export const useCalculateStandings = (tournamentId: string) => {
       await queryClient.invalidateQueries({
         queryKey: ['standings', tournamentId],
       })
+    },
+    onSuccess: () => {
+      p0.onSuccess()
     },
   })
 }

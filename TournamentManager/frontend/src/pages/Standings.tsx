@@ -12,11 +12,19 @@ import {
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import React from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function Standings() {
   const { tournamentId } = useParams<{ tournamentId: string }>()
+  const queryClient = useQueryClient()
   const { mutate: calculateStandings } = useCalculateStandings(
     tournamentId || '',
+    {
+      onSuccess: () => {
+        // Refetch groups after standings are calculated
+        queryClient.invalidateQueries({ queryKey: ['groups', tournamentId] })
+      },
+    },
   )
   const {
     data: groups,
@@ -26,7 +34,9 @@ export default function Standings() {
 
   const [hasCalculated, setHasCalculated] = React.useState(false)
 
-  // TODO: Calculate only when change happens (move this somewhere else)
+  // TODO: Is useEffect necessary here?
+  // Calculate is not very cheap, find a better way to handle this
+  // (e.g., only calculate when game results change)
   React.useEffect(() => {
     if (tournamentId && !hasCalculated) {
       calculateStandings()
