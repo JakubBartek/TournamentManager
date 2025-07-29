@@ -76,7 +76,7 @@ export default function Standings() {
               className='p-4'
               style={{ overflow: 'auto', scrollbarWidth: 'none' }}
             >
-              <Table className='[&::-webkit-scrollbar]:hidden'>
+              <Table className='[&::-webkit-scrollbar]:hidden overflow-x-auto'>
                 <TableHeader>
                   <TableRow>
                     <TableHead className='text-left'>Position</TableHead>
@@ -100,6 +100,15 @@ export default function Standings() {
                   ))}
                 </TableBody>
               </Table>
+              <style>{`
+              .overflow-x-auto::-webkit-scrollbar {
+                display: none;
+              }
+              .overflow-x-auto {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+              `}</style>
             </CardContent>
           </Card>
         </div>
