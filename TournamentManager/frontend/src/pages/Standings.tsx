@@ -72,8 +72,11 @@ export default function Standings() {
         <div key={group.id} className='mb-8'>
           <h3 className='text-xl font-semibold mb-2'>{group.name}</h3>
           <Card>
-            <CardContent className='p-4'>
-              <Table>
+            <CardContent
+              className='p-4'
+              style={{ overflow: 'auto', scrollbarWidth: 'none' }}
+            >
+              <Table className='[&::-webkit-scrollbar]:hidden'>
                 <TableHeader>
                   <TableRow>
                     <TableHead className='text-left'>Position</TableHead>
