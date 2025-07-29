@@ -40,6 +40,9 @@ export default function Schedule() {
     }
   }, [])
 
+  console.log('Teams:', teams)
+  console.log('Games:', games)
+
   if (!tournamentId) return <div>Error: Tournament ID is missing</div>
   if (gamesLoading) return <div>Loading games...</div>
   if (gamesError) return <div>Error: {(gamesError as Error).message}</div>

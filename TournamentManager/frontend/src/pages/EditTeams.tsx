@@ -126,6 +126,7 @@ export default function EditTeams() {
           <Link
             to={`/${tournamentId}/edit/teams/${team.id}`}
             className='text-primary w-full'
+            key={team.id}
           >
             <Card key={team.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
               <CardContent className='text-2xl'>{team.name}</CardContent>

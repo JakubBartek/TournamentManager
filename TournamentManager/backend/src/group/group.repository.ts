@@ -24,7 +24,7 @@ const deleteGroup = async (id: string) => {
   })
 }
 
-const getAllGroups = async () => {
+const getAllGroups = async (tournamentId: string) => {
   const groups = await db.group.findMany({
     select: {
       id: true,
@@ -46,6 +46,9 @@ const getAllGroups = async () => {
           tournamentId: true,
         },
       },
+    },
+    where: {
+      tournamentId: tournamentId,
     },
   })
 

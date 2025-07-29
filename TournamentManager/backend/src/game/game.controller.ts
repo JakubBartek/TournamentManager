@@ -62,15 +62,9 @@ export const updateGame: ControllerFn = async (req, res, next) => {
 
 export const getGames: ControllerFn = async (req, res, next) => {
   try {
-    const options = await parseRequest(gamePaginationQuerySchema, req.query)
-
-    if (options.page === undefined) {
-      const games = await GameRepository.getAllGames()
-      res.status(200).send(games)
-    } else {
-      const games = await GameRepository.getPaginatedGames(options)
-      res.status(200).send(games)
-    }
+    const tournamentId = req.params.tournamentId || req.query.tournamentId
+    const games = await GameRepository.getAllGames(tournamentId as string)
+    res.status(200).send(games)
   } catch (error) {
     next(error)
   }

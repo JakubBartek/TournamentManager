@@ -33,13 +33,16 @@ const updateTeam = (id: string, team: TeamEdit) => {
   })
 }
 
-const getAllTeams = async () => {
+const getAllTeams = async (tournamentId: string) => {
   const rawData = await db.team.findMany({
     select: {
       id: true,
       name: true,
       city: true,
       tournamentId: true,
+    },
+    where: {
+      tournamentId: tournamentId,
     },
   })
 

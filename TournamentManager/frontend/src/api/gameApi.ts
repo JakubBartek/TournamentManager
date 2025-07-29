@@ -2,10 +2,10 @@ import BaseApi from './baseApi'
 import { Game, GameCreate, GameQuery } from '../types/game'
 import { PaginatedResponse } from '@/types/api'
 
-const GAME_PREFIX = '/game'
+const GAME_PREFIX = '/games'
 
 async function getAll(tournamentId: string) {
-  return BaseApi.getAll<Game>(`/tournaments/${tournamentId}/games`)
+  return BaseApi.getAll<Game>(`/tournaments/${tournamentId}${GAME_PREFIX}`)
 }
 
 async function getPaginated(opts: GameQuery) {

@@ -38,6 +38,12 @@ async function create(data: TournamentCreate) {
   return BaseApi.create<Tournament>(`${TOURNAMENT_PREFIX}`, data)
 }
 
+async function createAndRetId(tournament: TournamentCreate) {
+  const resp = await BaseApi.create<Tournament>('/tournaments', tournament)
+  console.log('Created tournament:', resp)
+  return resp
+}
+
 async function deleteTournament(id: string) {
   return BaseApi.deleteResource<void>(`${TOURNAMENT_PREFIX}/${id}`)
 }
@@ -50,6 +56,7 @@ export default {
   getAll,
   getDetail,
   create,
+  createAndRetId,
   delete: deleteTournament,
   update,
   getPaginated,

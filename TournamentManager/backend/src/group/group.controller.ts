@@ -46,7 +46,9 @@ export const updateGroup: ControllerFn = async (req, res, next) => {
 
 export const getAllGroups: ControllerFn = async (req, res, next) => {
   try {
-    const groups = await GroupRepository.getAllGroups()
+    const groups = await GroupRepository.getAllGroups(
+      '' + req.params.tournamentId,
+    )
     res.status(200).send(groups)
   } catch (error) {
     next(error)

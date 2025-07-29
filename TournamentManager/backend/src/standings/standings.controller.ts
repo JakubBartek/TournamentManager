@@ -11,8 +11,10 @@ import { recalculateStandingsForGroup } from './standings.service'
 
 export const getStandings: ControllerFn = async (req, res, next) => {
   try {
-    const query = await parseRequest(standingsQuerySchema, req.query)
-    const standings = await StandingsRepository.getStandings(query.tournamentId)
+    const params = await parseRequest(standingsQuerySchema, req.params)
+    const standings = await StandingsRepository.getStandings(
+      params.tournamentId,
+    )
 
     res.status(200).send(standings)
   } catch (error) {

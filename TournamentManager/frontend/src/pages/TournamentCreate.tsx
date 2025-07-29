@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useTournamentCreate } from '@/hooks/useTournament'
+import { useTournamentCreateAndGoToEditTeams } from '@/hooks/useTournament'
 import { useNavigate } from 'react-router-dom'
 
 export default function TournamentCreate() {
@@ -12,7 +12,7 @@ export default function TournamentCreate() {
   const [endDate, setEndDate] = useState('')
   const [adminPassword, setAdminPassword] = useState('')
   const navigate = useNavigate()
-  const { mutate: createTournament } = useTournamentCreate()
+  const { mutate: createTournament } = useTournamentCreateAndGoToEditTeams()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,11 +24,11 @@ export default function TournamentCreate() {
         endDate: new Date(endDate),
         adminPassword,
       },
-      {
-        onSuccess: () => {
-          navigate('/select')
-        },
-      },
+      // {
+      //   onSuccess: (data) => {
+      //     navigate(`/${data.id}/edit/teams`)
+      //   },
+      // },
     )
   }
 

@@ -2,7 +2,7 @@ import BaseApi from './baseApi'
 import { Player, PlayerCreate, PlayerQuery } from '../types/player'
 import { PaginatedResponse } from '@/types/api'
 
-const PLAYER_PREFIX = '/player'
+const PLAYER_PREFIX = '/players'
 
 async function getAll() {
   return BaseApi.getAll<Player>(`${PLAYER_PREFIX}`)

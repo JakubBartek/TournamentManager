@@ -31,6 +31,25 @@ export const useTournamentCreate = () => {
   })
 }
 
+export const useTournamentCreateAndGoToEditTeams = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationKey: ['tournament'],
+    mutationFn: (tournament: TournamentCreate) =>
+      tournamentApi.create(tournament),
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['tournaments'],
+      })
+    },
+    onSuccess: (data) => {
+      // Navigate to the edit teams page after successful creation
+      window.location.href = `/${data.id}/edit/teams`
+    },
+  })
+}
+
 export const useTournamentDelete = () => {
   const queryClient = useQueryClient()
 

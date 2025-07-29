@@ -52,7 +52,7 @@ const upateGame = (id: string, game: GameEdit) => {
   })
 }
 
-const getAllGames = async () => {
+const getAllGames = async (tournamentId: string) => {
   const rawData = await db.game.findMany({
     select: {
       id: true,
@@ -63,6 +63,9 @@ const getAllGames = async () => {
       date: true,
       tournamentId: true,
       rinkId: true,
+    },
+    where: {
+      tournamentId: tournamentId,
     },
   })
 
