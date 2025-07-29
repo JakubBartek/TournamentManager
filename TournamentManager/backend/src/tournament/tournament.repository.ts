@@ -18,10 +18,11 @@ const getPages = async () => {
 
 const createTournament = async (data: TournamentCreate) => {
   const hashedPassword = await bcrypt.hash(data.adminPassword, 10)
+  const { adminPassword, ...rest } = data
 
   return db.tournament.create({
     data: {
-      ...data,
+      ...rest,
       adminPasswordHash: hashedPassword,
     },
   })

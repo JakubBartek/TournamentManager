@@ -20,7 +20,7 @@ export const tournamentCreateSchema = z.object({
   endDate: z.coerce.date(),
   adminPassword: z
     .string()
-    .min(8, 'Admin password must be at least 8 characters long'),
+    .min(1, 'Admin password must be at least 1 character long'),
 })
 
 export const tournamentIdQuerySchema = z.object({
