@@ -32,18 +32,7 @@ export function NavbarSimple() {
       onResizeCapture={undefined}
     >
       <div className='flex items-center justify-between text-blue-gray-900'>
-        {/* Desktop Nav List (always visible) */}
-        <div className='hidden lg:block'>
-          <Link
-            to={`/${tournamentId}`}
-            className='text-2xl mr-4 cursor-pointer'
-          >
-            Turnajuj
-          </Link>
-        </div>
-
-        {/* Mobile IconButton (hidden on desktop) */}
-        <div className='lg:hidden flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl z-51'>
+        <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl z-51'>
           <Link
             to={`/${tournamentId}/info`}
             className='flex-1 flex justify-center'
@@ -95,7 +84,7 @@ export function NavbarSimple() {
             </Sheet>
           </div>
         </div>
-        <div className='lg:hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-60'>
+        <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 z-60'>
           <Link to={`/${tournamentId}`} className='block'>
             <span className='w-18 h-18 bg-[#646cff] rounded-full flex items-center justify-center shadow-lg'>
               <FontAwesomeIcon icon={faHouse} className='text-white text-3xl' />
