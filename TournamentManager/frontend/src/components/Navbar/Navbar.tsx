@@ -10,8 +10,11 @@ import {
   faAnglesLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useTranslation } from 'react-i18next'
+import { Button } from '../ui/button'
 
 export function NavbarSimple() {
+  const { i18n } = useTranslation()
   const handleWindowResize = () => window.innerWidth >= 960
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const [open, setOpen] = React.useState(false)
@@ -22,6 +25,10 @@ export function NavbarSimple() {
   }, [])
 
   const handleLinkClickInSheet = () => setOpen(false)
+
+  const changeLanguage = (lng: 'sk' | 'en') => {
+    i18n.changeLanguage?.(lng)
+  }
 
   return (
     // @ts-expect-error Suppress missing props warning
@@ -65,6 +72,20 @@ export function NavbarSimple() {
               </SheetTrigger>
               <SheetContent>
                 <div className='flex flex-col gap-4 p-4'>
+                  <div className='flex gap-2'>
+                    <Button
+                      variant='outline'
+                      onClick={() => changeLanguage('sk')}
+                    >
+                      SK
+                    </Button>
+                    <Button
+                      variant='outline'
+                      onClick={() => changeLanguage('en')}
+                    >
+                      EN
+                    </Button>
+                  </div>
                   <Link
                     to='/select'
                     className='text-lg'
