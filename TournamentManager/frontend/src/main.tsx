@@ -5,6 +5,7 @@ import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/components/Auth/AuthContext'
 import { Toaster } from '@/components/ui/sonner.tsx'
+import './i18n.ts'
 
 const queryClient = new QueryClient()
 
