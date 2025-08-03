@@ -1,4 +1,3 @@
-import { group } from 'node:console'
 import { z } from 'zod'
 
 export const standingSchema = z.object({

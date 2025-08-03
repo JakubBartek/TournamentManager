@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+export const gameStatusSchema = z.enum(['SCHEDULED', 'LIVE', 'FINISHED'])
+
 export const gameSchema = z.object({
   team1Id: z.string().uuid('Invalid team1Id'),
   team2Id: z.string().uuid('Invalid team2Id'),
@@ -16,6 +18,7 @@ export const gameSchema = z.object({
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(), // TODO: THIS IS NOT OPTIONAL, BUT MAKING IT REQUIRED BREAKS THE APP AND I DONT HAVE BRAIN POWER TO FIX IT
   rinkId: z.string().uuid('Invalid rinkId').optional(),
+  status: gameStatusSchema.optional(),
 })
 
 export const gameEditSchema = z.object({
@@ -34,6 +37,7 @@ export const gameEditSchema = z.object({
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(),
   rinkId: z.string().uuid('Invalid rinkId').optional(),
+  status: gameStatusSchema.optional(),
 })
 
 export const gamePaginationQuerySchema = z.object({

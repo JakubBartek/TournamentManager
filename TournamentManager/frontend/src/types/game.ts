@@ -1,3 +1,9 @@
+export enum GameStatus {
+  SCHEDULED = 'SCHEDULED',
+  LIVE = 'LIVE',
+  FINISHED = 'FINISHED',
+}
+
 export type Game = {
   id: number
   team1Id: string
@@ -7,6 +13,7 @@ export type Game = {
   score1: number
   score2: number
   tournamentId: string
+  status: GameStatus
 }
 
 export type GameCreate = {
@@ -17,9 +24,11 @@ export type GameCreate = {
   score1: number
   score2: number
   tournamentId: string
+  status?: GameStatus
 }
 
 export type GameQuery = {
   tournamentId?: string
   date?: string // ISO format
+  status?: GameStatus
 }

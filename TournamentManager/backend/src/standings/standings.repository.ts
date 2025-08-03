@@ -1,5 +1,6 @@
 import db from '../db'
 import { Standings, StandingsCreate, StandingsEdit } from './standings.types'
+import { GameStatusEnum } from '../game/game.types'
 
 const getStandings = async (tournamentId: string) => {
   const groups = await db.group.findMany({
@@ -87,9 +88,86 @@ async function calculateStandings(tournamentId: string) {
       )
     }
 
-    const standingsMap = new Map<string, Standings>()
+    // Get tournament to get game duration and other settings
+    const tournament = await db.tournament.findUnique({
+      where: { id: tournamentId },
+      select: { zamboniDuration: true, gameDuration: true },
+    })
+    if (!tournament || !tournament.gameDuration) {
+      console.warn('[calculateStandings] Tournament not found:', tournamentId)
+      return
+    }
+
+    // Update game status based on time, first update them here, then in db
+    const now = new Date()
+    for (const game of games) {
+      if (game.date > now) {
+        game.status = GameStatusEnum.SCHEDULED
+      } else {
+        const gameEndDate = new Date(game.date)
+        gameEndDate.setMinutes(
+          gameEndDate.getMinutes() + tournament.gameDuration,
+        )
+        if (now >= gameEndDate) {
+          game.status = GameStatusEnum.FINISHED
+        } else {
+          game.status = GameStatusEnum.LIVE
+        }
+      }
+      console.log(`Game ${game.id} status updated to ${game.status}`)
+    }
 
     for (const game of games) {
+      await db.game.update({
+        where: { id: game.id },
+        data: { status: game.status },
+      })
+    }
+
+    // drop games that are not finished
+    const finishedGames = games.filter(
+      (game) => game.status === GameStatusEnum.FINISHED,
+    )
+    if (finishedGames.length === 0) {
+      // give every team 0 points if no finished games
+      const teams = await db.team.findMany({
+        where: { tournamentId },
+        include: { Standing: true },
+      })
+      for (const team of teams) {
+        await db.standing.upsert({
+          where: { teamId: team.id, tournamentId: tournamentId },
+          update: {
+            points: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            position: 0,
+            teamName: team.name,
+          },
+          create: {
+            tournamentId,
+            teamId: team.id,
+            groupId: team.groupId || '',
+            points: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            position: 0,
+            teamName: team.name,
+          },
+        })
+      }
+      return
+    }
+
+    const standingsMap = new Map<string, Standings>()
+
+    for (const game of finishedGames) {
       const { team1Id, team2Id, score1, score2 } = game
 
       if (!standingsMap.has(team1Id)) {
@@ -158,8 +236,14 @@ async function calculateStandings(tournamentId: string) {
       return goalDiffB - goalDiffA
     })
 
-    await db.standing.deleteMany({ where: { tournamentId } })
+    // create array of ints that will represent positions within groups
+    const groupPositions = standingsArray.reduce((acc, s) => {
+      if (!acc[s.groupId]) acc[s.groupId] = 0
+      acc[s.groupId] += 1
+      return acc
+    }, {} as Record<string, number>)
 
+    await db.standing.deleteMany({ where: { tournamentId } })
     for (let i = 0; i < standingsArray.length; i++) {
       const s = standingsArray[i]
       let teamName = s.teamName
@@ -170,8 +254,26 @@ async function calculateStandings(tournamentId: string) {
         })
         teamName = team?.name || ''
       }
-      await db.standing.create({
-        data: {
+      // Calculate position within the group using groupPositions
+      const positionInGroup =
+        groupPositions[s.groupId] -
+        standingsArray.slice(i + 1).filter((t) => t.groupId === s.groupId)
+          .length
+      await db.standing.upsert({
+        where: { teamId: s.teamId },
+        update: {
+          wins: s.wins,
+          draws: s.draws,
+          losses: s.losses,
+          goalsFor: s.goalsFor,
+          goalsAgainst: s.goalsAgainst,
+          points: s.points,
+          position: positionInGroup,
+          groupId: s.groupId,
+          teamName: teamName,
+          tournamentId,
+        },
+        create: {
           tournamentId,
           teamId: s.teamId,
           wins: s.wins,
@@ -180,7 +282,7 @@ async function calculateStandings(tournamentId: string) {
           goalsFor: s.goalsFor,
           goalsAgainst: s.goalsAgainst,
           points: s.points,
-          position: i + 1,
+          position: positionInGroup,
           groupId: s.groupId,
           teamName: teamName,
         },

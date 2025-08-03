@@ -79,6 +79,7 @@ model Game {
   groupId      String?
   Team         Team?          @relation(fields: [teamId], references: [id])
   teamId       String?
+  status       GameStatus     @default(SCHEDULED)
 }
 
 model Team {
