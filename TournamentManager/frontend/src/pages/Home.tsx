@@ -5,8 +5,10 @@ import { useGames } from '@/hooks/useGame'
 import { useParams } from 'react-router-dom'
 import { useTournament } from '@/hooks/useTournament.ts'
 import { useTeams } from '@/hooks/useTeam.ts'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
   const now = new Date()
   const GAME_DURATION_MINUTES = 60
   const { tournamentId } = useParams<{ tournamentId: string }>()
@@ -64,7 +66,7 @@ export default function Home() {
         return (
           <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
-              <p className='font-semibold text-blue-600'>Now Playing</p>
+              <p className='font-semibold text-blue-600'>{t('now_playing')}</p>
               <p>
                 {team1} vs {team2}
               </p>
@@ -89,7 +91,7 @@ export default function Home() {
         return (
           <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
-              <p className='font-semibold text-gray-800'>Next Game</p>
+              <p className='font-semibold text-gray-800'>{t('next_game')}</p>
               <p>
                 {team1} vs {team2}
               </p>

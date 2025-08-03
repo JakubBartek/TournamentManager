@@ -1,8 +1,10 @@
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function EditTeams() {
+  const { t } = useTranslation()
   const tournamentId = useParams().tournamentId
 
   return (
@@ -10,13 +12,15 @@ export default function EditTeams() {
       <NavbarEdit />
       <Link to={`/${tournamentId}/edit/teams`}>
         <Card className='max-w-xl mx-auto my-16 flex flex-col items-center'>
-          <CardContent className='w-full text-3xl'>Edit Teams</CardContent>
+          <CardContent className='w-full text-3xl'>
+            {t('edit_teams')}
+          </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/tournament`}>
         <Card className='max-w-xl mx-auto mt-16 flex flex-col items-center'>
           <CardContent className='w-full text-3xl'>
-            Tournament Options
+            {t('tournament_options')}
           </CardContent>
         </Card>
       </Link>

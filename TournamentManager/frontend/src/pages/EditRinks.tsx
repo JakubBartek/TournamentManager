@@ -17,8 +17,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
+import { useTranslation } from 'react-i18next'
 
 export default function EditRinks() {
+  const { t } = useTranslation()
   const tournamentId = useParams().tournamentId || ''
   const {
     data: rinks,
@@ -93,7 +95,7 @@ export default function EditRinks() {
       )}
       {fromCreate && (
         <h2 className='text-xl font-bold mb-4'>
-          3. Add rinks to your tournament
+          3. {t('add_rinks_to_your_tournament')}
         </h2>
       )}
       <Card className='max-w-3xl w-full mx-auto shadow-lg'>
@@ -109,20 +111,20 @@ export default function EditRinks() {
           <DialogContent>
             <DialogDescription></DialogDescription>
             <DialogHeader>
-              <DialogTitle>New Rink</DialogTitle>
+              <DialogTitle>{t('new_rink')}</DialogTitle>
             </DialogHeader>
             <form
               className='flex flex-col gap-4 mt-4'
               onSubmit={handleCreateRink}
             >
               <Input
-                placeholder='Rink Name'
+                placeholder={t('enter_rink_name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
               <Button type='submit' className='mt-2' disabled={!name}>
-                {'Create'}
+                {t('create_rink')}
               </Button>
             </form>
           </DialogContent>

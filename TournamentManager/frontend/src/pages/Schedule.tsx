@@ -14,8 +14,10 @@ import {
 import { useZamboniTimes } from '@/hooks/useZamboniTime'
 import { ZamboniTime } from '@/types/zamboniTime'
 import { useTournament } from '@/hooks/useTournament'
+import { useTranslation } from 'react-i18next'
 
 export default function Schedule() {
+  const { t } = useTranslation()
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: tournament } = useTournament(tournamentId || '')
   const {
@@ -113,14 +115,14 @@ export default function Schedule() {
             }
           >
             <SelectTrigger className='w-full h-12 text-lg border-1 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200 text-gray-300 bg-white'>
-              <SelectValue placeholder='Filter by team' />
+              <SelectValue placeholder={t('filter_by_team')} />
             </SelectTrigger>
             <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
               <SelectItem
                 value='all'
                 className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md font-semibold text-blue-700'
               >
-                All teams
+                {t('all_teams')}
               </SelectItem>
               {teams?.map((team) => (
                 <SelectItem
@@ -137,9 +139,9 @@ export default function Schedule() {
       </div>
 
       <div className='flex flex-col items-center gap-2 mb-16 mt-4'>
-        <h1 className='text-4xl font-bold mb-4'>Schedule</h1>
+        <h1 className='text-4xl font-bold mb-4'>{t('schedule')}</h1>
         {filteredScheduleItems.length === 0 && (
-          <p className='text-gray-500'>No games found for selected team.</p>
+          <p className='text-gray-500'>{t('no_games_found')}</p>
         )}
         {filteredScheduleItems.map((item, index) => {
           const start =
@@ -224,7 +226,7 @@ export default function Schedule() {
                   ref={index === scrollToIndex ? scrollRef : null}
                 >
                   <CardContent>
-                    <p>Ice resurfacing</p>
+                    <p>{t('zamboni_break')}</p>
                     <p className='text-sm text-gray-600'>
                       {format(start, 'yyyy-MM-dd')}
                     </p>

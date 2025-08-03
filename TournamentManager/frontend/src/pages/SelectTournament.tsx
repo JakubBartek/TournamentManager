@@ -8,8 +8,10 @@ import {
 } from '@/components/ui/select'
 import { useTournaments } from '@/hooks/useTournament'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 export default function TournamentSelectPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: tournaments, isLoading, error } = useTournaments()
 
@@ -42,13 +44,15 @@ export default function TournamentSelectPage() {
   return (
     <div className='flex flex-col items-center justify-center'>
       <h1 className='text-3xl font-extrabold text-gray-800 mb-2 mt-32'>
-        Choose
+        {t('choose')}
       </h1>
-      <h2 className='text-3xl font-extrabold text-gray-800'>a</h2>
-      <h1 className='text-3xl font-extrabold text-gray-800 mb-8'>Tournament</h1>
+      <h2 className='text-3xl font-extrabold text-gray-800'>{t('a')}</h2>
+      <h1 className='text-3xl font-extrabold text-gray-800 mb-8'>
+        {t('tournament')}
+      </h1>
       <Select onValueChange={handleChange}>
         <SelectTrigger className='w-[300px] mb-16 h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
-          <SelectValue placeholder='Choose a tournament' />
+          <SelectValue placeholder={t('choose_a_tournament')} />
         </SelectTrigger>
         <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
           {tournaments.map((tournament) => (
@@ -64,7 +68,7 @@ export default function TournamentSelectPage() {
       </Select>
       <Link to='/tournament/create'>
         <Button className='mt-16' size='wide3XL'>
-          Create a new tournament
+          {t('create_a_new_tournament')}
         </Button>
       </Link>
     </div>

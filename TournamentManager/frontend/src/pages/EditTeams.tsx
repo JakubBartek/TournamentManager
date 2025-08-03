@@ -17,8 +17,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
+import { useTranslation } from 'react-i18next'
 
 export default function EditTeams() {
+  const { t } = useTranslation()
   const tournamentId = useParams().tournamentId || ''
   const {
     data: teams,
@@ -102,7 +104,7 @@ export default function EditTeams() {
       )}
       {fromCreate && (
         <h2 className='text-xl font-bold mb-4'>
-          2. Add teams to your tournament
+          2. {t('add_teams_to_your_tournament')}
         </h2>
       )}
       <Card className='max-w-3xl w-full mx-auto shadow-lg'>
@@ -118,36 +120,36 @@ export default function EditTeams() {
           <DialogContent>
             <DialogDescription></DialogDescription>
             <DialogHeader>
-              <DialogTitle>New Team</DialogTitle>
+              <DialogTitle>{t('new_team')}</DialogTitle>
             </DialogHeader>
             <form
               className='flex flex-col gap-4 mt-4'
               onSubmit={handleCreateTeam}
             >
               <Input
-                placeholder='Team Name'
+                placeholder={t('enter_team_name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
               <Input
-                placeholder='City'
+                placeholder={t('enter_city')}
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
               />
               <Input
-                placeholder='Description (optional)'
+                placeholder={t('enter_description')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
               <Input
-                placeholder='Logo URL (optional)'
+                placeholder={t('enter_logo_url')}
                 value={logoUrl}
                 onChange={(e) => setLogoUrl(e.target.value)}
               />
               <Button type='submit' className='mt-2' disabled={!name || !city}>
-                {'Create'}
+                {t('create_team')}
               </Button>
             </form>
           </DialogContent>

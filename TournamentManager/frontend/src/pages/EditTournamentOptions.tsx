@@ -6,8 +6,10 @@ import { useState } from 'react'
 import { useTournamentEdit } from '@/hooks/useTournament'
 import { useTournament } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function EditTournamentOptions() {
+  const { t } = useTranslation()
   const { tournamentId } = useParams()
   const { mutate: updateTournament } = useTournamentEdit()
   const { data: tournament } = useTournament(tournamentId || '')
@@ -71,7 +73,9 @@ export default function EditTournamentOptions() {
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
       {fromCreate && (
-        <h2 className='text-xl font-bold'>4. Adjust tournament options</h2>
+        <h2 className='text-xl font-bold'>
+          4. {t('adjust_tournament_options')}
+        </h2>
       )}
       <Card className='w-full mt-8 shadow-lg'>
         <CardContent>
@@ -80,39 +84,39 @@ export default function EditTournamentOptions() {
               <div className='flex flex-col gap-6'>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
-                    Tournament Name
+                    {t('tournament_name')}
                   </span>
                   <Input
                     type='text'
                     id='tournamentName'
                     name='tournamentName'
-                    placeholder='Enter tournament name'
+                    placeholder={t('enter_tournament_name')}
                     value={tournamentName}
                     onChange={(e) => setTournamentName(e.target.value)}
                   />
                 </label>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
-                    Tournament Location
+                    {t('location')}
                   </span>
                   <Input
                     type='text'
                     id='tournamentLocation'
                     name='tournamentLocation'
-                    placeholder='Enter tournament location'
+                    placeholder={t('enter_location')}
                     value={tournamentLocation}
                     onChange={(e) => setTournamentLocation(e.target.value)}
                   />
                 </label>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
-                    Tournament Start Date
+                    {t('tournament_start_date')}
                   </span>
                   <Input
                     type='date'
                     id='tournamentStartDate'
                     name='tournamentStartDate'
-                    placeholder='Enter tournament start date'
+                    placeholder={t('enter_tournament_start_date')}
                     value={tournamentStartDate.toISOString().split('T')[0]}
                     onChange={(e) => {
                       setTournamentStartDate(new Date(e.target.value))
@@ -122,13 +126,13 @@ export default function EditTournamentOptions() {
                 </label>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
-                    Tournament End Date
+                    {t('tournament_end_date')}
                   </span>
                   <Input
                     type='date'
                     id='tournamentEndDate'
                     name='tournamentEndDate'
-                    placeholder='Enter tournament end date'
+                    placeholder={t('enter_tournament_end_date')}
                     value={tournamentEndDate.toISOString().split('T')[0]}
                     onChange={(e) => {
                       setTournamentEndDate(new Date(e.target.value))
@@ -138,13 +142,13 @@ export default function EditTournamentOptions() {
                 </label>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
-                    Admin Password
+                    {t('admin_password')}
                   </span>
                   <Input
                     type='password'
                     id='adminPassword'
                     name='adminPassword'
-                    placeholder='Enter admin password'
+                    placeholder={t('enter_admin_password')}
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                   />
@@ -153,63 +157,63 @@ export default function EditTournamentOptions() {
             )}
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Game Duration (minutes)
+                {t('game_duration_minutes')}
               </span>
               <Input
                 type='number'
                 id='gameDuration'
                 name='gameDuration'
                 min={0}
-                placeholder='Enter game duration'
+                placeholder={t('enter_game_duration')}
                 value={gameDuration}
                 onChange={(e) => setGameDuration(Number(e.target.value))}
               />
             </label>
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Break Duration (minutes)
+                {t('break_duration_minutes')}
               </span>
               <Input
                 type='number'
                 id='breakDuration'
                 name='breakDuration'
                 min={0}
-                placeholder='Enter break duration'
+                placeholder={t('enter_break_duration')}
                 value={breakDuration}
                 onChange={(e) => setBreakDuration(Number(e.target.value))}
               />
             </label>
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Zamboni Duration (minutes)
+                {t('zamboni_duration_minutes')}
               </span>
               <Input
                 type='number'
                 id='zamboniDuration'
                 name='zamboniDuration'
                 min={0}
-                placeholder='Enter zamboni duration'
+                placeholder={t('enter_zamboni_duration')}
                 value={zamboniDuration}
                 onChange={(e) => setZamboniDuration(Number(e.target.value))}
               />
             </label>
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Zamboni Interval (minutes)
+                {t('zamboni_interval_minutes')}
               </span>
               <Input
                 type='number'
                 id='zamboniInterval'
                 name='zamboniInterval'
                 min={0}
-                placeholder='Enter zamboni interval'
+                placeholder={t('enter_zamboni_interval')}
                 value={zamboniInterval}
                 onChange={(e) => setZamboniInterval(Number(e.target.value))}
               />
             </label>
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Daily Start Time (HH:mm)
+                {t('daily_start_time')}
               </span>
               <Input
                 type='time'
@@ -221,7 +225,7 @@ export default function EditTournamentOptions() {
             </label>
             <label className='flex flex-col gap-1'>
               <span className='text-sm font-medium text-gray-700'>
-                Daily End Time (HH:mm)
+                {t('daily_end_time')}
               </span>
               <Input
                 type='time'
@@ -232,7 +236,7 @@ export default function EditTournamentOptions() {
               />
             </label>
             <Button type='submit' className='w-full mt-4'>
-              Save
+              {t('save')}
             </Button>
           </form>
         </CardContent>

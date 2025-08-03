@@ -4,8 +4,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useTournamentCreateAndGoToEditTeams } from '@/hooks/useTournament'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function TournamentCreate() {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -29,30 +31,30 @@ export default function TournamentCreate() {
     <div className='max-w-xl mx-auto mt-10 flex flex-col items-center'>
       <Card className='mt-6 shadow-lg'>
         <CardHeader>
-          <CardTitle>Create Tournament</CardTitle>
+          <CardTitle>{t('create_a_new_tournament')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <label>
-              Tournament Name
+              {t('tournament_name')}
               <Input
-                placeholder='Enter tournament name'
+                placeholder={t('enter_tournament_name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
             </label>
             <label>
-              Location
+              {t('location')}
               <Input
-                placeholder='Enter location'
+                placeholder={t('enter_location')}
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
               />
             </label>
             <label>
-              Start Date
+              {t('start_date')}
               <Input
                 type='date'
                 value={startDate}
@@ -61,7 +63,7 @@ export default function TournamentCreate() {
               />
             </label>
             <label>
-              End Date
+              {t('end_date')}
               <Input
                 type='date'
                 value={endDate}
@@ -70,10 +72,10 @@ export default function TournamentCreate() {
               />
             </label>
             <label>
-              Admin Password
+              {t('admin_password')}
               <Input
                 type='password'
-                placeholder='Enter admin password'
+                placeholder={t('enter_admin_password')}
                 onChange={(e) => setAdminPassword(e.target.value)}
                 required
               />
@@ -84,7 +86,7 @@ export default function TournamentCreate() {
                 onClick={() => navigate('/select')}
                 className='text-white w-32'
               >
-                Back
+                {t('back')}
               </Button>
               <Button
                 className='w-32'
@@ -93,7 +95,7 @@ export default function TournamentCreate() {
                   !name || !location || !startDate || !endDate || !adminPassword
                 }
               >
-                {'Create'}
+                {t('create')}
               </Button>
             </div>
           </form>
