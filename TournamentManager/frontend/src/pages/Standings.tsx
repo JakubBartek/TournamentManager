@@ -66,11 +66,11 @@ export default function Standings() {
   }
 
   return (
-    <div className='p-2'>
+    <div className='p-2 flex flex-col items-center'>
       <h2 className='text-3xl font-bold mb-6'>Standings</h2>
       {groups?.map((group) => (
         <div key={group.id} className='mb-4'>
-          <Card>
+          <Card className='md:w-lg'>
             <CardContent
               className='px-4'
               style={{ overflow: 'auto', scrollbarWidth: 'none' }}

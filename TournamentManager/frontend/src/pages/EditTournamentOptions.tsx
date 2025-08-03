@@ -77,7 +77,7 @@ export default function EditTournamentOptions() {
         <CardContent>
           <form className='flex flex-col gap-6' onSubmit={handleSubmit}>
             {!fromCreate && (
-              <div>
+              <div className='flex flex-col gap-6'>
                 <label className='flex flex-col gap-1'>
                   <span className='text-sm font-medium text-gray-700'>
                     Tournament Name

@@ -17,19 +17,21 @@ export function NavbarEdit() {
   }, [])
 
   return (
-    // @ts-expect-error Suppress missing props warning
-    <Navbar
-      className='fixed top-4 left-0 right-70 z-50 bg-white shadow-md px-6 py-3 w-auto rounded-l-none border-gray-400'
-      placeholder={undefined}
-      onResize={undefined}
-      onResizeCapture={undefined}
-      onClick={() => navigate(parentPath)}
-    >
-      <div className='lg:hidden flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl z-51'>
-        <Button variant='white' size='full'>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </Button>
-      </div>
-    </Navbar>
+    <div className='fixed top-4 md:top-100 left-0 z-50'>
+      {/* @ts-expect-error Suppress missing props warning */}
+      <Navbar
+        className='bg-white shadow-md px-6 py-3 w-auto rounded-l-none border-gray-400'
+        placeholder={undefined}
+        onResize={undefined}
+        onResizeCapture={undefined}
+        onClick={() => navigate(parentPath)}
+      >
+        <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
+          <Button variant='white' size='full'>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Button>
+        </div>
+      </Navbar>
+    </div>
   )
 }

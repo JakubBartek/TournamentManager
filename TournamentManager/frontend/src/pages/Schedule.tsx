@@ -136,7 +136,7 @@ export default function Schedule() {
         </div>
       </div>
 
-      <div className='flex flex-col gap-2 mb-16 mt-4'>
+      <div className='flex flex-col items-center gap-2 mb-16 mt-4'>
         <h1 className='text-4xl font-bold mb-4'>Schedule</h1>
         {filteredScheduleItems.length === 0 && (
           <p className='text-gray-500'>No games found for selected team.</p>
@@ -194,7 +194,7 @@ export default function Schedule() {
                             .zamboni.id
                         }`
                   }
-                  className={`w-full ${gameColor}`}
+                  className={`w-full ${gameColor} md:w-lg`}
                   ref={index === scrollToIndex ? scrollRef : null}
                 >
                   <CardContent>

@@ -54,7 +54,7 @@ export default function Home() {
   }
 
   return (
-    <div className='flex flex-col gap-2 mb-16'>
+    <div className='flex flex-col gap-2 mb-16 items-center'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
       {playingGames.map((game) => {
         const team1 =
@@ -62,7 +62,7 @@ export default function Home() {
         const team2 =
           teams?.find((t) => t.id === game.team2Id)?.name || game.team2Id
         return (
-          <Card key={game.id} className='w-full'>
+          <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
               <p className='font-semibold text-blue-600'>Now Playing</p>
               <p>
@@ -87,7 +87,7 @@ export default function Home() {
         const team2 =
           teams?.find((t) => t.id === game.team2Id)?.name || game.team2Id
         return (
-          <Card key={game.id} className='w-full'>
+          <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
               <p className='font-semibold text-gray-800'>Next Game</p>
               <p>

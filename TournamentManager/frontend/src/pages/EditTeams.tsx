@@ -79,24 +79,26 @@ export default function EditTeams() {
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full mb-16'>
       <NavbarEdit />
       {fromCreate && (
-        // @ts-expect-error Suppress missing props warning
-        <Navbar
-          className='fixed top-4 left-70 right-0 z-50 bg-white shadow-md px-6 py-3 w-auto rounded-r-none border-gray-400'
-          placeholder={undefined}
-          onResize={undefined}
-          onResizeCapture={undefined}
-          onClick={() =>
-            navigate(`/${tournamentId}/edit/rinks`, {
-              state: { fromEditTeams: true },
-            })
-          }
-        >
-          <div className='lg:hidden flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl z-51'>
-            <Button variant='white' size='full'>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </Button>
-          </div>
-        </Navbar>
+        <div className='fixed top-4 md:top-100 right-0 z-50'>
+          {/* @ts-expect-error Suppress missing props warning */}
+          <Navbar
+            className='bg-white shadow-md px-6 py-3 w-auto rounded-r-none border-gray-400'
+            placeholder={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
+            onClick={() =>
+              navigate(`/${tournamentId}/edit/rinks`, {
+                state: { fromEditTeams: true },
+              })
+            }
+          >
+            <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
+              <Button variant='white' size='full'>
+                <FontAwesomeIcon icon={faArrowRight} />
+              </Button>
+            </div>
+          </Navbar>
+        </div>
       )}
       {fromCreate && (
         <h2 className='text-xl font-bold mb-4'>
