@@ -79,9 +79,9 @@ export default function Standings() {
               <Table className='[&::-webkit-scrollbar]:hidden overflow-x-auto'>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className='text-left'>Position</TableHead>
+                    <TableHead className='text-center'>Position</TableHead>
                     <TableHead className='text-center'>Name</TableHead>
-                    <TableHead className='text-left'>Points</TableHead>
+                    <TableHead className='text-center'>Points</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -90,7 +90,7 @@ export default function Standings() {
                       <TableCell className='text-center'>
                         {standing.position}
                       </TableCell>
-                      <TableCell className='font-medium text-left'>
+                      <TableCell className='font-medium text-center'>
                         {standing.teamName}
                       </TableCell>
                       <TableCell className='text-center'>

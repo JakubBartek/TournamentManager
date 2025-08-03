@@ -105,33 +105,35 @@ export default function Schedule() {
 
   return (
     <>
-      <div className='fixed top-4'>
-        <Select
-          onValueChange={(value) =>
-            setSelectedTeamId(value === 'all' ? null : value)
-          }
-        >
-          <SelectTrigger className='w-[300px] h-12 text-lg border-1 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200 text-gray-300 bg-white'>
-            <SelectValue placeholder='Filter by team' />
-          </SelectTrigger>
-          <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
-            <SelectItem
-              value='all'
-              className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md font-semibold text-blue-700'
-            >
-              All teams
-            </SelectItem>
-            {teams?.map((team) => (
+      <div className='fixed top-4 left-1/2 transform -translate-x-1/2 w-full flex justify-center z-10'>
+        <div className='max-w-md w-full mx-8'>
+          <Select
+            onValueChange={(value) =>
+              setSelectedTeamId(value === 'all' ? null : value)
+            }
+          >
+            <SelectTrigger className='w-full h-12 text-lg border-1 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200 text-gray-300 bg-white'>
+              <SelectValue placeholder='Filter by team' />
+            </SelectTrigger>
+            <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
               <SelectItem
-                key={team.id}
-                value={team.id}
-                className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md'
+                value='all'
+                className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md font-semibold text-blue-700'
               >
-                {team.name}
+                All teams
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+              {teams?.map((team) => (
+                <SelectItem
+                  key={team.id}
+                  value={team.id}
+                  className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md'
+                >
+                  {team.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className='flex flex-col gap-2 mb-16 mt-4'>
