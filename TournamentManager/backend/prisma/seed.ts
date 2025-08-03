@@ -93,25 +93,28 @@ async function main() {
     teams.push(team)
   }
 
-  // Create Games for each team (some in the past, some now, some in the future)
+  // Create Games ONLY between teams in the same group
   const now = new Date()
   const pastBase = new Date(now.getTime() - 48 * 60 * 60 * 1000) // 48 hours ago
   const futureBase = new Date(now.getTime() + 2 * 60 * 60 * 1000) // 2 hours from now
 
   const rinks = [rinkA, rinkB]
   let gameCount = 1
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = 0; j < teams.length; j++) {
+
+  // Helper: get teams in a group
+  const teamsInGroupA = teams.filter((t) => t.groupId === groupA.id)
+  const teamsInGroupB = teams.filter((t) => t.groupId === groupB.id)
+
+  // Round-robin for Group A
+  for (let i = 0; i < teamsInGroupA.length; i++) {
+    for (let j = 0; j < teamsInGroupA.length; j++) {
       if (i !== j) {
         let date: Date
         if (gameCount % 3 === 1) {
-          // Past
           date = new Date(pastBase.getTime() + (gameCount - 1) * 60 * 60 * 1000)
         } else if (gameCount % 3 === 2) {
-          // Now
           date = new Date(now.getTime())
         } else {
-          // Future
           date = new Date(
             futureBase.getTime() + (gameCount - 1) * 60 * 60 * 1000,
           )
@@ -119,13 +122,46 @@ async function main() {
 
         await prisma.game.create({
           data: {
-            team1Id: teams[i].id,
-            team2Id: teams[j].id,
+            team1Id: teamsInGroupA[i].id,
+            team2Id: teamsInGroupA[j].id,
             score1: Math.floor(Math.random() * 6),
             score2: Math.floor(Math.random() * 6),
             date,
             tournamentId: tournament.id,
-            groupId: teams[i].groupId,
+            groupId: groupA.id,
+            rinkId: rinks[gameCount % rinks.length].id,
+            status: 'SCHEDULED',
+          },
+        })
+        gameCount++
+      }
+    }
+  }
+
+  // Round-robin for Group B
+  for (let i = 0; i < teamsInGroupB.length; i++) {
+    for (let j = 0; j < teamsInGroupB.length; j++) {
+      if (i !== j) {
+        let date: Date
+        if (gameCount % 3 === 1) {
+          date = new Date(pastBase.getTime() + (gameCount - 1) * 60 * 60 * 1000)
+        } else if (gameCount % 3 === 2) {
+          date = new Date(now.getTime())
+        } else {
+          date = new Date(
+            futureBase.getTime() + (gameCount - 1) * 60 * 60 * 1000,
+          )
+        }
+
+        await prisma.game.create({
+          data: {
+            team1Id: teamsInGroupB[i].id,
+            team2Id: teamsInGroupB[j].id,
+            score1: Math.floor(Math.random() * 6),
+            score2: Math.floor(Math.random() * 6),
+            date,
+            tournamentId: tournament.id,
+            groupId: groupB.id,
             rinkId: rinks[gameCount % rinks.length].id,
             status: 'SCHEDULED',
           },
