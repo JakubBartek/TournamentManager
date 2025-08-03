@@ -9,6 +9,7 @@ import {
   tournamentCreateSchema,
 } from './tournament.schema'
 import { NotFound } from 'http-errors'
+import { createSchedule as createTournamentSchedule } from './tournament.service'
 
 export const addNewTournament: ControllerFn = async (req, res, next) => {
   try {
@@ -89,6 +90,23 @@ export const getAllTournaments: ControllerFn = async (req, res, next) => {
   }
 }
 
+export const createScheduleController: ControllerFn = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const { id: tournamentId } = req.params
+    const { numberOfGroups, autoCreate } = req.body
+
+    // Validate input here (Zod schema)
+    await createTournamentSchedule(tournamentId, numberOfGroups, autoCreate)
+    res.status(201).send({ message: 'Schedule created successfully' })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export default {
   addNewTournament,
   getSingleTournament,
@@ -97,4 +115,5 @@ export default {
   getPaginatedTournaments,
   getAllTournaments,
   getTournamentDetails: getSingleTournament, // Alias for consistency
+  createSchedule: createScheduleController,
 }

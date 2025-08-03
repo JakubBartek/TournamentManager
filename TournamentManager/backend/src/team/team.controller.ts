@@ -66,7 +66,6 @@ export const updateTeam: ControllerFn = async (req, res, next) => {
 export const getAllTeams: ControllerFn = async (req, res, next) => {
   try {
     const params = await parseRequest(teamQuerySchema, req.params)
-    console.log('Fetching all teams for tournament:', params.tournamentId)
     const data = await TeamRepository.getAllTeams(params.tournamentId)
 
     res.status(200).send(data)

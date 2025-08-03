@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   addNewTournament,
+  createScheduleController,
   deleteTournament,
   getAllTournaments,
   getPaginatedTournaments,
@@ -15,7 +16,8 @@ router.post('/', addNewTournament)
 router.get('/', getPaginatedTournaments)
 router.get('/all', getAllTournaments)
 router.get('/:id', getSingleTournament)
-router.put('/:id', isAdmin, updateTournament)
-router.delete('/:id', isAdmin, deleteTournament)
+router.put('/:id', updateTournament)
+router.delete('/:id', deleteTournament)
+router.post('/:id/create-schedule', createScheduleController)
 
 export default router

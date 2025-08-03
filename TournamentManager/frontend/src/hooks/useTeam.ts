@@ -12,7 +12,6 @@ export const useTeams = (tournamentId: string) => {
 }
 
 export const useTeam = (tournamentId: string, teamId: string) => {
-  console.log('Fetching team:', teamId, 'for tournament:', tournamentId)
   return useQuery({
     queryKey: ['team', tournamentId, teamId], // Include tournamentId and teamId in queryKey
     queryFn: () => teamApi.getDetail(tournamentId, teamId), // Pass both IDs

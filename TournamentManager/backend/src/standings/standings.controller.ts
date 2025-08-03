@@ -89,9 +89,6 @@ export const recalculateGroupStandings: ControllerFn = async (
 export const calculateStandings: ControllerFn = async (req, res, next) => {
   const { tournamentId } = req.params
 
-  console.log('Params:', req.params)
-  console.log('Body:', req.body)
-
   try {
     await StandingsRepository.calculateStandings(tournamentId)
     res.status(200).send({ message: 'Standings recalculated successfully' })

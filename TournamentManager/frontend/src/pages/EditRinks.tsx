@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useTeams, useTeamCreate } from '@/hooks/useTeam'
+import { useRinks, useRinkCreate } from '@/hooks/useRinks'
 import { faArrowRight, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -18,59 +18,50 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
 
-export default function EditTeams() {
+export default function EditRinks() {
   const tournamentId = useParams().tournamentId || ''
   const {
-    data: teams,
-    isLoading: isLoadingTeams,
-    isError: isErrorTeams,
-  } = useTeams(tournamentId)
-  const { mutate: createTeam } = useTeamCreate(tournamentId)
+    data: rinks,
+    isLoading: isLoadingRinks,
+    isError: isErrorRinks,
+  } = useRinks(tournamentId)
+  const { mutate: createRink } = useRinkCreate()
   const location = useLocation()
-  const fromCreate = location.state?.fromCreate
+  const fromCreate = location.state?.fromEditTeams
   const navigate = useNavigate()
 
-  // Form state for new team
+  // Form state for new rink
   const [name, setName] = useState('')
-  const [city, setCity] = useState('')
-  const [description, setDescription] = useState('')
-  const [logoUrl, setLogoUrl] = useState('')
   const [open, setOpen] = useState(false)
 
-  const handleCreateTeam = (e: React.FormEvent) => {
+  const handleCreateRink = (e: React.FormEvent) => {
     e.preventDefault()
-    createTeam(
+    createRink(
       {
         name,
-        city,
         tournamentId,
-        description: description || undefined,
-        logoUrl: logoUrl || undefined,
       },
       {
         onSuccess: () => {
           setName('')
-          setCity('')
-          setDescription('')
-          setLogoUrl('')
           setOpen(false)
         },
       },
     )
   }
 
-  if (isLoadingTeams) {
+  if (isLoadingRinks) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
-        Loading teams...
+        Loading rinks...
       </div>
     )
   }
 
-  if (isErrorTeams) {
+  if (isErrorRinks) {
     return (
       <div className='flex items-center justify-center min-h-screen text-red-500'>
-        Error loading teams: {isErrorTeams}
+        Error loading rinks: {isErrorRinks}
       </div>
     )
   }
@@ -86,8 +77,8 @@ export default function EditTeams() {
           onResize={undefined}
           onResizeCapture={undefined}
           onClick={() =>
-            navigate(`/${tournamentId}/edit/rinks`, {
-              state: { fromEditTeams: true },
+            navigate(`/${tournamentId}/edit/tournament`, {
+              state: { fromEditRinks: true },
             })
           }
         >
@@ -100,7 +91,7 @@ export default function EditTeams() {
       )}
       {fromCreate && (
         <h2 className='text-xl font-bold mb-4'>
-          2. Add teams to your tournament
+          3. Add rinks to your tournament
         </h2>
       )}
       <Card className='max-w-3xl w-full mx-auto shadow-lg'>
@@ -116,50 +107,34 @@ export default function EditTeams() {
           <DialogContent>
             <DialogDescription></DialogDescription>
             <DialogHeader>
-              <DialogTitle>New Team</DialogTitle>
+              <DialogTitle>New Rink</DialogTitle>
             </DialogHeader>
             <form
               className='flex flex-col gap-4 mt-4'
-              onSubmit={handleCreateTeam}
+              onSubmit={handleCreateRink}
             >
               <Input
-                placeholder='Team Name'
+                placeholder='Rink Name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
-              <Input
-                placeholder='City'
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-              <Input
-                placeholder='Description (optional)'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-              <Input
-                placeholder='Logo URL (optional)'
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-              />
-              <Button type='submit' className='mt-2' disabled={!name || !city}>
+              <Button type='submit' className='mt-2' disabled={!name}>
                 {'Create'}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </Card>
-      {teams &&
-        teams.map((team) => (
+      {rinks &&
+        rinks.map((rink) => (
           <Link
-            to={`/${tournamentId}/edit/teams/${team.id}`}
+            to={`/${tournamentId}/edit/rinks/${rink.id}`}
             className='text-primary w-full'
-            key={team.id}
+            key={rink.id}
           >
-            <Card key={team.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
-              <CardContent className='text-2xl'>{team.name}</CardContent>
+            <Card key={rink.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
+              <CardContent className='text-2xl'>{rink.name}</CardContent>
             </Card>
           </Link>
         ))}

@@ -36,7 +36,7 @@ export default function EditTeam() {
   }
 
   return (
-    <div className='max-w-xl mx-auto mt-16 flex flex-col items-center w-full'>
+    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
       <h1>Edit Team</h1>
       <h1>{team?.name}</h1>

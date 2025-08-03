@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import tournamentApi from '@/api/tournamentApi'
 import { Tournament, TournamentCreate } from '@/types/tournament'
+import { useNavigate } from 'react-router-dom'
 
 export const useTournaments = () => {
   return useQuery({
@@ -33,6 +34,7 @@ export const useTournamentCreate = () => {
 
 export const useTournamentCreateAndGoToEditTeams = () => {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationKey: ['tournament'],
@@ -45,7 +47,7 @@ export const useTournamentCreateAndGoToEditTeams = () => {
     },
     onSuccess: (data) => {
       // Navigate to the edit teams page after successful creation
-      window.location.href = `/${data.id}/edit/teams`
+      navigate(`/${data.id}/edit/teams`, { state: { fromCreate: true } })
     },
   })
 }
@@ -73,6 +75,29 @@ export const useTournamentEdit = () => {
     onSettled: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['tournaments'],
+      })
+    },
+  })
+}
+
+export const useTournamentCreateSchedule = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationKey: ['tournament', 'createSchedule'],
+    mutationFn: ({
+      tournamentId,
+      numberOfGroups,
+      autoCreate,
+    }: {
+      tournamentId: string
+      numberOfGroups: number
+      autoCreate: boolean
+    }) =>
+      tournamentApi.createSchedule(tournamentId, numberOfGroups, autoCreate),
+    onSettled: async (_data, _error, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ['tournament', variables.tournamentId],
       })
     },
   })

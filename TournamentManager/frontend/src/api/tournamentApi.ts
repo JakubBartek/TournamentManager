@@ -40,7 +40,6 @@ async function create(data: TournamentCreate) {
 
 async function createAndRetId(tournament: TournamentCreate) {
   const resp = await BaseApi.create<Tournament>('/tournaments', tournament)
-  console.log('Created tournament:', resp)
   return resp
 }
 
@@ -52,6 +51,20 @@ async function update(data: Tournament) {
   return BaseApi.update<Tournament>(`${TOURNAMENT_PREFIX}/${data.id}`, data)
 }
 
+async function createSchedule(
+  tournamentId: string,
+  numberOfGroups: number,
+  autoCreate: boolean,
+) {
+  return BaseApi.create<void>(
+    `${TOURNAMENT_PREFIX}/${tournamentId}/create-schedule`,
+    {
+      numberOfGroups,
+      autoCreate,
+    },
+  )
+}
+
 export default {
   getAll,
   getDetail,
@@ -60,4 +73,5 @@ export default {
   delete: deleteTournament,
   update,
   getPaginated,
+  createSchedule,
 }

@@ -2,6 +2,7 @@ import { z } from 'zod'
 import {
   tournamentCreateSchema,
   tournamentEditSchema,
+  tournamentFullSchema,
   tournamentIdQuerySchema,
   tournamentPaginationQuerySchema,
   tournamentSchema,
@@ -18,3 +19,4 @@ export type GetTournamentDetailsOptions = z.infer<
 export type TournamentPaginationQuery = z.infer<
   typeof tournamentPaginationQuerySchema
 >
+export type TournamentFull = z.infer<typeof tournamentFullSchema>

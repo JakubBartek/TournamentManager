@@ -66,8 +66,8 @@ model Game {
   team2Id      String
   team1        Team           @relation("Team1Games", fields: [team1Id], references: [id])
   team2        Team           @relation("Team2Games", fields: [team2Id], references: [id])
-  score1       Int
-  score2       Int
+  score1       Int            @default(0)
+  score2       Int            @default(0)
   rinkId       String?
   date         DateTime
   createdAt    DateTime       @default(now())
@@ -153,6 +153,16 @@ model Group {
   Standing     Standing[]
 }
 
+model ZamboniTime {
+  id           String     @id @default(uuid())
+  tournamentId String
+  Tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  startTime    DateTime
+  endTime      DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
 model Tournament {
   id                 String         @id @default(uuid())
   name               String
@@ -170,6 +180,7 @@ model Tournament {
   TournamentManagers User[]         @relation("TournamentManagers")
   standings          Standing[]
   playoffRounds      PlayoffRound[]
+  playOffStage       PlayoffStage?  @default(ROUND_OF_16)
   groups             Group[]
   adminPasswordHash  String?
   Rinks              Rink[]
@@ -177,6 +188,10 @@ model Tournament {
   breakDuration      Int?           @default(15) // Break duration in minutes
   zamboniDuration    Int?           @default(10) // Zamboni duration in minutes
   zamboniInterval    Int?           @default(60) // Interval in minutes
+  dailyStartTime     String? // Daily start time in HH:mm format
+  dailyEndTime       String? // Daily end time in HH:mm format
+
+  ZamboniTime ZamboniTime[]
 }
 
 model Rink {

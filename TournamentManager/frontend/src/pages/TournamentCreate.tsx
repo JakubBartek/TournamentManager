@@ -16,20 +16,13 @@ export default function TournamentCreate() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createTournament(
-      {
-        name,
-        location,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        adminPassword,
-      },
-      // {
-      //   onSuccess: (data) => {
-      //     navigate(`/${data.id}/edit/teams`)
-      //   },
-      // },
-    )
+    createTournament({
+      name,
+      location,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      adminPassword,
+    })
   }
 
   return (

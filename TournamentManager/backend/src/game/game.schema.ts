@@ -3,8 +3,16 @@ import { z } from 'zod'
 export const gameSchema = z.object({
   team1Id: z.string().uuid('Invalid team1Id'),
   team2Id: z.string().uuid('Invalid team2Id'),
-  score1: z.number().int().min(0, 'Score 1 must be a non-negative integer'),
-  score2: z.number().int().min(0, 'Score 2 must be a non-negative integer'),
+  score1: z
+    .number()
+    .int()
+    .min(0, 'Score 1 must be a non-negative integer')
+    .optional(),
+  score2: z
+    .number()
+    .int()
+    .min(0, 'Score 2 must be a non-negative integer')
+    .optional(),
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(), // TODO: THIS IS NOT OPTIONAL, BUT MAKING IT REQUIRED BREAKS THE APP AND I DONT HAVE BRAIN POWER TO FIX IT
   rinkId: z.string().uuid('Invalid rinkId').optional(),
@@ -13,8 +21,16 @@ export const gameSchema = z.object({
 export const gameEditSchema = z.object({
   team1Id: z.string().uuid('Invalid team1Id'),
   team2Id: z.string().uuid('Invalid team2Id'),
-  score1: z.number().int().min(0, 'Score 1 must be a non-negative integer'),
-  score2: z.number().int().min(0, 'Score 2 must be a non-negative integer'),
+  score1: z
+    .number()
+    .int()
+    .min(0, 'Score 1 must be a non-negative integer')
+    .optional(),
+  score2: z
+    .number()
+    .int()
+    .min(0, 'Score 2 must be a non-negative integer')
+    .optional(),
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(),
   rinkId: z.string().uuid('Invalid rinkId').optional(),

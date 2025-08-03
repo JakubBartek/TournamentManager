@@ -71,7 +71,6 @@ const getGroupStandings = async (groupId: string, tournamentId: string) => {
 
 async function calculateStandings(tournamentId: string) {
   try {
-    console.log('[calculateStandings] tournamentId:', tournamentId)
     const games = await db.game.findMany({
       where: {
         tournamentId,
@@ -81,7 +80,6 @@ async function calculateStandings(tournamentId: string) {
         team2: true,
       },
     })
-    console.log('[calculateStandings] games fetched:', games.length)
     if (games.length === 0) {
       console.warn(
         '[calculateStandings] No games found for tournamentId:',
