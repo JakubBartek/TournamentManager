@@ -87,5 +87,6 @@
   "select_number_of_groups": "Vyberte počet skupín",
   "edit_teams": "Upraviť tímy",
   "edit_team": "Upraviť tím",
-  "delete_team": "Odstrániť tím"
+  "delete_team": "Odstrániť tím",
+  "all_rinks" : "Všetky hracie plochy"
 }

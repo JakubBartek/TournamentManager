@@ -87,5 +87,6 @@
   "select_number_of_groups": "Select Number of Groups",
   "edit_teams": "Edit Teams",
   "edit_team": "Edit Team",
-  "delete_team": "Delete Team"
+  "delete_team": "Delete Team",
+  "all_rinks": "All Rinks"
 }

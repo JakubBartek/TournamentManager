@@ -173,7 +173,7 @@ export default function Schedule() {
           } else if (item.type === 'zamboni') {
             team1Name = 'Zamboni Break'
             team2Name = ''
-            rink = 'All Rinks'
+            rink = t('all_rinks')
           }
 
           if (now >= start && now <= end) {
