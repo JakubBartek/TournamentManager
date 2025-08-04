@@ -63,6 +63,7 @@ const getAllGames = async (tournamentId: string) => {
       date: true,
       tournamentId: true,
       rinkId: true,
+      rinkName: true,
     },
     where: {
       tournamentId: tournamentId,
@@ -73,6 +74,7 @@ const getAllGames = async (tournamentId: string) => {
     ...game,
     rinkId: game.rinkId ?? '',
     tournamentId: game.tournamentId,
+    rinkName: game.rinkName ?? '',
   }))
 
   return data
@@ -89,6 +91,7 @@ const getSingleGame = async (id: string, options: GetGameDeatilsOptions) => {
       rinkId: true,
       date: true,
       tournamentId: true,
+      rinkName: true,
     },
     where: {
       id: id,
@@ -112,6 +115,7 @@ const getPaginatedGames = async (options: GetGamesOptions) => {
       score1: true,
       score2: true,
       rinkId: true,
+      rinkName: true,
       date: true,
       tournamentId: true,
     },

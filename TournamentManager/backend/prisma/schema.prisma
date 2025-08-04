@@ -69,6 +69,7 @@ model Game {
   score1       Int            @default(0)
   score2       Int            @default(0)
   rinkId       String?
+  rinkName     String?
   date         DateTime
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

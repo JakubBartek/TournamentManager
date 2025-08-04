@@ -130,6 +130,7 @@ async function main() {
             tournamentId: tournament.id,
             groupId: groupA.id,
             rinkId: rinks[gameCount % rinks.length].id,
+            rinkName: rinks[gameCount % rinks.length].name,
             status: 'SCHEDULED',
           },
         })
@@ -163,6 +164,7 @@ async function main() {
             tournamentId: tournament.id,
             groupId: groupB.id,
             rinkId: rinks[gameCount % rinks.length].id,
+            rinkName: rinks[gameCount % rinks.length].name,
             status: 'SCHEDULED',
           },
         })

@@ -169,7 +169,7 @@ export default function Schedule() {
               'Unknown Team 2'
             score1 = item.game.score1
             score2 = item.game.score2
-            rink = item.game.rink
+            rink = item.game.rinkName || 'Unknown Rink'
           } else if (item.type === 'zamboni') {
             team1Name = 'Zamboni Break'
             team2Name = ''

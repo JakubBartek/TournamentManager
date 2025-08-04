@@ -18,6 +18,7 @@ export const gameSchema = z.object({
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(), // TODO: THIS IS NOT OPTIONAL, BUT MAKING IT REQUIRED BREAKS THE APP AND I DONT HAVE BRAIN POWER TO FIX IT
   rinkId: z.string().uuid('Invalid rinkId').optional(),
+  rinkName: z.string().optional(),
   status: gameStatusSchema.optional(),
 })
 
@@ -37,6 +38,7 @@ export const gameEditSchema = z.object({
   date: z.coerce.date(),
   tournamentId: z.string().uuid('Invalid tournamentId').optional(),
   rinkId: z.string().uuid('Invalid rinkId').optional(),
+  rinkName: z.string().optional(),
   status: gameStatusSchema.optional(),
 })
 

@@ -76,7 +76,8 @@ export default function Home() {
                 </p>
               )}
               <p className='text-sm text-gray-600'>
-                {format(new Date(game.date), 'HH:mm')} @ {game.rink}
+                {format(new Date(game.date), 'HH:mm')} @{' '}
+                {game.rinkName || 'Unknown Rink'}
               </p>
             </CardContent>
           </Card>
@@ -96,7 +97,8 @@ export default function Home() {
                 {team1} vs {team2}
               </p>
               <p className='text-sm text-gray-600'>
-                {format(new Date(game.date), 'HH:mm')} @ {game.rink}
+                {format(new Date(game.date), 'HH:mm')} @{' '}
+                {game.rinkName || 'Unknown Rink'}
               </p>
             </CardContent>
           </Card>

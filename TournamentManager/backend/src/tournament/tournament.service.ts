@@ -150,6 +150,7 @@ export async function createSchedule(
             groupId,
             date: new Date(currentGameTime),
             rinkId: rinks[rinkIdx].id,
+            rinkName: rinks[rinkIdx].name,
           },
         })
       }
