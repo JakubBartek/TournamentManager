@@ -64,6 +64,20 @@ const getAllGames = async (tournamentId: string) => {
       tournamentId: true,
       rinkId: true,
       rinkName: true,
+      team1: {
+        select: {
+          id: true,
+          name: true,
+          groupId: true,
+        },
+      },
+      team2: {
+        select: {
+          id: true,
+          name: true,
+          groupId: true,
+        },
+      },
     },
     where: {
       tournamentId: tournamentId,

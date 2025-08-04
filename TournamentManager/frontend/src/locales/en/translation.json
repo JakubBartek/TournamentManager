@@ -88,5 +88,7 @@
   "edit_teams": "Edit Teams",
   "edit_team": "Edit Team",
   "delete_team": "Delete Team",
-  "all_rinks": "All Rinks"
+  "all_rinks": "All Rinks",
+  "edit_games": "Edit Games",
+  "end_game": "End Game"
 }

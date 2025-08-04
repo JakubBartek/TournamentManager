@@ -88,5 +88,7 @@
   "edit_teams": "Upraviť tímy",
   "edit_team": "Upraviť tím",
   "delete_team": "Odstrániť tím",
-  "all_rinks" : "Všetky hracie plochy"
+  "all_rinks" : "Všetky hracie plochy",
+  "edit_games": "Upraviť zápasy",
+  "end_game": "Ukončiť zápas"
 }

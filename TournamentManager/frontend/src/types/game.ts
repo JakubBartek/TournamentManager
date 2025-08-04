@@ -4,6 +4,12 @@ export enum GameStatus {
   FINISHED = 'FINISHED',
 }
 
+type GameTeam = {
+  id: string
+  name: string
+  groupId: string
+}
+
 export type Game = {
   id: number
   team1Id: string
@@ -15,6 +21,8 @@ export type Game = {
   score2: number
   tournamentId: string
   status: GameStatus
+  team1?: GameTeam
+  team2?: GameTeam
 }
 
 export type GameCreate = {

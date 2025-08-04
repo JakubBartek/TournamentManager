@@ -15,6 +15,7 @@ import EditTeam from './pages/EditTeam'
 import EditTournamentOptions from './pages/EditTournamentOptions'
 import EditSchedule from './pages/EditSchedule'
 import EditRinks from './pages/EditRinks'
+import EditGames from './pages/EditGames'
 
 const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
       {
         path: 'edit/rinks',
         Component: EditRinks,
+      },
+      {
+        path: 'edit/games',
+        Component: EditGames,
       },
     ],
   },

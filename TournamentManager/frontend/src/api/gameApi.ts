@@ -33,7 +33,10 @@ async function deleteGame(id: string) {
 }
 
 async function update(data: Game) {
-  return BaseApi.update<Game>(`${GAME_PREFIX}/${data.id}`, data)
+  return BaseApi.update<Game>(
+    `/tournaments/${data.tournamentId}${GAME_PREFIX}/${data.id}`,
+    data,
+  )
 }
 
 export default {

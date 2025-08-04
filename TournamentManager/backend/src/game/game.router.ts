@@ -10,10 +10,10 @@ import { isAdmin } from '../middlewares'
 
 const router = Router({ mergeParams: true })
 
-router.post('/', isAdmin, addNewGame)
+router.post('/', addNewGame)
 router.get('/', getGames)
 router.get('/:id', getSingleGame)
-router.put('/:id', isAdmin, updateGame)
-router.delete('/:id', isAdmin, deleteGame)
+router.put('/:id', updateGame)
+router.delete('/:id', deleteGame)
 
 export default router
