@@ -20,7 +20,7 @@ export default function EditTournamentOptions() {
   const [gameDuration, setGameDuration] = useState(20)
   const [breakDuration, setBreakDuration] = useState(5)
   const [zamboniDuration, setZamboniDuration] = useState(10)
-  const [zamboniInterval, setZamboniInterval] = useState(10)
+  const [zamboniInterval, setZamboniInterval] = useState(90)
   const [tournamentName, setTournamentName] = useState('')
   const [tournamentLocation, setTournamentLocation] = useState('')
   const [tournamentStartDate, setTournamentStartDate] = useState(new Date())
@@ -53,7 +53,7 @@ export default function EditTournamentOptions() {
         gameDuration: gameDuration || tournament?.gameDuration || 20,
         breakDuration: breakDuration || tournament?.breakDuration || 5,
         zamboniDuration: zamboniDuration || tournament?.zamboniDuration || 10,
-        zamboniInterval: zamboniInterval || tournament?.zamboniInterval || 10,
+        zamboniInterval: zamboniInterval || tournament?.zamboniInterval || 90,
         dailyStartTime: dailyStartTime || tournament?.dailyStartTime || '09:00',
         dailyEndTime: dailyEndTime || tournament?.dailyEndTime || '18:00',
       },
@@ -207,7 +207,7 @@ export default function EditTournamentOptions() {
                 name='zamboniInterval'
                 min={0}
                 placeholder={t('enter_zamboni_interval')}
-                value={zamboniInterval}
+                value={zamboniInterval || 90}
                 onChange={(e) => setZamboniInterval(Number(e.target.value))}
               />
             </label>
@@ -219,7 +219,7 @@ export default function EditTournamentOptions() {
                 type='time'
                 id='dailyStartTime'
                 name='dailyStartTime'
-                value={dailyStartTime}
+                value={dailyStartTime || '09:00'}
                 onChange={(e) => setDailyStartTime(e.target.value)}
               />
             </label>
@@ -231,7 +231,7 @@ export default function EditTournamentOptions() {
                 type='time'
                 id='dailyEndTime'
                 name='dailyEndTime'
-                value={dailyEndTime}
+                value={dailyEndTime || '16:00'}
                 onChange={(e) => setDailyEndTime(e.target.value)}
               />
             </label>
