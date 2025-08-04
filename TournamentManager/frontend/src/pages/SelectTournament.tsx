@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 export default function TournamentSelectPage() {
   const { t } = useTranslation()
+  const { i18n } = useTranslation()
   const navigate = useNavigate()
   const { data: tournaments, isLoading, error } = useTournaments()
 
@@ -38,6 +39,10 @@ export default function TournamentSelectPage() {
 
   const handleChange = (value: string) => {
     navigate(`/${value}`)
+  }
+
+  const changeLanguage = (lng: 'sk' | 'en') => {
+    i18n.changeLanguage?.(lng)
   }
 
   // TODO: Remake this page
@@ -71,6 +76,14 @@ export default function TournamentSelectPage() {
           {t('create_a_new_tournament')}
         </Button>
       </Link>
+      <div className='flex gap-2 mt-16'>
+        <Button variant='outline' onClick={() => changeLanguage('sk')}>
+          SK
+        </Button>
+        <Button variant='outline' onClick={() => changeLanguage('en')}>
+          EN
+        </Button>
+      </div>
     </div>
   )
 }
