@@ -229,11 +229,49 @@ async function calculateStandings(tournamentId: string) {
 
     const standingsArray = Array.from(standingsMap.values())
 
+    // Tiebreakers: POINTS -> MUTUAL MATCH -> GOAL DIFFERENCE -> GOALS SCORED -> GOALS TAKEN
     standingsArray.sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points
+
+      // Mutual match tiebreaker
+      const mutualGame = finishedGames.find(
+        (g) =>
+          (g.team1Id === a.teamId && g.team2Id === b.teamId) ||
+          (g.team1Id === b.teamId && g.team2Id === a.teamId),
+      )
+      if (mutualGame) {
+        if (
+          mutualGame.score1 !== undefined &&
+          mutualGame.score2 !== undefined
+        ) {
+          if (
+            mutualGame.team1Id === a.teamId &&
+            mutualGame.score1 !== mutualGame.score2
+          ) {
+            return mutualGame.score2 - mutualGame.score1 // a won: negative, b won: positive
+          }
+          if (
+            mutualGame.team2Id === a.teamId &&
+            mutualGame.score2 !== mutualGame.score1
+          ) {
+            return mutualGame.score1 - mutualGame.score2
+          }
+        }
+      }
+
+      // Goal difference
       const goalDiffA = a.goalsFor - a.goalsAgainst
       const goalDiffB = b.goalsFor - b.goalsAgainst
-      return goalDiffB - goalDiffA
+      if (goalDiffB !== goalDiffA) return goalDiffB - goalDiffA
+
+      // Goals scored
+      if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor
+
+      // Goals taken (lower is better)
+      if (a.goalsAgainst !== b.goalsAgainst)
+        return a.goalsAgainst - b.goalsAgainst
+
+      return 0
     })
 
     // create array of ints that will represent positions within groups
