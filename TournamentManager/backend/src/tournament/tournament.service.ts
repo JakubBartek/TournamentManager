@@ -1,4 +1,5 @@
 import db from '../db'
+import { Team } from '../team/team.types'
 import { tournamentTypeEnum } from './tournament.schema'
 import { TournamentFull } from './tournament.types'
 
@@ -6,6 +7,7 @@ export async function createSchedule(
   tournamentId: string,
   numberOfGroups: number,
   autoCreate: boolean,
+  manualGroups?: { groupNumber: number; teamId: string }[],
 ) {
   const tournament = await db.tournament.findUnique({
     where: { id: tournamentId },
@@ -30,21 +32,57 @@ export async function createSchedule(
     zamboniInterval: tournament?.zamboniInterval || 5,
   }
   const teams = await db.team.findMany({ where: { tournamentId } })
-  const rinks = await db.rink.findMany({ where: { tournamentId } })
 
-  // Group assignment logic (auto/manual)
   if (!autoCreate) {
-    // Manual schedule: just create empty groups, let user assign teams/games later
-    for (let i = 0; i < numberOfGroups; i++) {
-      await db.group.create({
+    if (!manualGroups || manualGroups.length === 0) {
+      throw new Error('Manual group assignment requires at least one group')
+    }
+
+    // Put teams into groups based on groupNumber
+    const groupTeams: Record<number, string[]> = {}
+    manualGroups.forEach(({ groupNumber, teamId }) => {
+      if (!groupTeams[groupNumber]) {
+        groupTeams[groupNumber] = []
+      }
+      groupTeams[groupNumber].push(teamId)
+    })
+    // Create groups based on manual assignment
+    const groupIdsM: string[] = []
+    for (const groupNumber in groupTeams) {
+      const group = await db.group.create({
         data: {
-          name: `Group ${String.fromCharCode(65 + i)}`,
+          name: `Group ${groupNumber}`,
           tournamentId,
         },
       })
+      groupIdsM.push(group.id)
+
+      // Assign teams to this group
+      await Promise.all(
+        groupTeams[groupNumber].map((teamId) =>
+          db.team.update({
+            where: { id: teamId },
+            data: { groupId: group.id },
+          }),
+        ),
+      )
     }
+
+    // Create games for manual groups
+    await createGamesForGroup(
+      tournamentFull,
+      groupIdsM,
+      tournamentId,
+      teams.map((team) => ({
+        ...team,
+        logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
+        description: team.description === null ? undefined : team.description,
+      })),
+      numberOfGroups,
+    )
     return
   }
+
   // Create groups
   const groupIds: string[] = []
   for (let i = 0; i < numberOfGroups; i++) {
@@ -66,7 +104,28 @@ export async function createSchedule(
   )
 
   // Create games (round-robin within each group)
-  // Prepare scheduling parameters
+  await createGamesForGroup(
+    tournamentFull,
+    groupIds,
+    tournamentId,
+    teams.map((team) => ({
+      ...team,
+      logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
+      description: team.description === null ? undefined : team.description,
+    })),
+    numberOfGroups,
+  )
+}
+
+async function createGamesForGroup(
+  tournamentFull: TournamentFull,
+  groupIds: string[],
+  tournamentId: string,
+  teams: Team[],
+  numberOfGroups: number,
+) {
+  const rinks = await db.rink.findMany({ where: { tournamentId } })
+
   const dailyStart = tournamentFull.dailyStartTime // e.g., "09:00"
   const dailyEnd = tournamentFull.dailyEndTime // e.g., "18:00"
   const gameDuration = tournamentFull.gameDuration // in minutes

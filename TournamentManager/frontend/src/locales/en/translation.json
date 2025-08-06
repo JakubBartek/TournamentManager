@@ -90,5 +90,7 @@
   "delete_team": "Delete Team",
   "all_rinks": "All Rinks",
   "edit_games": "Edit Games",
-  "end_game": "End Game"
+  "end_game": "End Game",
+  "add_team_to_group": "Add Team to Group",
+  "group": "Group"
 }

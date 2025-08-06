@@ -89,12 +89,19 @@ export const useTournamentCreateSchedule = () => {
       tournamentId,
       numberOfGroups,
       autoCreate,
+      manualGroups,
     }: {
       tournamentId: string
       numberOfGroups: number
       autoCreate: boolean
+      manualGroups?: { groupNumber: number; teamId: string }[]
     }) =>
-      tournamentApi.createSchedule(tournamentId, numberOfGroups, autoCreate),
+      tournamentApi.createSchedule(
+        tournamentId,
+        numberOfGroups,
+        autoCreate,
+        manualGroups,
+      ),
     onSettled: async (_data, _error, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ['tournament', variables.tournamentId],

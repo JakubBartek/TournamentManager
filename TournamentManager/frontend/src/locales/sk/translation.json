@@ -90,5 +90,7 @@
   "delete_team": "Odstrániť tím",
   "all_rinks" : "Všetky hracie plochy",
   "edit_games": "Upraviť zápasy",
-  "end_game": "Ukončiť zápas"
+  "end_game": "Ukončiť zápas",
+  "add_team_to_group": "Pridať tím do skupiny",
+  "group": "Skupina"
 }

@@ -97,10 +97,15 @@ export const createScheduleController: ControllerFn = async (
 ) => {
   try {
     const { id: tournamentId } = req.params
-    const { numberOfGroups, autoCreate } = req.body
+    const { numberOfGroups, autoCreate, manualGroups } = req.body
 
     // Validate input here (Zod schema)
-    await createTournamentSchedule(tournamentId, numberOfGroups, autoCreate)
+    await createTournamentSchedule(
+      tournamentId,
+      numberOfGroups,
+      autoCreate,
+      manualGroups,
+    )
     res.status(201).send({ message: 'Schedule created successfully' })
   } catch (error) {
     next(error)

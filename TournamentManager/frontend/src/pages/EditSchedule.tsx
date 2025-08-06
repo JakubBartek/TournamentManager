@@ -1,9 +1,10 @@
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTournament } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useTeams } from '@/hooks/useTeam'
 import { TournamentType } from '@/types/tournament'
 import {
   Select,
@@ -27,18 +28,59 @@ export default function EditSchedule() {
 
   const { tournamentId } = useParams()
   const { data: tournament } = useTournament(tournamentId || '')
+  const { data: teams } = useTeams(tournamentId || '')
   const [tournamentType, setTournamentType] = useState(
     tournament?.type || TournamentType.GROUPS,
   )
   const [schedulingMethod, setSchedulingMethod] = useState('option-one')
   const [groupCount, setGroupCount] = useState(2)
 
+  // Manual group assignment state
+  const [manualGroups, setManualGroups] = useState<Record<number, string[]>>({})
+
+  // Compute unassigned teams for manual assignment
+  const unassignedTeams = useMemo(() => {
+    if (!teams) return []
+    const assigned = Object.values(manualGroups).flat()
+    return teams.filter((team) => !assigned.includes(team.id))
+  }, [teams, manualGroups])
+
+  const handleAssignTeam = (groupIdx: number, teamId: string) => {
+    setManualGroups((prev) => {
+      const updated = { ...prev }
+      // Remove team from all groups first
+      Object.keys(updated).forEach((g) => {
+        updated[Number(g)] = updated[Number(g)].filter((id) => id !== teamId)
+      })
+      // Add to selected group
+      updated[groupIdx] = [...(updated[groupIdx] || []), teamId]
+      return updated
+    })
+  }
+
+  const handleRemoveTeam = (groupIdx: number, teamId: string) => {
+    setManualGroups((prev) => ({
+      ...prev,
+      [groupIdx]: (prev[groupIdx] || []).filter((id) => id !== teamId),
+    }))
+  }
+
   const handleCreateGroupStagePairings = () => {
+    // If manual, pass manualGroups as assignment
     createSchedule(
       {
         tournamentId: tournament?.id || '',
         numberOfGroups: groupCount,
         autoCreate: schedulingMethod === 'option-one',
+        manualGroups:
+          schedulingMethod === 'option-two'
+            ? Object.entries(manualGroups).flatMap(([groupIdx, teamIds]) =>
+                teamIds.map((teamId) => ({
+                  groupNumber: Number(groupIdx) + 1,
+                  teamId,
+                })),
+              )
+            : undefined,
       },
       {
         onSuccess: () => {
@@ -85,7 +127,7 @@ export default function EditSchedule() {
                     <SelectValue placeholder={t('select_number_of_groups')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {[2, 3, 4, 5, 6].map((num) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                       <SelectItem
                         key={num}
                         value={`group-${num}`}
@@ -120,8 +162,67 @@ export default function EditSchedule() {
           </CardContent>
         </Card>
       )}
+      {/* Manual group assignment UI */}
+      {fromCreate &&
+        tournamentType === TournamentType.GROUPS &&
+        schedulingMethod === 'option-two' &&
+        teams && (
+          <div className='w-full mt-8 flex flex-col gap-6'>
+            {[...Array(groupCount)].map((_, groupIdx) => (
+              <Card key={groupIdx} className='w-full shadow-md'>
+                <CardContent>
+                  <h3 className='font-bold mb-2'>
+                    {t('group')} {groupIdx + 1}
+                  </h3>
+                  <div className='flex flex-wrap gap-2 mb-2'>
+                    {(manualGroups[groupIdx] || []).map((teamId) => {
+                      const team = teams.find((t) => t.id === teamId)
+                      return (
+                        <span
+                          key={teamId}
+                          className='px-2 py-1 bg-blue-100 rounded font-semibold flex items-center gap-2'
+                        >
+                          {team?.name || teamId}
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            onClick={() => handleRemoveTeam(groupIdx, teamId)}
+                          >
+                            ×
+                          </Button>
+                        </span>
+                      )
+                    })}
+                  </div>
+                  <Select
+                    onValueChange={(teamId) =>
+                      handleAssignTeam(groupIdx, teamId)
+                    }
+                  >
+                    <SelectTrigger className='w-full font-bold'>
+                      <SelectValue placeholder={t('add_team_to_group')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unassignedTeams.map((team) => (
+                        <SelectItem key={team.id} value={team.id}>
+                          {team.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       {fromCreate && tournamentType == TournamentType.GROUPS && (
-        <Button className='mt-4' onClick={handleCreateGroupStagePairings}>
+        <Button
+          className='mt-4'
+          onClick={handleCreateGroupStagePairings}
+          disabled={
+            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+          }
+        >
           {t('create_group_stage_pairings')}
         </Button>
       )}

@@ -55,12 +55,14 @@ async function createSchedule(
   tournamentId: string,
   numberOfGroups: number,
   autoCreate: boolean,
+  manualGroups?: { groupNumber: number; teamId: string }[],
 ) {
   return BaseApi.create<void>(
     `${TOURNAMENT_PREFIX}/${tournamentId}/create-schedule`,
     {
       numberOfGroups,
       autoCreate,
+      manualGroups,
     },
   )
 }
