@@ -64,6 +64,7 @@ const getAllGames = async (tournamentId: string) => {
       tournamentId: true,
       rinkId: true,
       rinkName: true,
+      name: true,
       team1: {
         select: {
           id: true,
@@ -86,9 +87,12 @@ const getAllGames = async (tournamentId: string) => {
 
   const data: Game[] = rawData.map((game) => ({
     ...game,
+    team1Id: game.team1Id ?? undefined,
+    team2Id: game.team2Id ?? undefined,
     rinkId: game.rinkId ?? '',
     tournamentId: game.tournamentId,
     rinkName: game.rinkName ?? '',
+    name: game.name ?? '',
   }))
 
   return data
@@ -106,6 +110,7 @@ const getSingleGame = async (id: string, options: GetGameDeatilsOptions) => {
       date: true,
       tournamentId: true,
       rinkName: true,
+      name: true,
     },
     where: {
       id: id,
@@ -150,11 +155,23 @@ const getPaginatedGames = async (options: GetGamesOptions) => {
   }
 }
 
-const deleteGameById = (id: string) => {
+const deleteGameById = async (id: string) => {
+  // First, find the game to check if PlacementGame exists
+  const game = await db.game.findUnique({
+    where: { id },
+    select: { placementGame: true },
+  })
+
+  // If PlacementGame exists, delete it
+  if (game?.placementGame) {
+    await db.placementGame.delete({
+      where: { id: game.placementGame.id },
+    })
+  }
+
+  // Delete the game itself
   return db.game.delete({
-    where: {
-      id: id,
-    },
+    where: { id },
   })
 }
 

@@ -16,3 +16,7 @@ export const zamboniTimeCreateSchema = z.object({
 export const zamboniTimeTournamentIdSchema = z.object({
   tournamentId: z.string().uuid('Invalid tournament ID format'),
 })
+
+export const zamboniTimeIdSchema = z.object({
+  id: z.string().uuid('Invalid Zamboni Time ID format'),
+})

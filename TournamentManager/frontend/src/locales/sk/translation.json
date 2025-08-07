@@ -114,5 +114,6 @@
   "select_date_time_range": "Vyberte rozsah dátumu a času",
   "message": "Správa",
   "priority": "Priorita",
-  "cancel": "Zrušiť"
+  "cancel": "Zrušiť",
+  "delete_and_go_back": "Odstrániť a ísť späť"
 }

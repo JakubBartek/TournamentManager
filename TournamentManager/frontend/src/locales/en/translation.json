@@ -114,5 +114,6 @@
   "edit_rinks": "Edit Rinks",
   "edit_rink": "Edit Rink",
   "delete_rink": "Delete Rink",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "delete_and_go_back": "Delete and Go Back"
 }

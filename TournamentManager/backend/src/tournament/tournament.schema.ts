@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const tournamentTypeEnum = z.enum([
-  'ROUND_ROBIN',
-  'PLAYOFF',
-  'GROUP_STAGE',
+  'GROUPS',
+  'GROUPS_AND_PLAYOFFS',
+  'GROUPS_AND_PLACEMENT', // 1vs1, 3v3, etc.
 ])
 
 export const playOffRoundEnum = z.enum([

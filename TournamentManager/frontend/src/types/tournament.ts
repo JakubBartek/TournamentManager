@@ -18,11 +18,9 @@ export type Tournament = {
 }
 
 export enum TournamentType {
-  ROUND_ROBIN = 'ROUND_ROBIN',
-  SINGLE_ELIMINATION = 'SINGLE_ELIMINATION',
-  DOUBLE_ELIMINATION = 'DOUBLE_ELIMINATION',
-  SWISS = 'SWISS',
   GROUPS = 'GROUPS',
+  GROUPS_AND_PLAYOFFS = 'GROUPS_AND_PLAYOFFS',
+  GROUPS_AND_PLACEMENT = 'GROUPS_AND_PLACEMENT', // 1vs1, 3v3, etc.
 }
 
 export type TournamentCreate = {

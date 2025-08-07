@@ -10,10 +10,10 @@ export const useGames = (tournamentId: string) => {
   })
 }
 
-export const useGame = (id: string) => {
+export const useGame = (id: string, tournamentId: string) => {
   return useQuery({
-    queryKey: ['game', id],
-    queryFn: () => gameApi.getDetail(id),
+    queryKey: ['game', id, tournamentId],
+    queryFn: () => gameApi.getDetail(id, tournamentId),
   })
 }
 
@@ -36,7 +36,8 @@ export const useGameDelete = () => {
 
   return useMutation({
     mutationKey: ['game'],
-    mutationFn: (id: string) => gameApi.delete(id),
+    mutationFn: ({ id, tournamentId }: { id: string; tournamentId: string }) =>
+      gameApi.delete(id, tournamentId),
     onSettled: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['games'],

@@ -1,6 +1,7 @@
 import db from '../db'
 import { Standings, StandingsCreate, StandingsEdit } from './standings.types'
 import { GameStatusEnum } from '../game/game.types'
+import { GameStatus, GameType, TournamentType } from '@prisma/client'
 
 const getStandings = async (tournamentId: string) => {
   const groups = await db.group.findMany({
@@ -91,7 +92,7 @@ async function calculateStandings(tournamentId: string) {
     // Get tournament to get game duration and other settings
     const tournament = await db.tournament.findUnique({
       where: { id: tournamentId },
-      select: { zamboniDuration: true, gameDuration: true },
+      include: { groups: true },
     })
     if (!tournament || !tournament.gameDuration) {
       console.warn('[calculateStandings] Tournament not found:', tournamentId)
@@ -170,6 +171,10 @@ async function calculateStandings(tournamentId: string) {
     for (const game of finishedGames) {
       const { team1Id, team2Id, score1, score2 } = game
 
+      if (!team1Id || !team2Id) {
+        continue
+      }
+
       if (!standingsMap.has(team1Id)) {
         standingsMap.set(team1Id, {
           teamId: team1Id,
@@ -179,7 +184,7 @@ async function calculateStandings(tournamentId: string) {
           goalsFor: 0,
           goalsAgainst: 0,
           points: 0,
-          groupId: game.team1.groupId || '',
+          groupId: game.team1!.groupId || '',
           id: '',
           tournamentId: tournamentId,
           position: 0,
@@ -197,7 +202,7 @@ async function calculateStandings(tournamentId: string) {
           points: 0,
           id: '',
           tournamentId: tournamentId,
-          groupId: game.team2.groupId || '',
+          groupId: game.team2!.groupId || '',
           position: 0,
           teamName: '',
         })
@@ -325,6 +330,46 @@ async function calculateStandings(tournamentId: string) {
           teamName: teamName,
         },
       })
+    }
+
+    // if all games with type group have status finished and tournament.type == Groups_And_Placement, assign teams to final games
+
+    const allGroupGamesFinished = await db.game.findMany({
+      where: {
+        tournamentId: tournament.id,
+        type: GameType.GROUP,
+      },
+    })
+
+    const allGroupGamesFinishedBool = allGroupGamesFinished.every(
+      (game) => game.status === GameStatus.FINISHED,
+    )
+
+    if (
+      allGroupGamesFinishedBool &&
+      tournament?.type === TournamentType.GROUPS_AND_PLACEMENT
+    ) {
+      // Assign teams to final games
+      // Get all games that have PlacementGame not undefined
+      // and sort them by PlacementGame.placement
+      const placementGames = await db.game.findMany({
+        where: {
+          tournamentId: tournament.id,
+          placementGame: {
+            NOT: undefined,
+          },
+        },
+        orderBy: {
+          placementGame: {
+            placement: 'asc',
+          },
+        },
+      })
+
+      const groups = tournament.groups || []
+      if (groups.length === 2) {
+        // Assign teams to final games
+      }
     }
   } catch (err) {
     console.error('[calculateStandings] Error:', err)

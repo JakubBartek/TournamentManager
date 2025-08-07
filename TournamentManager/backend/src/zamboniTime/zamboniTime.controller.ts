@@ -4,6 +4,7 @@ import {
   zamboniTimeSchema,
   zamboniTimeCreateSchema,
   zamboniTimeTournamentIdSchema,
+  zamboniTimeIdSchema,
 } from './zamboniTime.schema'
 import { NotFound } from 'http-errors'
 
@@ -73,7 +74,7 @@ export const updateZamboniTime: ControllerFn = async (req, res, next) => {
 
 export const deleteZamboniTime: ControllerFn = async (req, res, next) => {
   try {
-    const params = await parseRequest(zamboniTimeSchema, req.params)
+    const params = await parseRequest(zamboniTimeIdSchema, req.params)
     const deleted = await zamboniTimeRepository.deleteZamboniTime(params.id)
 
     if (!deleted) {

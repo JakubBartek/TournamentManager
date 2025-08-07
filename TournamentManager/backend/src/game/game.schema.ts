@@ -1,10 +1,17 @@
 import { z } from 'zod'
 
 export const gameStatusSchema = z.enum(['SCHEDULED', 'LIVE', 'FINISHED'])
+export const gameTypeEnum = z.enum([
+  'FINAL',
+  'GROUP',
+  'ROUND_OF_16',
+  'QUARTER_FINAL',
+  'SEMIFINAL',
+])
 
 export const gameSchema = z.object({
-  team1Id: z.string().uuid('Invalid team1Id'),
-  team2Id: z.string().uuid('Invalid team2Id'),
+  team1Id: z.string().uuid('Invalid team1Id').optional(),
+  team2Id: z.string().uuid('Invalid team2Id').optional(),
   score1: z
     .number()
     .int()
@@ -20,11 +27,13 @@ export const gameSchema = z.object({
   rinkId: z.string().uuid('Invalid rinkId').optional(),
   rinkName: z.string().optional(),
   status: gameStatusSchema.optional(),
+  placementGameId: z.string().uuid('Invalid placementGameId').optional(),
+  name: z.string().optional(),
 })
 
 export const gameEditSchema = z.object({
-  team1Id: z.string().uuid('Invalid team1Id'),
-  team2Id: z.string().uuid('Invalid team2Id'),
+  team1Id: z.string().uuid('Invalid team1Id').optional(),
+  team2Id: z.string().uuid('Invalid team2Id').optional(),
   score1: z
     .number()
     .int()
@@ -40,6 +49,8 @@ export const gameEditSchema = z.object({
   rinkId: z.string().uuid('Invalid rinkId').optional(),
   rinkName: z.string().optional(),
   status: gameStatusSchema.optional(),
+  placementGameId: z.string().uuid('Invalid placementGameId').optional(),
+  name: z.string().optional(),
 })
 
 export const gamePaginationQuerySchema = z.object({

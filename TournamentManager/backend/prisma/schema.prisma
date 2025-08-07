@@ -24,18 +24,24 @@ enum GameStatus {
   FINISHED
 }
 
-enum TournamentType {
-  ROUND_ROBIN
-  PLAYOFF
-  GROUP_STAGE
-  MIXED
+enum GameResult {
+  TEAM1_WIN
+  TEAM2_WIN
+  DRAW
 }
 
-enum PlayoffStage {
+enum TournamentType {
+  GROUPS
+  GROUPS_AND_PLAYOFFS
+  GROUPS_AND_PLACEMENT // 1vs1, 3v3, etc.
+}
+
+enum GameType {
   ROUND_OF_16
   QUARTERFINAL
   SEMIFINAL
   FINAL
+  GROUP
 }
 
 enum MessageType {
@@ -80,45 +86,51 @@ model Message {
 }
 
 model Game {
-  id           String         @id @default(uuid())
-  team1Id      String
-  team2Id      String
-  team1        Team           @relation("Team1Games", fields: [team1Id], references: [id])
-  team2        Team           @relation("Team2Games", fields: [team2Id], references: [id])
-  score1       Int            @default(0)
-  score2       Int            @default(0)
-  rinkId       String?
-  rinkName     String?
-  date         DateTime
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Tournament   Tournament     @relation(fields: [tournamentId], references: [id])
-  tournamentId String
-  PlayoffRound PlayoffRound[]
-  group        Group?         @relation(fields: [groupId], references: [id])
-  groupId      String?
-  Team         Team?          @relation(fields: [teamId], references: [id])
-  teamId       String?
-  status       GameStatus     @default(SCHEDULED)
+  id              String         @id @default(uuid())
+  team1Id         String?
+  team2Id         String?
+  team1           Team?          @relation("Team1Games", fields: [team1Id], references: [id], onDelete: SetNull)
+  team2           Team?          @relation("Team2Games", fields: [team2Id], references: [id], onDelete: SetNull)
+  score1          Int            @default(0)
+  score2          Int            @default(0)
+  rinkId          String?
+  rinkName        String?
+  date            DateTime
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  Tournament      Tournament     @relation(fields: [tournamentId], references: [id])
+  tournamentId    String
+  PlayoffRound    PlayoffRound[]
+  type            GameType       @default(GROUP)
+  group           Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  groupId         String?
+  Team            Team?          @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  teamId          String?
+  status          GameStatus     @default(SCHEDULED)
+  placementGame   PlacementGame?
+  placementGameId String?
+  result          GameResult?
+  name            String?
 }
 
 model Team {
-  id           String     @id @default(uuid())
-  name         String
-  city         String
-  logoUrl      String?
-  description  String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  Player       Player[]
-  Tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  tournamentId String
-  team1Games   Game[]     @relation("Team1Games")
-  team2Games   Game[]     @relation("Team2Games")
-  Game         Game[]
-  Standing     Standing?
-  Group        Group?     @relation(fields: [groupId], references: [id])
-  groupId      String?
+  id             String           @id @default(uuid())
+  name           String
+  city           String
+  logoUrl        String?
+  description    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Player         Player[]
+  Tournament     Tournament       @relation(fields: [tournamentId], references: [id])
+  tournamentId   String
+  team1Games     Game[]           @relation("Team1Games")
+  team2Games     Game[]           @relation("Team2Games")
+  Game           Game[]
+  Standing       Standing?
+  Group          Group?           @relation(fields: [groupId], references: [id])
+  groupId        String?
+  FinalPlacement FinalPlacement[]
 }
 
 model Player {
@@ -152,13 +164,33 @@ model Standing {
   position     Int @default(0)
 }
 
-model PlayoffRound {
-  id           String       @id @default(uuid())
-  tournament   Tournament   @relation(fields: [tournamentId], references: [id])
+model PlacementGame {
+  id        String   @id @default(uuid())
+  gameId    String   @unique
+  game      Game     @relation(fields: [gameId], references: [id])
+  placement Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FinalPlacement {
+  id           String     @id @default(uuid())
   tournamentId String
-  game         Game         @relation(fields: [gameId], references: [id])
+  Tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  teamId       String
+  team         Team       @relation(fields: [teamId], references: [id])
+  placement    Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model PlayoffRound {
+  id           String     @id @default(uuid())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  game         Game       @relation(fields: [gameId], references: [id])
   gameId       String
-  stage        PlayoffStage
+  stage        GameType
   roundNumber  Int
 }
 
@@ -190,7 +222,7 @@ model Tournament {
   location           String
   startDate          DateTime
   endDate            DateTime
-  type               TournamentType @default(ROUND_ROBIN)
+  type               TournamentType @default(GROUPS)
   teams              Team[]
   games              Game[]
   sponsors           Sponsor[]
@@ -201,7 +233,7 @@ model Tournament {
   TournamentManagers User[]         @relation("TournamentManagers")
   standings          Standing[]
   playoffRounds      PlayoffRound[]
-  playOffStage       PlayoffStage?  @default(ROUND_OF_16)
+  gameType           GameType       @default(GROUP)
   groups             Group[]
   adminPasswordHash  String?
   Rinks              Rink[]
@@ -212,8 +244,9 @@ model Tournament {
   dailyStartTime     String? // Daily start time in HH:mm format
   dailyEndTime       String? // Daily end time in HH:mm format
 
-  ZamboniTime ZamboniTime[]
-  Message     Message[]
+  ZamboniTime    ZamboniTime[]
+  Message        Message[]
+  FinalPlacement FinalPlacement[]
 }
 
 model Rink {

@@ -1,4 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import {
+  GameStatus,
+  GameType,
+  PrismaClient,
+  TournamentType,
+} from '@prisma/client'
 import { Standings } from './standings.types'
 
 const prisma = new PrismaClient()
@@ -52,6 +57,9 @@ export async function recalculateStandingsForGroup(groupId: string) {
 
   // 4. Iterate through games and update standings
   for (const game of games) {
+    if (!game.team1Id || !game.team2Id) {
+      continue
+    }
     const team1 = standingsMap.get(game.team1Id)
     const team2 = standingsMap.get(game.team2Id)
     if (!team1 || !team2) continue

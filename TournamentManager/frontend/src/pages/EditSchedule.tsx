@@ -2,7 +2,7 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useState, useMemo } from 'react'
-import { useTournament } from '@/hooks/useTournament'
+import { useTournament, useTournamentEdit } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTeams } from '@/hooks/useTeam'
 import { TournamentType } from '@/types/tournament'
@@ -25,7 +25,7 @@ export default function EditSchedule() {
   const fromCreate = location.state?.fromOptions
   const navigate = useNavigate()
   const { mutate: createSchedule } = useTournamentCreateSchedule()
-
+  const { mutate: editTournament } = useTournamentEdit()
   const { tournamentId } = useParams()
   const { data: tournament } = useTournament(tournamentId || '')
   const { data: teams } = useTeams(tournamentId || '')
@@ -67,6 +67,15 @@ export default function EditSchedule() {
 
   const handleCreateGroupStagePairings = () => {
     // If manual, pass manualGroups as assignment
+    editTournament({
+      id: tournament?.id || '',
+      type: tournamentType,
+      name: tournament?.name || '',
+      gameDuration: tournament?.gameDuration || 30,
+      startDate: tournament?.startDate || new Date(),
+      endDate: tournament?.endDate || new Date(),
+      location: tournament?.location || '',
+    })
     createSchedule(
       {
         tournamentId: tournament?.id || '',
@@ -120,7 +129,7 @@ export default function EditSchedule() {
                 ))}
               </SelectContent>
             </Select>
-            {tournamentType === TournamentType.GROUPS && (
+            {tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS && (
               <>
                 <Select>
                   <SelectTrigger className='w-full font-bold mt-6'>
@@ -164,7 +173,7 @@ export default function EditSchedule() {
       )}
       {/* Manual group assignment UI */}
       {fromCreate &&
-        tournamentType === TournamentType.GROUPS &&
+        tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS &&
         schedulingMethod === 'option-two' &&
         teams && (
           <div className='w-full mt-8 flex flex-col gap-6'>
@@ -215,19 +224,21 @@ export default function EditSchedule() {
             ))}
           </div>
         )}
-      {fromCreate && tournamentType == TournamentType.GROUPS && (
-        <Button
-          className='mt-4'
-          onClick={handleCreateGroupStagePairings}
-          disabled={
-            schedulingMethod === 'option-two' && unassignedTeams.length > 0
-          }
-        >
-          {t('create_group_stage_pairings')}
-        </Button>
-      )}
+      {fromCreate &&
+        (tournamentType == TournamentType.GROUPS ||
+          tournamentType == TournamentType.GROUPS_AND_PLACEMENT) && (
+          <Button
+            className='mt-4'
+            onClick={handleCreateGroupStagePairings}
+            disabled={
+              schedulingMethod === 'option-two' && unassignedTeams.length > 0
+            }
+          >
+            {t('create_group_stage_pairings')}
+          </Button>
+        )}
 
-      {tournamentType != TournamentType.GROUPS && (
+      {tournamentType == TournamentType.GROUPS_AND_PLAYOFFS && (
         // TODO: Implement other tournament types
         <Card className='w-full mt-8 shadow-lg'>
           <CardContent>

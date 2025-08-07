@@ -1,8 +1,11 @@
+import { tournamentTypeEnum } from './../src/tournament/tournament.schema'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
   // Clear existing data
+  await prisma.message.deleteMany({})
+  await prisma.sponsor.deleteMany({})
   await prisma.zamboniTime.deleteMany({})
   await prisma.game.deleteMany({})
   await prisma.player.deleteMany({})
@@ -11,9 +14,6 @@ async function main() {
   await prisma.group.deleteMany({})
   await prisma.rink.deleteMany({})
   await prisma.tournament.deleteMany({})
-  await prisma.sponsor.deleteMany({})
-  await prisma.message.deleteMany({})
-
   // Create a tournament
   const tournament = await prisma.tournament.create({
     data: {
@@ -21,7 +21,7 @@ async function main() {
       location: 'Ice Arena Central',
       startDate: new Date('2025-01-15'),
       endDate: new Date('2025-01-17'),
-      type: 'GROUP_STAGE',
+      type: tournamentTypeEnum.Values.GROUPS,
       gameDuration: 60,
       breakDuration: 15,
       zamboniDuration: 10,

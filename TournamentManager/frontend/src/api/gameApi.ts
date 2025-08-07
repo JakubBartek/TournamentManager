@@ -16,20 +16,27 @@ async function getPaginated(opts: GameQuery) {
   params.append('page', '1')
 
   return BaseApi.getAllPaginated<PaginatedResponse<Game>>(
-    `${GAME_PREFIX}?` + params.toString(),
+    `/tournaments/${opts.tournamentId}${GAME_PREFIX}?` + params.toString(),
   )
 }
 
-async function getDetail(id: string) {
-  return BaseApi.getDetail<Game>(`${GAME_PREFIX}/${id}`)
+async function getDetail(id: string, tournamentId: string) {
+  return BaseApi.getDetail<Game>(
+    `/tournaments/${tournamentId}${GAME_PREFIX}/${id}`,
+  )
 }
 
 async function create(data: GameCreate) {
-  return BaseApi.create<Game>(`${GAME_PREFIX}`, data)
+  return BaseApi.create<Game>(
+    `/tournaments/${data.tournamentId}${GAME_PREFIX}`,
+    data,
+  )
 }
 
-async function deleteGame(id: string) {
-  return BaseApi.deleteResource<void>(`${GAME_PREFIX}/${id}`)
+async function deleteGame(id: string, tournamentId: string) {
+  return BaseApi.deleteResource<void>(
+    `/tournaments/${tournamentId}${GAME_PREFIX}/${id}`,
+  )
 }
 
 async function update(data: Game) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { useGames } from '@/hooks/useGame'
+import { useGames, useGameDelete } from '@/hooks/useGame'
 import { useTeams } from '@/hooks/useTeam'
 import { useParams } from 'react-router-dom'
 import { format } from 'date-fns'
@@ -11,25 +11,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useZamboniTimes } from '@/hooks/useZamboniTime'
+import { useZamboniTimes, useZamboniTimeDelete } from '@/hooks/useZamboniTime'
 import { ZamboniTime } from '@/types/zamboniTime'
 import { useTournament } from '@/hooks/useTournament'
 import { useTranslation } from 'react-i18next'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { useGroups, useGroupDelete } from '@/hooks/useGroup'
 
 export default function Schedule() {
   const { t } = useTranslation()
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: tournament } = useTournament(tournamentId || '')
+  const location = useLocation()
+  const fromCreate = location.state?.fromCreate
+  const navigate = useNavigate()
   const {
     data: games,
     isLoading: gamesLoading,
     error: gamesError,
   } = useGames(tournamentId ?? '')
+  const { mutate: deleteGame } = useGameDelete()
+  const { mutate: deleteZamboniTime } = useZamboniTimeDelete()
   const {
     data: teams,
     isLoading: teamsLoading,
     error: teamsError,
   } = useTeams(tournamentId ?? '')
+  const { data: groups } = useGroups(tournamentId || '')
+  const { mutate: deleteGroup } = useGroupDelete(tournamentId || '')
   const {
     data: zamboniTimes,
     isLoading: zamboniTimesLoading,
@@ -140,6 +150,36 @@ export default function Schedule() {
 
       <div className='flex flex-col items-center gap-2 mb-16 mt-4'>
         <h1 className='text-4xl font-bold mb-4'>{t('schedule')}</h1>
+        {fromCreate && (
+          <Button
+            onClick={() => {
+              // delete all games and go back to edit tournament
+              if (games) {
+                ;[...games].forEach((game) => {
+                  deleteGame({ id: game.id, tournamentId })
+                })
+              }
+              if (zamboniTimes) {
+                ;[...zamboniTimes].forEach((zamboni) => {
+                  deleteZamboniTime({ id: zamboni.id, tournamentId })
+                })
+              }
+
+              if (groups) {
+                ;[...groups].forEach((group) => {
+                  deleteGroup(group.id)
+                })
+              }
+
+              navigate(`/${tournamentId}/edit/tournament`, {
+                state: { fromEditRinks: true },
+              })
+            }}
+            variant='destructive'
+          >
+            {t('delete_and_go_back')}
+          </Button>
+        )}
         {filteredScheduleItems.length === 0 && (
           <p className='text-gray-500'>{t('no_games_found')}</p>
         )}
@@ -162,11 +202,15 @@ export default function Schedule() {
 
           if (item.type === 'game') {
             team1Name =
-              teams?.find((team) => team.id === item.game.team1Id)?.name ||
-              'Unknown Team 1'
+              item.game.id == undefined
+                ? 'TBD'
+                : teams?.find((team) => team.id === item.game.team1Id)?.name ||
+                  'TBD'
             team2Name =
-              teams?.find((team) => team.id === item.game.team2Id)?.name ||
-              'Unknown Team 2'
+              item.game.id == undefined
+                ? 'TBD'
+                : teams?.find((team) => team.id === item.game.team2Id)?.name ||
+                  'TBD'
             score1 = item.game.score1
             score2 = item.game.score2
             rink = item.game.rinkName || 'Unknown Rink'
@@ -200,6 +244,7 @@ export default function Schedule() {
                   ref={index === scrollToIndex ? scrollRef : null}
                 >
                   <CardContent>
+                    <p>{item.game.name}</p>
                     <p>
                       {team1Name}
                       {team2Name && ` vs ${team2Name}`}
@@ -222,7 +267,7 @@ export default function Schedule() {
               ) : (
                 <Card
                   key={`zamboni-${item.zamboni.id}`}
-                  className={`w-full ${gameColor}`}
+                  className={`w-full bg-white`}
                   ref={index === scrollToIndex ? scrollRef : null}
                 >
                   <CardContent>

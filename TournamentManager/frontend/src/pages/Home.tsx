@@ -80,6 +80,7 @@ export default function Home() {
           <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
               <p className='font-semibold text-blue-600'>{t('now_playing')}</p>
+              <p>{game.name}</p>
               <p>
                 {team1} vs {team2}
               </p>
@@ -104,6 +105,7 @@ export default function Home() {
           <Card key={game.id} className='w-full md:w-lg'>
             <CardContent>
               <p className='font-semibold text-gray-800'>{t('next_game')}</p>
+              <p>{game.name}</p>
               <p>
                 {team1} vs {team2}
               </p>

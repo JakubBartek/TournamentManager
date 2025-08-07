@@ -11,9 +11,9 @@ type GameTeam = {
 }
 
 export type Game = {
-  id: number
-  team1Id: string
-  team2Id: string
+  id: string
+  team1Id?: string
+  team2Id?: string
   date: string // ISO format
   rinkId?: string
   rinkName?: string
@@ -23,11 +23,12 @@ export type Game = {
   status: GameStatus
   team1?: GameTeam
   team2?: GameTeam
+  name?: string
 }
 
 export type GameCreate = {
-  team1Id: string
-  team2Id: string
+  team1Id?: string
+  team2Id?: string
   date: string // ISO format
   rinkId?: string
   rinkName?: string
@@ -35,6 +36,7 @@ export type GameCreate = {
   score2: number
   tournamentId: string
   status?: GameStatus
+  name?: string
 }
 
 export type GameQuery = {
