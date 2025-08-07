@@ -6,13 +6,12 @@ import {
   getMessageById,
   getMessagesByTournamentId,
 } from './message.controller'
-import { isAdmin } from '../middlewares'
 
 const router = Router({ mergeParams: true })
-router.post('/', isAdmin, createMessage)
+router.post('/', createMessage)
 router.get('/', getMessagesByTournamentId)
 router.get('/:id', getMessageById)
-router.put('/:id', isAdmin, updateMessage)
-router.delete('/:id', isAdmin, deleteMessage)
+router.put('/:id', updateMessage)
+router.delete('/:id', deleteMessage)
 
 export default router

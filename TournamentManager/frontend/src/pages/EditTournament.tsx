@@ -17,6 +17,20 @@ export default function EditTeams() {
           </CardContent>
         </Card>
       </Link>
+      <Link to={`/${tournamentId}/edit/messages`}>
+        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+          <CardContent className='w-full text-3xl'>
+            {t('edit_messages')}
+          </CardContent>
+        </Card>
+      </Link>
+      <Link to={`/${tournamentId}/edit/rinks`}>
+        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+          <CardContent className='w-full text-3xl'>
+            {t('edit_rinks')}
+          </CardContent>
+        </Card>
+      </Link>
       <Link to={`/${tournamentId}/edit/teams`}>
         <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
           <CardContent className='w-full text-3xl'>
