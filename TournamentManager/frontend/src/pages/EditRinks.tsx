@@ -10,10 +10,20 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useRinks, useRinkCreate } from '@/hooks/useRinks'
-import { faArrowRight, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  useRinks,
+  useRinkCreate,
+  useRinkUpdate,
+  useRinkDelete,
+} from '@/hooks/useRinks'
+import {
+  faArrowRight,
+  faPlus,
+  faEdit,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
@@ -28,6 +38,8 @@ export default function EditRinks() {
     isError: isErrorRinks,
   } = useRinks(tournamentId)
   const { mutate: createRink } = useRinkCreate()
+  const { mutate: updateRink } = useRinkUpdate()
+  const { mutate: deleteRink } = useRinkDelete()
   const location = useLocation()
   const fromCreate = location.state?.fromEditTeams
   const navigate = useNavigate()
@@ -35,6 +47,10 @@ export default function EditRinks() {
   // Form state for new rink
   const [name, setName] = useState('')
   const [open, setOpen] = useState(false)
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
 
   const handleCreateRink = (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,6 +63,41 @@ export default function EditRinks() {
         onSuccess: () => {
           setName('')
           setOpen(false)
+        },
+      },
+    )
+  }
+
+  const startEdit = (rink: { id: string; name: string }) => {
+    setEditingId(rink.id)
+    setEditName(rink.name)
+  }
+
+  const handleEditRink = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingId) return
+    updateRink(
+      {
+        id: editingId,
+        name: editName,
+        tournamentId,
+      },
+      {
+        onSuccess: () => {
+          setEditingId(null)
+          setEditName('')
+        },
+      },
+    )
+  }
+
+  const handleDeleteRink = (id: string) => {
+    deleteRink(
+      { tournamentId, id },
+      {
+        onSuccess: () => {
+          setEditingId(null)
+          setEditName('')
         },
       },
     )
@@ -101,10 +152,10 @@ export default function EditRinks() {
       <Card className='max-w-3xl w-full mx-auto shadow-lg'>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <CardContent className='cursor-pointer'>
+            <CardContent className='cursor-pointer flex justify-center items-center'>
               <FontAwesomeIcon
                 icon={faPlus}
-                className='flex-1 flex text-3xl font-bold justify-center text-[#646cff]'
+                className='text-3xl font-bold text-[#646cff]'
               />
             </CardContent>
           </DialogTrigger>
@@ -132,15 +183,52 @@ export default function EditRinks() {
       </Card>
       {rinks &&
         rinks.map((rink) => (
-          <Link
-            to={`/${tournamentId}/edit/rinks/${rink.id}`}
-            className='text-primary w-full'
-            key={rink.id}
-          >
-            <Card key={rink.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
-              <CardContent className='text-2xl'>{rink.name}</CardContent>
-            </Card>
-          </Link>
+          <Card key={rink.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
+            <CardContent className='flex flex-col gap-2'>
+              {editingId === rink.id ? (
+                <form
+                  className='flex flex-col gap-2 w-full'
+                  onSubmit={handleEditRink}
+                >
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
+                  />
+                  <div className='flex gap-2 mt-2'>
+                    <Button type='submit'>{t('save')}</Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={() => setEditingId(null)}
+                    >
+                      {t('cancel')}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <span className='text-2xl mb-2'>{rink.name}</span>
+                  <div className='flex gap-2 mt-2'>
+                    <Button
+                      size='sm'
+                      variant='outline'
+                      onClick={() => startEdit(rink)}
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> {t('edit')}
+                    </Button>
+                    <Button
+                      size='sm'
+                      variant='destructive'
+                      onClick={() => handleDeleteRink(rink.id)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} /> {t('delete')}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         ))}
     </div>
   )
