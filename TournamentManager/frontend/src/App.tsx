@@ -60,10 +60,6 @@ const router = createBrowserRouter([
         Component: EditTeams,
       },
       {
-        path: 'edit/teams/:teamId',
-        Component: EditTeam,
-      },
-      {
         path: 'edit/tournament',
         Component: EditTournamentOptions,
       },
