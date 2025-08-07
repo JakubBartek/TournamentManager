@@ -9,6 +9,7 @@ import groupRoutes from './group/group.router'
 import standingsRoutes from './standings/standings.router'
 import zamboniRoutes from './zamboniTime/zamboniTime.router'
 import rinkRoutes from './rink/rink.router'
+import messageRoutes from './message/message.router'
 import { isAuthenticated } from './middlewares'
 import { ValidationError } from 'zod-validation-error'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
@@ -24,6 +25,7 @@ router.use('/tournaments/:tournamentId/groups', groupRoutes)
 router.use('/tournaments/:tournamentId/standings', standingsRoutes)
 router.use('/tournaments/:tournamentId/zamboni-time', zamboniRoutes)
 router.use('/tournaments/:tournamentId/rinks', rinkRoutes)
+router.use('/tournaments/:tournamentId/messages', messageRoutes)
 
 router.get('/', isAuthenticated, (_req: Request, res: Response) => {
   res.send('Hello World!').status(200)

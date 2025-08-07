@@ -12,6 +12,7 @@ async function main() {
   await prisma.rink.deleteMany({})
   await prisma.tournament.deleteMany({})
   await prisma.sponsor.deleteMany({})
+  await prisma.message.deleteMany({})
 
   // Create a tournament
   const tournament = await prisma.tournament.create({
@@ -189,6 +190,30 @@ async function main() {
       startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
       endTime: new Date(now.getTime() + 3.5 * 60 * 60 * 1000),
     },
+  })
+
+  // Add some messages
+  await prisma.message.createMany({
+    data: [
+      {
+        tournamentId: tournament.id,
+        content: 'Welcome to the Winter Hockey Cup!',
+        priority: 1,
+        type: 'INFO',
+      },
+      {
+        tournamentId: tournament.id,
+        content: 'First games start at 09:00 on January 15th.',
+        priority: 2,
+        type: 'INFO',
+      },
+      {
+        tournamentId: tournament.id,
+        content: 'Please check in at the registration desk.',
+        priority: 1,
+        type: 'ALERT',
+      },
+    ],
   })
 
   console.log('✅ Seed completed')

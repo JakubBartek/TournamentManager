@@ -5,14 +5,15 @@ import { useGames } from '@/hooks/useGame'
 import { useParams } from 'react-router-dom'
 import { useTournament } from '@/hooks/useTournament.ts'
 import { useTranslation } from 'react-i18next'
+import { useMessages } from '@/hooks/useMessage'
 
 export default function Home() {
   const { t } = useTranslation()
   const now = new Date()
-  const GAME_DURATION_MINUTES = 60
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: games, isLoading, error } = useGames(tournamentId ?? '')
   const { data: tournament } = useTournament(tournamentId ?? '')
+  const { data: messages } = useMessages(tournamentId ?? '')
 
   if (!tournamentId) {
     return <div>Error: Tournament ID is missing</div>
@@ -28,6 +29,11 @@ export default function Home() {
   if (games === undefined) {
     return <div>Loading...</div>
   }
+
+  const GAME_DURATION_MINUTES = tournament.gameDuration || 30
+
+  // Show ALERT messages at the top
+  const alertMessages = (messages ?? []).filter((msg) => msg.type === 'ALERT')
 
   // Games that are currently playing
   const playingGames = games.filter((game) => {
@@ -56,6 +62,17 @@ export default function Home() {
   return (
     <div className='flex flex-col gap-2 mb-16 items-center'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
+      {/* ALERT messages on top */}
+      {alertMessages.map((msg) => (
+        <Card key={msg.id} className='w-full md:w-lg bg-yellow-100'>
+          <CardContent>
+            <p className='font-semibold text-yellow-800'>{msg.content}</p>
+            <p className='text-xs text-gray-500'>
+              {new Date(msg.createdAt).toLocaleString()}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
       {playingGames.map((game) => {
         const team1 = game.team1?.name || game.team1Id
         const team2 = game.team2?.name || game.team2Id

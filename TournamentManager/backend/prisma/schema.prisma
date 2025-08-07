@@ -38,6 +38,11 @@ enum PlayoffStage {
   FINAL
 }
 
+enum MessageType {
+  INFO
+  ALERT
+}
+
 model User {
   id                 String         @id @default(uuid())
   email              String         @unique
@@ -58,6 +63,20 @@ model RefreshToken {
   userId      String
   User        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   revoked     Boolean @default(false)
+}
+
+model Message {
+  id           String     @id @default(uuid())
+  tournamentId String
+  Tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  content      String
+  priority     Int        @default(0) // Higher number means higher priority
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  type MessageType @default(INFO)
+
+  @@map("Message")
 }
 
 model Game {
@@ -194,6 +213,7 @@ model Tournament {
   dailyEndTime       String? // Daily end time in HH:mm format
 
   ZamboniTime ZamboniTime[]
+  Message     Message[]
 }
 
 model Rink {
