@@ -10,14 +10,26 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useTeams, useTeamCreate } from '@/hooks/useTeam'
-import { faArrowRight, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  useTeams,
+  useTeamCreate,
+  useTeamEdit,
+  useTeamDelete,
+} from '@/hooks/useTeam'
+import {
+  faArrowRight,
+  faPlus,
+  faEdit,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+import { Team } from '@/types/team'
+import { useStandings } from '@/hooks/useStandings'
 
 export default function EditTeams() {
   const { t } = useTranslation()
@@ -28,6 +40,9 @@ export default function EditTeams() {
     isError: isErrorTeams,
   } = useTeams(tournamentId)
   const { mutate: createTeam } = useTeamCreate(tournamentId)
+  const { mutate: updateTeam } = useTeamEdit(tournamentId)
+  const { mutate: deleteTeam } = useTeamDelete(tournamentId)
+  const { data: standings } = useStandings(tournamentId)
   const location = useLocation()
   const fromCreate = location.state?.fromCreate
   const navigate = useNavigate()
@@ -38,6 +53,13 @@ export default function EditTeams() {
   const [description, setDescription] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
   const [open, setOpen] = useState(false)
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
+  const [editCity, setEditCity] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+  const [editLogoUrl, setEditLogoUrl] = useState('')
 
   const handleCreateTeam = (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,6 +81,47 @@ export default function EditTeams() {
         },
       },
     )
+  }
+
+  const startEdit = (team: Team) => {
+    setEditingId(team.id)
+    setEditName(team.name)
+    setEditCity(team.city)
+    setEditDescription(team.description || '')
+    setEditLogoUrl(team.logoUrl || '')
+  }
+
+  const handleEditTeam = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingId) return
+    updateTeam(
+      {
+        id: editingId,
+        name: editName,
+        city: editCity,
+        tournamentId,
+        description: editDescription || undefined,
+        logoUrl: editLogoUrl || undefined,
+        standing: standings?.find((s) => s.teamId === editingId) || null,
+      },
+      {
+        onSuccess: () => {
+          setEditingId(null)
+          setEditName('')
+          setEditCity('')
+          setEditDescription('')
+          setEditLogoUrl('')
+        },
+      },
+    )
+  }
+
+  const handleDeleteTeam = (id: string) => {
+    deleteTeam(id, {
+      onSuccess: () => {
+        setEditingId(null)
+      },
+    })
   }
 
   if (isLoadingTeams) {
@@ -110,10 +173,10 @@ export default function EditTeams() {
       <Card className='max-w-3xl w-full mx-auto shadow-lg'>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <CardContent className='cursor-pointer'>
+            <CardContent className='cursor-pointer flex justify-center items-center'>
               <FontAwesomeIcon
                 icon={faPlus}
-                className='flex-1 flex text-3xl font-bold justify-center text-[#646cff]'
+                className='text-3xl font-bold text-[#646cff]'
               />
             </CardContent>
           </DialogTrigger>
@@ -157,15 +220,80 @@ export default function EditTeams() {
       </Card>
       {teams &&
         teams.map((team) => (
-          <Link
-            to={`/${tournamentId}/edit/teams/${team.id}`}
-            className='text-primary w-full'
+          <Card
             key={team.id}
+            className='max-w-3xl w-full mx-auto mt-4 shadow-lg'
           >
-            <Card key={team.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
-              <CardContent className='text-2xl'>{team.name}</CardContent>
-            </Card>
-          </Link>
+            <CardContent>
+              {editingId === team.id ? (
+                <form className='flex flex-col gap-2' onSubmit={handleEditTeam}>
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder={t('enter_team_name')}
+                    required
+                  />
+                  <Input
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    placeholder={t('enter_city')}
+                    required
+                  />
+                  <Input
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    placeholder={t('enter_description')}
+                  />
+                  <Input
+                    value={editLogoUrl}
+                    onChange={(e) => setEditLogoUrl(e.target.value)}
+                    placeholder={t('enter_logo_url')}
+                  />
+                  <div className='flex gap-2 mt-2'>
+                    <Button type='submit'>{t('save')}</Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={() => setEditingId(null)}
+                    >
+                      {t('cancel')}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <p className='text-2xl font-bold'>{team.name}</p>
+                  <p className='text-base text-gray-700'>{team.city}</p>
+                  {team.description && (
+                    <p className='text-sm text-gray-500'>{team.description}</p>
+                  )}
+                  {team.logoUrl && (
+                    <img
+                      src={team.logoUrl}
+                      alt={team.name}
+                      className='w-16 h-16 object-contain mt-2'
+                    />
+                  )}
+                  <div className='flex gap-2 mt-2'>
+                    <Button
+                      size='sm'
+                      variant='outline'
+                      onClick={() => startEdit(team)}
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> {t('edit')}
+                    </Button>
+                    <Button
+                      size='sm'
+                      variant='destructive'
+                      onClick={() => handleDeleteTeam(team.id)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} /> {t('delete')}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         ))}
     </div>
   )

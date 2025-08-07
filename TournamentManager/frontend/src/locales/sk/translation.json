@@ -113,5 +113,6 @@
   "message_deleted": "Správa bola úspešne odstránená",
   "select_date_time_range": "Vyberte rozsah dátumu a času",
   "message": "Správa",
-  "priority": "Priorita"
+  "priority": "Priorita",
+  "cancel": "Zrušiť"
 }
