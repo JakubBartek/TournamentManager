@@ -183,8 +183,11 @@ export default function EditRinks() {
       </Card>
       {rinks &&
         rinks.map((rink) => (
-          <Card key={rink.id} className='max-w-3xl mx-auto mt-4 shadow-lg'>
-            <CardContent className='flex flex-col gap-2'>
+          <Card
+            key={rink.id}
+            className='max-w-3xl w-full mx-auto mt-4 shadow-lg'
+          >
+            <CardContent className='flex flex-col gap-2 w-full'>
               {editingId === rink.id ? (
                 <form
                   className='flex flex-col gap-2 w-full'

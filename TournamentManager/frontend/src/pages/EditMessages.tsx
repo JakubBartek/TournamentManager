@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useParams } from 'react-router-dom'
 import {
@@ -209,14 +209,14 @@ export default function EditMessages() {
                       variant='outline'
                       onClick={() => startEdit(msg)}
                     >
-                      {t('edit')}
+                      <FontAwesomeIcon icon={faEdit} /> {t('edit')}
                     </Button>
                     <Button
                       size='sm'
                       variant='destructive'
                       onClick={() => handleDelete(msg.id)}
                     >
-                      {t('delete')}
+                      <FontAwesomeIcon icon={faTrash} /> {t('delete')}
                     </Button>
                   </div>
                 </>
