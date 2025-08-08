@@ -87,6 +87,7 @@ export default function Standings() {
                     </TableHead>
                     <TableHead className='text-center'>{t('name')}</TableHead>
                     <TableHead className='text-center'>{t('points')}</TableHead>
+                    <TableHead className='text-center'>+/-</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -100,6 +101,9 @@ export default function Standings() {
                       </TableCell>
                       <TableCell className='text-center'>
                         {standing.points}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {standing.goalsFor - standing.goalsAgainst}
                       </TableCell>
                     </TableRow>
                   ))}
