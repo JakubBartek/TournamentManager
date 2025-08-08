@@ -115,5 +115,6 @@
   "message": "Správa",
   "priority": "Priorita",
   "cancel": "Zrušiť",
-  "delete_and_go_back": "Odstrániť a ísť späť"
+  "delete_and_go_back": "Odstrániť a ísť späť",
+  "start_game": "Začať zápas"
 }

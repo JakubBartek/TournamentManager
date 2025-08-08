@@ -79,9 +79,13 @@ const getAllGames = async (tournamentId: string) => {
           groupId: true,
         },
       },
+      status: true,
     },
     where: {
       tournamentId: tournamentId,
+    },
+    orderBy: {
+      date: 'asc',
     },
   })
 
@@ -111,6 +115,7 @@ const getSingleGame = async (id: string, options: GetGameDeatilsOptions) => {
       tournamentId: true,
       rinkName: true,
       name: true,
+      status: true,
     },
     where: {
       id: id,

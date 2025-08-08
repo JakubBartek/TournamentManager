@@ -89,40 +89,21 @@ async function calculateStandings(tournamentId: string) {
       )
     }
 
-    // Get tournament to get game duration and other settings
     const tournament = await db.tournament.findUnique({
       where: { id: tournamentId },
-      include: { groups: true },
+      include: {
+        groups: {
+          include: {
+            teams: {
+              include: { Standing: true },
+            },
+          },
+        },
+      },
     })
     if (!tournament || !tournament.gameDuration) {
       console.warn('[calculateStandings] Tournament not found:', tournamentId)
       return
-    }
-
-    // Update game status based on time, first update them here, then in db
-    const now = new Date()
-    for (const game of games) {
-      if (game.date > now) {
-        game.status = GameStatusEnum.SCHEDULED
-      } else {
-        const gameEndDate = new Date(game.date)
-        gameEndDate.setMinutes(
-          gameEndDate.getMinutes() + tournament.gameDuration,
-        )
-        if (now >= gameEndDate) {
-          game.status = GameStatusEnum.FINISHED
-        } else {
-          game.status = GameStatusEnum.LIVE
-        }
-      }
-      console.log(`Game ${game.id} status updated to ${game.status}`)
-    }
-
-    for (const game of games) {
-      await db.game.update({
-        where: { id: game.id },
-        data: { status: game.status },
-      })
     }
 
     // drop games that are not finished
@@ -345,19 +326,19 @@ async function calculateStandings(tournamentId: string) {
       (game) => game.status === GameStatus.FINISHED,
     )
 
+    // Assign teams to placement games for any number of teams in each group
     if (
       allGroupGamesFinishedBool &&
       tournament?.type === TournamentType.GROUPS_AND_PLACEMENT
     ) {
-      // Assign teams to final games
-      // Get all games that have PlacementGame not undefined
-      // and sort them by PlacementGame.placement
+      // Get all games that have PlacementGame not undefined and sort them by PlacementGame.placement
       const placementGames = await db.game.findMany({
         where: {
           tournamentId: tournament.id,
-          placementGame: {
-            NOT: undefined,
-          },
+          placementGameId: { not: null },
+        },
+        include: {
+          placementGame: true,
         },
         orderBy: {
           placementGame: {
@@ -365,12 +346,83 @@ async function calculateStandings(tournamentId: string) {
           },
         },
       })
+      console.log(
+        '[calculateStandings] Found placementGames:',
+        placementGames.map((g) => ({
+          id: g.id,
+          placementGame: g.placementGameId,
+        })),
+      )
 
       const groups = tournament.groups || []
-      if (groups.length === 2) {
-        // Assign teams to final games
+      console.log(
+        '[calculateStandings] Groups:',
+        groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          teams: g.teams.map((t) => ({
+            id: t.id,
+            name: t.name,
+            standing: t.Standing,
+          })),
+        })),
+      )
+
+      // Find the minimum number of teams in any group (to avoid out-of-bounds)
+      const minTeams = Math.min(...groups.map((g) => g.teams.length))
+      console.log('[calculateStandings] minTeams:', minTeams)
+
+      // For each placement position (1st, 2nd, 3rd, ...)
+      for (let pos = 0; pos < minTeams; pos++) {
+        // Collect the teamId for this position from each group
+        const teamIdsAtPos = groups
+          .map((group) => {
+            const team = group.teams[pos]
+            console.log(
+              `[calculateStandings] Group ${group.id} position ${pos}:`,
+              team?.Standing,
+            )
+            return team?.Standing?.teamId
+          })
+          .filter(Boolean)
+        console.log(
+          `[calculateStandings] Position ${pos} teamIdsAtPos:`,
+          teamIdsAtPos,
+        )
+
+        // If there are at least 2 teams for this position, assign them to a placement game
+        if (teamIdsAtPos.length >= 2 && placementGames[pos]) {
+          console.log(
+            `[calculateStandings] Assigning to placementGame ${placementGames[pos].id}:`,
+            {
+              team1Id: teamIdsAtPos[0] ?? null,
+              team2Id: teamIdsAtPos[1] ?? null,
+            },
+          )
+
+          placementGames[pos].team1Id = teamIdsAtPos[0] ?? null
+          placementGames[pos].team2Id = teamIdsAtPos[1] ?? null
+
+          const newgame = await db.game.update({
+            where: { id: placementGames[pos].id },
+            data: {
+              team1Id: teamIdsAtPos[0] ?? null,
+              team2Id: teamIdsAtPos[1] ?? null,
+            },
+          })
+          console.log(
+            `[calculateStandings] Updated placementGame ${placementGames[pos].id} with teams:`,
+            newgame,
+          )
+        } else {
+          console.log(
+            `[calculateStandings] Not enough teams for position ${pos} or no placementGame available`,
+          )
+        }
       }
     }
+
+    console.log('[calculateStandings] Standings calculated successfully')
   } catch (err) {
     console.error('[calculateStandings] Error:', err)
     throw err

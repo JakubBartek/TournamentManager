@@ -1,5 +1,5 @@
 import { tournamentTypeEnum } from './../src/tournament/tournament.schema'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -7,6 +7,8 @@ async function main() {
   await prisma.message.deleteMany({})
   await prisma.sponsor.deleteMany({})
   await prisma.zamboniTime.deleteMany({})
+  await prisma.placementGame.deleteMany({})
+  await prisma.playoffRound.deleteMany({})
   await prisma.game.deleteMany({})
   await prisma.player.deleteMany({})
   await prisma.standing.deleteMany({})
@@ -111,14 +113,18 @@ async function main() {
     for (let j = 0; j < teamsInGroupA.length; j++) {
       if (i !== j) {
         let date: Date
+        let status: 'SCHEDULED' | 'LIVE' | 'FINISHED'
         if (gameCount % 3 === 1) {
           date = new Date(pastBase.getTime() + (gameCount - 1) * 60 * 60 * 1000)
+          status = 'FINISHED'
         } else if (gameCount % 3 === 2) {
           date = new Date(now.getTime())
+          status = 'LIVE'
         } else {
           date = new Date(
             futureBase.getTime() + (gameCount - 1) * 60 * 60 * 1000,
           )
+          status = 'SCHEDULED'
         }
 
         await prisma.game.create({
@@ -132,7 +138,7 @@ async function main() {
             groupId: groupA.id,
             rinkId: rinks[gameCount % rinks.length].id,
             rinkName: rinks[gameCount % rinks.length].name,
-            status: 'SCHEDULED',
+            status,
           },
         })
         gameCount++
@@ -145,14 +151,18 @@ async function main() {
     for (let j = 0; j < teamsInGroupB.length; j++) {
       if (i !== j) {
         let date: Date
+        let status: 'SCHEDULED' | 'FINISHED' | 'LIVE'
         if (gameCount % 3 === 1) {
           date = new Date(pastBase.getTime() + (gameCount - 1) * 60 * 60 * 1000)
+          status = 'FINISHED'
         } else if (gameCount % 3 === 2) {
           date = new Date(now.getTime())
+          status = 'LIVE'
         } else {
           date = new Date(
             futureBase.getTime() + (gameCount - 1) * 60 * 60 * 1000,
           )
+          status = 'SCHEDULED'
         }
 
         await prisma.game.create({
@@ -166,7 +176,7 @@ async function main() {
             groupId: groupB.id,
             rinkId: rinks[gameCount % rinks.length].id,
             rinkName: rinks[gameCount % rinks.length].name,
-            status: 'SCHEDULED',
+            status,
           },
         })
         gameCount++

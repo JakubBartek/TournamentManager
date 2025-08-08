@@ -28,6 +28,8 @@ export default function EditGames() {
   if (error) return <div>Error: {(error as Error).message}</div>
   if (!games) return <div>No games found.</div>
 
+  console.log('Games:', games)
+
   return (
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
@@ -84,7 +86,14 @@ export default function EditGames() {
             <span className='text-sm text-gray-500'>
               {new Date(game.date).toLocaleString()}
             </span>
-            {game.status !== GameStatus.FINISHED && (
+            {game.status === GameStatus.SCHEDULED && (
+              <Button
+                onClick={() => updateGame({ ...game, status: GameStatus.LIVE })}
+              >
+                {t('start_game')}
+              </Button>
+            )}
+            {game.status === GameStatus.LIVE && (
               <Button
                 onClick={() =>
                   updateGame({ ...game, status: GameStatus.FINISHED })

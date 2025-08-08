@@ -278,7 +278,7 @@ async function createGamesForFinalStage(
       // Add zamboni break
       await db.zamboniTime.create({
         data: {
-          tournamentId: tournament.name,
+          tournamentId: tournamentId,
           startTime: new Date(current.getTime() + gameDuration * 60000),
           endTime: new Date(
             current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
@@ -315,6 +315,7 @@ async function createGamesForFinalStage(
       rinkIdx < rinks.length && i < numPlacementGames;
       rinkIdx++
     ) {
+      // Create the game with team1Id and team2Id as null
       const createdGame = await db.game.create({
         data: {
           team1Id: null,
@@ -327,13 +328,22 @@ async function createGamesForFinalStage(
           status: GameStatus.SCHEDULED,
           name: `Zápas o ${(i + 1) * 2 - 1} miesto`,
           type: GameType.FINAL,
+          // placementGame will be linked after PlacementGame is created
         },
       })
-      await db.placementGame.create({
+
+      // Create the PlacementGame and link it to the game
+      const placementGame = await db.placementGame.create({
         data: {
           gameId: createdGame.id,
           placement: (i + 1) * 2 - 1,
         },
+      })
+
+      // Update the game to link the placementGameId
+      await db.game.update({
+        where: { id: createdGame.id },
+        data: { placementGameId: placementGame.id },
       })
       i--
     }

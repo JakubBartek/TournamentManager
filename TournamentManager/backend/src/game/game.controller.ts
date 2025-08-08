@@ -1,3 +1,4 @@
+import standingsRepository from '../standings/standings.repository'
 import { parseRequest } from '../utils/utils'
 import GameRepository from './game.repository'
 import {
@@ -53,6 +54,9 @@ export const updateGame: ControllerFn = async (req, res, next) => {
     const payload = await parseRequest(gameEditSchema, req.body)
 
     const updated = await GameRepository.upateGame(params.id, payload)
+
+    // Recalculate groups
+    await standingsRepository.calculateStandings(updated.tournamentId)
 
     res.status(200).send(updated)
   } catch (error) {

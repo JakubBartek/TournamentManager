@@ -115,5 +115,6 @@
   "edit_rink": "Edit Rink",
   "delete_rink": "Delete Rink",
   "cancel": "Cancel",
-  "delete_and_go_back": "Delete and Go Back"
+  "delete_and_go_back": "Delete and Go Back",
+  "start_game": "Start Game"
 }

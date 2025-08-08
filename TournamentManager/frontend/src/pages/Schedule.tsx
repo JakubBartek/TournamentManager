@@ -244,8 +244,8 @@ export default function Schedule() {
                   ref={index === scrollToIndex ? scrollRef : null}
                 >
                   <CardContent>
-                    <p>{item.game.name}</p>
-                    <p>
+                    <p className='font-bold'>{item.game.name}</p>
+                    <p className='font-bold'>
                       {team1Name}
                       {team2Name && ` vs ${team2Name}`}
                     </p>
@@ -253,7 +253,11 @@ export default function Schedule() {
                       score1 !== undefined &&
                       ((now >= start && now <= end) || now > end) && (
                         <p className='text-xl font-bold'>
-                          {score1} : {score2}
+                          {item.game.status !== 'SCHEDULED' && (
+                            <>
+                              {score1} : {score2}
+                            </>
+                          )}
                         </p>
                       )}
                     <p className='text-sm text-gray-600'>
