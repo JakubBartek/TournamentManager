@@ -16,6 +16,7 @@ import EditSchedule from './pages/EditSchedule'
 import EditRinks from './pages/EditRinks'
 import EditGames from './pages/EditGames'
 import EditMessages from './pages/EditMessages'
+import EnterTournamentPassword from './pages/EnterTournamentPassword'
 
 const router = createBrowserRouter([
   {
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Navigate to='/select' />,
+  },
+  {
+    path: '/:tournamentId/enter-password',
+    element: <EnterTournamentPassword />,
   },
   {
     path: '*',

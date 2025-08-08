@@ -1,6 +1,7 @@
 import { tournamentTypeEnum } from './../src/tournament/tournament.schema'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { createSchedule } from '../src/tournament/tournament.service'
+import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -18,6 +19,7 @@ async function main() {
   await prisma.rink.deleteMany({})
   await prisma.tournament.deleteMany({})
   // Create a tournament
+  const hashedPassword = await bcrypt.hash('admin', 10)
   const tournament = await prisma.tournament.create({
     data: {
       name: 'Winter Hockey Cup',
@@ -31,7 +33,7 @@ async function main() {
       zamboniInterval: 60,
       dailyStartTime: '09:00',
       dailyEndTime: '18:00',
-      adminPasswordHash: 'admin123',
+      adminPasswordHash: hashedPassword,
     },
   })
 

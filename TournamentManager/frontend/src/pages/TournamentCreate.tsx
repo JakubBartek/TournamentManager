@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useTournamentCreateAndGoToEditTeams } from '@/hooks/useTournament'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
 export default function TournamentCreate() {
   const { t } = useTranslation()
@@ -15,16 +16,27 @@ export default function TournamentCreate() {
   const [adminPassword, setAdminPassword] = useState('')
   const navigate = useNavigate()
   const { mutate: createTournament } = useTournamentCreateAndGoToEditTeams()
+  const { authenticate } = useTournamentAuth()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createTournament({
-      name,
-      location,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      adminPassword,
-    })
+    createTournament(
+      {
+        name,
+        location,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        adminPassword,
+      },
+      {
+        onSuccess: async (newTournament) => {
+          await authenticate(newTournament.id, adminPassword)
+          navigate(`/${newTournament.id}/edit/teams`, {
+            state: { fromCreate: true },
+          })
+        },
+      },
+    )
   }
 
   return (

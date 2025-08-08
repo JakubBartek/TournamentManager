@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
@@ -28,6 +28,7 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
 export default function EditRinks() {
   const { t } = useTranslation()
@@ -43,6 +44,7 @@ export default function EditRinks() {
   const location = useLocation()
   const fromCreate = location.state?.fromEditTeams
   const navigate = useNavigate()
+  const { isAuthenticated } = useTournamentAuth()
 
   // Form state for new rink
   const [name, setName] = useState('')
@@ -51,6 +53,14 @@ export default function EditRinks() {
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
+
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
 
   const handleCreateRink = (e: React.FormEvent) => {
     e.preventDefault()

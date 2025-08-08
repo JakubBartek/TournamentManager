@@ -2,11 +2,12 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTournamentEdit } from '@/hooks/useTournament'
 import { useTournament } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
 export default function EditTournamentOptions() {
   const { t } = useTranslation()
@@ -31,6 +32,16 @@ export default function EditTournamentOptions() {
   const [tournamentStartDateWasSet, setTournamentStartDateWasSet] =
     useState(false)
   const [tournamentEndDateWasSet, setTournamentEndDateWasSet] = useState(false)
+
+  const { isAuthenticated } = useTournamentAuth()
+
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     const tournamentStartDateToUse = tournamentStartDateWasSet

@@ -116,5 +116,8 @@
   "priority": "Priorita",
   "cancel": "Zrušiť",
   "delete_and_go_back": "Odstrániť a ísť späť",
-  "start_game": "Začať zápas"
+  "start_game": "Začať zápas",
+  "enter_tournament_password": "Zadajte heslo turnaja",
+  "back_home": "Späť domov",
+  "enter": "Zadať"
 }

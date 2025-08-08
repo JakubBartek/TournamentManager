@@ -7,6 +7,7 @@ import {
   getPaginatedTournaments,
   getSingleTournament,
   updateTournament,
+  verifyTournamentPassword,
 } from './tournament.controller'
 import { isAdmin } from '../middlewares'
 
@@ -19,5 +20,6 @@ router.get('/:id', getSingleTournament)
 router.put('/:id', updateTournament)
 router.delete('/:id', deleteTournament)
 router.post('/:id/create-schedule', createScheduleController)
+router.post('/:id/verify-password', verifyTournamentPassword)
 
 export default router

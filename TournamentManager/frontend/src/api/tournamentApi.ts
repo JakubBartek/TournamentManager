@@ -67,6 +67,18 @@ async function createSchedule(
   )
 }
 
+export const verifyTournamentPassword = async (
+  tournamentId: string,
+  password: string,
+) => {
+  return BaseApi.create_send_status(
+    `/tournaments/${tournamentId}/verify-password`,
+    {
+      password,
+    },
+  )
+}
+
 export default {
   getAll,
   getDetail,
@@ -76,4 +88,5 @@ export default {
   update,
   getPaginated,
   createSchedule,
+  verifyTournamentPassword,
 }

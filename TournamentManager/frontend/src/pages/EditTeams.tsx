@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
@@ -30,6 +30,7 @@ import { Navbar } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { Team } from '@/types/team'
 import { useStandings } from '@/hooks/useStandings'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
 export default function EditTeams() {
   const { t } = useTranslation()
@@ -60,6 +61,16 @@ export default function EditTeams() {
   const [editCity, setEditCity] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editLogoUrl, setEditLogoUrl] = useState('')
+
+  const { isAuthenticated } = useTournamentAuth()
+
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
 
   const handleCreateTeam = (e: React.FormEvent) => {
     e.preventDefault()

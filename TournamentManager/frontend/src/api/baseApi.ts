@@ -62,6 +62,15 @@ async function create<T>(path: string, data: unknown, config?: RequestConfig) {
   return resp.data
 }
 
+async function create_send_status<T>(
+  path: string,
+  data: unknown,
+  config?: RequestConfig,
+) {
+  const resp = await axiosInstance.post<T>(path, data, config)
+  return resp.status
+}
+
 async function update<T>(path: string, data: unknown, config?: RequestConfig) {
   const resp = await axiosInstance.put<T>(path, data, config)
   return resp.data
@@ -79,4 +88,5 @@ export default {
   create,
   update,
   deleteResource,
+  create_send_status,
 }

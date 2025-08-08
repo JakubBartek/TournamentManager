@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import tournamentApi from '@/api/tournamentApi'
 import { Tournament, TournamentCreate } from '@/types/tournament'
-import { useNavigate } from 'react-router-dom'
 
 export const useTournaments = () => {
   return useQuery({
@@ -34,7 +33,6 @@ export const useTournamentCreate = () => {
 
 export const useTournamentCreateAndGoToEditTeams = () => {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
 
   return useMutation({
     mutationKey: ['tournament'],
@@ -44,10 +42,6 @@ export const useTournamentCreateAndGoToEditTeams = () => {
       await queryClient.invalidateQueries({
         queryKey: ['tournaments'],
       })
-    },
-    onSuccess: (data) => {
-      // Navigate to the edit teams page after successful creation
-      navigate(`/${data.id}/edit/teams`, { state: { fromCreate: true } })
     },
   })
 }

@@ -2,11 +2,23 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 export default function EditTeams() {
   const { t } = useTranslation()
   const tournamentId = useParams().tournamentId
+  const { isAuthenticated } = useTournamentAuth()
+  const navigate = useNavigate()
 
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
   return (
     <div>
       <NavbarEdit />

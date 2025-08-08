@@ -116,5 +116,8 @@
   "delete_rink": "Delete Rink",
   "cancel": "Cancel",
   "delete_and_go_back": "Delete and Go Back",
-  "start_game": "Start Game"
+  "start_game": "Start Game",
+  "enter_tournament_password": "Enter Tournament Password",
+  "back_home": "Back Home",
+  "enter": "Enter"
 }

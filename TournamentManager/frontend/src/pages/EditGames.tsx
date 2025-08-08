@@ -5,12 +5,25 @@ import { useParams } from 'react-router-dom'
 import { useGames, useGameEdit } from '@/hooks/useGame'
 import { useTranslation } from 'react-i18next'
 import { Game, GameStatus } from '@/types/game'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 export default function EditGames() {
   const { t } = useTranslation()
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: games, isLoading, error } = useGames(tournamentId ?? '')
   const { mutate: updateGame } = useGameEdit()
+  const { isAuthenticated } = useTournamentAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
 
   const handleScoreChange = (
     game: Game,

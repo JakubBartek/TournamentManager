@@ -25,9 +25,11 @@ import {
   useMessageUpdate,
   useMessageDelete,
 } from '@/hooks/useMessage'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Message, MessageType } from '@/types/message'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function EditMessages() {
   const { t } = useTranslation()
@@ -44,6 +46,16 @@ export default function EditMessages() {
   const [editType, setEditType] = useState<MessageType>(MessageType.INFO)
   const [editPriority, setEditPriority] = useState(1)
   const [open, setOpen] = useState(false)
+  const { isAuthenticated } = useTournamentAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault()

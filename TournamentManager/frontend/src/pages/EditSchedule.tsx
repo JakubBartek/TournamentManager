@@ -1,7 +1,7 @@
 import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTournament, useTournamentEdit } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTeams } from '@/hooks/useTeam'
@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { useTournamentCreateSchedule } from '@/hooks/useTournament'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
 export default function EditSchedule() {
   const { t } = useTranslation()
@@ -38,6 +39,8 @@ export default function EditSchedule() {
   // Manual group assignment state
   const [manualGroups, setManualGroups] = useState<Record<number, string[]>>({})
 
+  const { isAuthenticated } = useTournamentAuth()
+
   // Compute unassigned teams for manual assignment
   const unassignedTeams = useMemo(() => {
     if (!teams) return []
@@ -45,6 +48,13 @@ export default function EditSchedule() {
     return teams.filter((team) => !assigned.includes(team.id))
   }, [teams, manualGroups])
 
+  useEffect(() => {
+    if (!isAuthenticated(tournamentId ?? '')) {
+      navigate(`/${tournamentId}/enter-password`)
+    }
+  }, [isAuthenticated, navigate, tournamentId])
+
+  if (!isAuthenticated(tournamentId ?? '')) return null
   const handleAssignTeam = (groupIdx: number, teamId: string) => {
     setManualGroups((prev) => {
       const updated = { ...prev }

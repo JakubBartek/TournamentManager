@@ -10,6 +10,34 @@ import {
 } from './tournament.schema'
 import { NotFound } from 'http-errors'
 import { createSchedule as createTournamentSchedule } from './tournament.service'
+import { Request, Response } from 'express'
+import db from '../db'
+import bcrypt from 'bcryptjs'
+
+export async function verifyTournamentPassword(req: Request, res: Response) {
+  const { id } = req.params
+  const { password } = req.body
+
+  if (!password) {
+    return res.status(400).json({ message: 'Password is required' })
+  }
+
+  const tournament = await db.tournament.findUnique({ where: { id } })
+  if (!tournament) {
+    return res.status(404).json({ message: 'Tournament not found' })
+  }
+
+  // Compare password with hash
+  const isValid = await bcrypt.compare(
+    password,
+    tournament.adminPasswordHash || '',
+  )
+  if (isValid) {
+    return res.status(200).json({ success: true })
+  } else {
+    return res.status(401).json({ message: 'Invalid password' })
+  }
+}
 
 export const addNewTournament: ControllerFn = async (req, res, next) => {
   try {
