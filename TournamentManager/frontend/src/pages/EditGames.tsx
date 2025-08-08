@@ -28,8 +28,6 @@ export default function EditGames() {
   if (error) return <div>Error: {(error as Error).message}</div>
   if (!games) return <div>No games found.</div>
 
-  console.log('Games:', games)
-
   return (
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
