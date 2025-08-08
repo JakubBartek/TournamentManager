@@ -194,29 +194,39 @@ async function createGamesForGroup(
     endHour,
     endMinute,
   )
-
   for (const groupId of groupIds) {
     const groupTeams = teams.filter(
       (_, idx) => groupIds[idx % numberOfGroups] === groupId,
     )
 
-    // Generate all unique pairings for round robin
-    const pairings: [string, string][] = []
-    for (let i = 0; i < groupTeams.length; i++) {
-      for (let j = i + 1; j < groupTeams.length; j++) {
-        pairings.push([groupTeams[i].id, groupTeams[j].id])
+    // Use round-robin "circle method" for better distribution
+    const n = groupTeams.length
+    const rounds = n - 1 + (n % 2) // If odd, add a dummy team
+    const teamIds = [...groupTeams.map((t) => t.id)]
+    if (n % 2 === 1) teamIds.push('BYE') // Add dummy team for odd number
+
+    const schedule: [string, string][] = []
+    for (let round = 0; round < rounds; round++) {
+      for (let i = 0; i < n / 2; i++) {
+        const teamA = teamIds[i]
+        const teamB = teamIds[n - 1 - i]
+        if (teamA !== 'BYE' && teamB !== 'BYE') {
+          schedule.push([teamA, teamB])
+        }
       }
+      // Rotate teams (except the first)
+      teamIds.splice(1, 0, teamIds.pop() as string)
     }
 
     let pairingIdx = 0
-    while (pairingIdx < pairings.length) {
+    while (pairingIdx < schedule.length) {
       // For each time slot, schedule up to rinks.length games in parallel
       for (
         let rinkIdx = 0;
-        rinkIdx < rinks.length && pairingIdx < pairings.length;
+        rinkIdx < rinks.length && pairingIdx < schedule.length;
         rinkIdx++, pairingIdx++
       ) {
-        const [team1Id, team2Id] = pairings[pairingIdx]
+        const [team1Id, team2Id] = schedule[pairingIdx]
         await db.game.create({
           data: {
             team1Id,
