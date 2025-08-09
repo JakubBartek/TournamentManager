@@ -44,7 +44,7 @@ export default function Standings() {
   }
 
   return (
-    <div className='p-2 flex flex-col items-center'>
+    <div className='p-2 flex flex-col items-center mb-8'>
       <h2 className='text-3xl font-bold mb-6'>{t('standings')}</h2>
       {groups?.map((group) => (
         <div key={group.id} className='mb-4'>
