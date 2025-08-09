@@ -2,7 +2,7 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useParams } from 'react-router-dom'
-import { useGames, useGameEdit } from '@/hooks/useGame'
+import { useGames, useGameEdit, useGameCreate } from '@/hooks/useGame'
 import { useTranslation } from 'react-i18next'
 import { Game, GameStatus } from '@/types/game'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
@@ -22,12 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 export default function EditGames() {
   const { t } = useTranslation()
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: games, isLoading, error } = useGames(tournamentId ?? '')
   const { mutate: updateGame } = useGameEdit()
+  const { mutate: createGame } = useGameCreate()
   const { isAuthenticated } = useTournamentAuth()
   const navigate = useNavigate()
 
@@ -36,6 +38,12 @@ export default function EditGames() {
   const [team1Id, setTeam1Id] = useState<string>('')
   const [team2Id, setTeam2Id] = useState<string>('')
   const [startTime, setStartTime] = useState<string>('')
+
+  // State for creating a new game
+  const [createOpen, setCreateOpen] = useState(false)
+  const [newTeam1Id, setNewTeam1Id] = useState('')
+  const [newTeam2Id, setNewTeam2Id] = useState('')
+  const [newStartTime, setNewStartTime] = useState('')
 
   useEffect(() => {
     if (!isAuthenticated(tournamentId ?? '')) {
@@ -78,6 +86,23 @@ export default function EditGames() {
     setDrawerOpen(false)
   }
 
+  const handleCreateGame = () => {
+    if (!newTeam1Id || !newTeam2Id || !newStartTime) return
+    createGame({
+      team1Id: newTeam1Id,
+      team2Id: newTeam2Id,
+      tournamentId: tournamentId ?? '',
+      date: new Date(newStartTime).toISOString(),
+      status: GameStatus.SCHEDULED,
+      score1: 0,
+      score2: 0,
+    })
+    setCreateOpen(false)
+    setNewTeam1Id('')
+    setNewTeam2Id('')
+    setNewStartTime('')
+  }
+
   if (isLoading) return <div>Loading games...</div>
   if (error) return <div>Error: {(error as Error).message}</div>
   if (!games) return <div>No games found.</div>
@@ -95,7 +120,11 @@ export default function EditGames() {
   return (
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
-      <h2 className='text-2xl font-bold mb-6'>{t('edit_games')}</h2>
+      <h2 className='text-2xl font-bold mb-2'>{t('edit_games')}</h2>
+      {/* Button to create a new game */}
+      <Button className='mb-2' onClick={() => setCreateOpen(true)}>
+        {t('create_new_game')}
+      </Button>
       {games.map((game: Game) => (
         <Card key={game.id} className='w-full mb-4'>
           <CardContent className='flex flex-col gap-2'>
@@ -171,6 +200,7 @@ export default function EditGames() {
         </Card>
       ))}
 
+      {/* Drawer for editing a game */}
       <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DialogContent>
           <DialogHeader>
@@ -210,6 +240,52 @@ export default function EditGames() {
               onChange={(e) => setStartTime(e.target.value)}
             />
             <Button className='mt-4' onClick={handleDrawerSave}>
+              {t('save')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Drawer for creating a new game */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('create_new_game')}</DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col items-center justify-center gap-4 p-4'>
+            <Label>Team 1</Label>
+            <Select value={newTeam1Id} onValueChange={setNewTeam1Id}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder={t('select_team')} />
+              </SelectTrigger>
+              <SelectContent>
+                {allTeams.map((team) => (
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Label>Team 2</Label>
+            <Select value={newTeam2Id} onValueChange={setNewTeam2Id}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder={t('select_team')} />
+              </SelectTrigger>
+              <SelectContent>
+                {allTeams.map((team) => (
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Label>{t('start_time')}</Label>
+            <Input
+              type='datetime-local'
+              value={newStartTime}
+              onChange={(e) => setNewStartTime(e.target.value)}
+            />
+            <Button className='mt-4' onClick={handleCreateGame}>
               {t('save')}
             </Button>
           </div>

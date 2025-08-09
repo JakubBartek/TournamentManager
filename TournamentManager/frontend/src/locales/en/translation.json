@@ -128,5 +128,7 @@
   "search_by_name": "Search by Name",
   "click_to_tournament": "Click to go to tournament",
   "no_tournaments_found": "No tournaments found.",
-  "edit_game": "Edit Game"
+  "edit_game": "Edit Game",
+  "create_new_game": "Create Game",
+  "start_time": "Start Time"
 }

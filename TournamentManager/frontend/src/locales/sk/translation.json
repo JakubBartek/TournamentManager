@@ -128,5 +128,7 @@
   "search_by_name": "Hľadať podľa názvu",
   "click_to_tournament": "Kliknite na prechod na turnaj",
   "no_tournaments_found": "Žiadne turnaje nenájdené.",
-  "edit_game": "Upraviť zápas"
+  "edit_game": "Upraviť zápas",
+  "create_new_game": "Vytvoriť zápas",
+  "start_time": "Čas začiatku"
 }
