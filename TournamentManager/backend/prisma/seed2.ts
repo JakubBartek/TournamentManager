@@ -85,17 +85,6 @@ async function createTournament(tournamentName: string) {
     },
   })
 
-  const now = new Date()
-
-  // Create Zamboni times
-  await prisma.zamboniTime.create({
-    data: {
-      tournamentId: tournament.id,
-      startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
-      endTime: new Date(now.getTime() + 3.5 * 60 * 60 * 1000),
-    },
-  })
-
   // Add some messages
   await prisma.message.createMany({
     data: [
