@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { useTeams } from '@/hooks/useTeam'
+import { Team } from '@/types/team'
 
 export default function EditGames() {
   const { t } = useTranslation()
@@ -31,6 +33,7 @@ export default function EditGames() {
   const { mutate: updateGame } = useGameEdit()
   const { mutate: createGame } = useGameCreate()
   const { isAuthenticated } = useTournamentAuth()
+  const { data: teams } = useTeams(tournamentId ?? '')
   const navigate = useNavigate()
 
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -52,6 +55,10 @@ export default function EditGames() {
   }, [isAuthenticated, navigate, tournamentId])
 
   if (!isAuthenticated(tournamentId ?? '')) return null
+
+  if (!teams) {
+    return <div>Loading teams...</div>
+  }
 
   const handleScoreChange = (
     game: Game,
@@ -106,16 +113,6 @@ export default function EditGames() {
   if (isLoading) return <div>Loading games...</div>
   if (error) return <div>Error: {(error as Error).message}</div>
   if (!games) return <div>No games found.</div>
-
-  // Collect all teams from games for select options
-  const allTeams = Array.from(
-    new Set(
-      games
-        .flatMap((g) => [g.team1, g.team2])
-        .filter((t) => t && t.id)
-        .map((t) => t!),
-    ),
-  )
 
   return (
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
@@ -213,7 +210,7 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team1')} />
               </SelectTrigger>
               <SelectContent>
-                {allTeams.map((team) => (
+                {teams.map((team: Team) => (
                   <SelectItem key={team.id} value={team.id}>
                     {team.name}
                   </SelectItem>
@@ -226,7 +223,7 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team2')} />
               </SelectTrigger>
               <SelectContent>
-                {allTeams.map((team) => (
+                {teams.map((team: Team) => (
                   <SelectItem key={team.id} value={team.id}>
                     {team.name}
                   </SelectItem>
@@ -259,7 +256,7 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team')} />
               </SelectTrigger>
               <SelectContent>
-                {allTeams.map((team) => (
+                {teams.map((team) => (
                   <SelectItem key={team.id} value={team.id}>
                     {team.name}
                   </SelectItem>
@@ -272,7 +269,7 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team')} />
               </SelectTrigger>
               <SelectContent>
-                {allTeams.map((team) => (
+                {teams.map((team) => (
                   <SelectItem key={team.id} value={team.id}>
                     {team.name}
                   </SelectItem>
