@@ -35,6 +35,9 @@ export default function TournamentSelectPage() {
     })
   }, [tournaments, fromDate, toDate, search])
 
+  // Show only top two tournaments
+  const topTournaments = filteredTournaments.slice(0, 2)
+
   if (isLoading)
     return (
       <div className='flex items-center justify-center min-h-screen'>
@@ -70,39 +73,39 @@ export default function TournamentSelectPage() {
         {t('tournament')}
       </h1>
       {/* Filters */}
-      <Card className='w-full md:w-lg mb-4'>
+      <Card className='w-full md:max-w-lg mb-4'>
         <CardHeader>
           <h2 className='text-lg font-bold'>{t('filter_tournaments')}</h2>
         </CardHeader>
         <CardContent className='flex flex-col gap-4 items-center justify-center'>
-          <div className='flex flex-col flex-wrap gap-4 justify-center items-center px-4'>
-            <div className='flex'>
-              <div>
+          <div className='flex flex-col gap-4 w-full px-4'>
+            <div className='flex flex-row gap-4 w-full'>
+              <div className='flex-1 min-w-0'>
                 <Label>{t('filter_from_date')}</Label>
                 <Input
                   type='date'
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className='bg-white mt-1'
+                  className='bg-white mt-1 w-full'
                 />
               </div>
-              <div>
+              <div className='flex-1 min-w-0'>
                 <Label>{t('filter_to_date')}</Label>
                 <Input
                   type='date'
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className='bg-white mt-1'
+                  className='bg-white mt-1 w-full'
                 />
               </div>
             </div>
-            <div className='flex-1 min-w-[200px] w-full'>
+            <div className='w-full'>
               <Label>{t('search_by_name')}</Label>
               <Input
                 placeholder={t('search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className='bg-white mt-1'
+                className='bg-white mt-1 w-full'
               />
             </div>
             <Button
@@ -120,11 +123,11 @@ export default function TournamentSelectPage() {
       </Card>
       {/* Tournament List */}
       {filteredTournaments.length === 0 && (
-        <p className='text-gray-500 mt-4'>{t('no_tournaments_available')}</p>
+        <p className='text-gray-500 mt-4'>{t('no_tournaments_found')}</p>
       )}
 
       <div className='flex flex-col items-center gap-4 w-full px-4 max-w-2xl'>
-        {filteredTournaments.map((tournament) => (
+        {topTournaments.map((tournament) => (
           <Card
             key={tournament.id}
             className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
@@ -141,7 +144,7 @@ export default function TournamentSelectPage() {
           </Card>
         ))}
       </div>
-      <div className='mt-16'></div>
+      <div className='mt-4'></div>
       <Link to='/tournament/create'>
         <Button className='' size='wide3XL'>
           {t('create_a_new_tournament')}
