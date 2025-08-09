@@ -119,5 +119,13 @@
   "start_game": "Start Game",
   "enter_tournament_password": "Enter Tournament Password",
   "back_home": "Back Home",
-  "enter": "Enter"
+  "enter": "Enter",
+  "filter_tournaments": "Filter Tournaments",
+  "reset_filter": "Reset Filter",
+  "search_placeholder": "Search by Name",
+  "filter_from_date": "From",
+  "filter_to_date": "To",
+  "search_by_name": "Search by Name",
+  "click_to_tournament": "Click to go to tournament",
+  "no_tournaments_found": "No tournaments found."
 }

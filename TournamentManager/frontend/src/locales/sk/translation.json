@@ -119,5 +119,13 @@
   "start_game": "Začať zápas",
   "enter_tournament_password": "Zadajte heslo turnaja",
   "back_home": "Späť domov",
-  "enter": "Zadať"
+  "enter": "Zadať",
+  "filter_tournaments": "Filtrovať turnaje",
+  "reset_filter": "Resetovať filter",
+  "search_placeholder": "Hľadať podľa názvu",
+  "filter_from_date": "Od",
+  "filter_to_date": "Do",
+  "search_by_name": "Hľadať podľa názvu",
+  "click_to_tournament": "Kliknite na prechod na turnaj",
+  "no_tournaments_found": "Žiadne turnaje nenájdené."
 }

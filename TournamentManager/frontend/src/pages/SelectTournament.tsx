@@ -1,17 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useTournaments } from '@/hooks/useTournament'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function TournamentSelectPage() {
   const { t } = useTranslation()
@@ -20,6 +14,26 @@ export default function TournamentSelectPage() {
   const { data: tournaments, isLoading, error } = useTournaments()
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
+  const [search, setSearch] = useState('')
+
+  const filteredTournaments = useMemo(() => {
+    if (!tournaments) return []
+    return tournaments.filter((tournament) => {
+      const start = fromDate ? new Date(fromDate) : null
+      const end = toDate ? new Date(toDate) : null
+      const tStart = new Date(tournament.startDate)
+      const tEnd = new Date(tournament.endDate)
+
+      if (start && tEnd < start) return false
+      if (end && tStart > end) return false
+      if (
+        search &&
+        !tournament.name.toLowerCase().includes(search.toLowerCase())
+      )
+        return false
+      return true
+    })
+  }, [tournaments, fromDate, toDate, search])
 
   if (isLoading)
     return (
@@ -37,71 +51,103 @@ export default function TournamentSelectPage() {
   if (!tournaments || tournaments.length === 0) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
-        No tournaments available.
+        {t('no_tournaments_found')}
       </div>
     )
-  }
-
-  const handleChange = (value: string) => {
-    navigate(`/${value}`)
   }
 
   const changeLanguage = (lng: 'sk' | 'en') => {
     i18n.changeLanguage?.(lng)
   }
 
-  // TODO: Remake this page
   return (
-    <div className='flex flex-col items-center justify-center'>
-      <h1 className='text-3xl font-extrabold text-gray-800 mb-2 mt-32'>
+    <div className='flex flex-col mb-16 items-center'>
+      <h1 className='text-3xl font-extrabold text-gray-800 mb-2'>
         {t('choose')}
       </h1>
       <h2 className='text-3xl font-extrabold text-gray-800'>{t('a')}</h2>
       <h1 className='text-3xl font-extrabold text-gray-800 mb-8'>
         {t('tournament')}
       </h1>
-      <Select onValueChange={handleChange}>
-        <SelectTrigger className='w-[300px] mb-8 h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
-          <SelectValue placeholder={t('choose_a_tournament')} />
-        </SelectTrigger>
-        <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
-          {tournaments.map((tournament) => (
-            <SelectItem
-              key={tournament.id}
-              value={tournament.id}
-              className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md'
+      {/* Filters */}
+      <Card className='w-full md:w-lg mb-4'>
+        <CardHeader>
+          <h2 className='text-lg font-bold'>{t('filter_tournaments')}</h2>
+        </CardHeader>
+        <CardContent className='flex flex-col gap-4 items-center justify-center'>
+          <div className='flex flex-col flex-wrap gap-4 justify-center items-center px-4'>
+            <div className='flex'>
+              <div>
+                <Label>{t('filter_from_date')}</Label>
+                <Input
+                  type='date'
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className='bg-white mt-1'
+                />
+              </div>
+              <div>
+                <Label>{t('filter_to_date')}</Label>
+                <Input
+                  type='date'
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className='bg-white mt-1'
+                />
+              </div>
+            </div>
+            <div className='flex-1 min-w-[200px] w-full'>
+              <Label>{t('search_by_name')}</Label>
+              <Input
+                placeholder={t('search_placeholder')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className='bg-white mt-1'
+              />
+            </div>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setFromDate('')
+                setToDate('')
+                setSearch('')
+              }}
             >
-              {tournament.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <div className='flex gap-4 mb-8'>
-        <div>
-          <Label className='block text-sm mb-1'>{t('filter_from_date')}</Label>
-          <Input
-            type='date'
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className='border rounded px-2 py-1'
-          />
-        </div>
-        <div>
-          <Label className='block text-sm mb-1'>{t('filter_to_date')}</Label>
-          <Input
-            type='date'
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className='border rounded px-2 py-1'
-          />
-        </div>
+              {t('reset_filter')}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+      {/* Tournament List */}
+      {filteredTournaments.length === 0 && (
+        <p className='text-gray-500 mt-4'>{t('no_tournaments_available')}</p>
+      )}
+
+      <div className='flex flex-col items-center gap-4 w-full px-4 max-w-2xl'>
+        {filteredTournaments.map((tournament) => (
+          <Card
+            key={tournament.id}
+            className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
+            onClick={() => navigate(`/${tournament.id}`)}
+          >
+            <CardContent>
+              <CardHeader>{t('click_to_tournament')}</CardHeader>
+              <p className='font-bold text-lg'>{tournament.name}</p>
+              <p className='text-sm text-gray-600'>
+                {new Date(tournament.startDate).toLocaleDateString()} -{' '}
+                {new Date(tournament.endDate).toLocaleDateString()}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+      <div className='mt-16'></div>
       <Link to='/tournament/create'>
-        <Button className='mt-16' size='wide3XL'>
+        <Button className='' size='wide3XL'>
           {t('create_a_new_tournament')}
         </Button>
       </Link>
-      <div className='flex gap-2 mt-16'>
+      <div className='flex gap-2 mt-8'>
         <Button variant='outline' onClick={() => changeLanguage('sk')}>
           SK
         </Button>
