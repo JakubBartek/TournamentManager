@@ -3,6 +3,7 @@ import db from '../db'
 import { Team } from '../team/team.types'
 import { tournamentTypeEnum } from './tournament.schema'
 import { TournamentFull } from './tournament.types'
+import standingsRepository from '../standings/standings.repository'
 
 export async function createSchedule(
   tournamentId: string,
@@ -133,6 +134,8 @@ export async function createSchedule(
     tournamentId,
     last_zamboni_time,
   )
+
+  await standingsRepository.calculateStandings(tournamentId)
 }
 
 async function createGamesForGroup(
