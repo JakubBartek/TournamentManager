@@ -4,25 +4,11 @@ import { createSchedule } from '../src/tournament/tournament.service'
 import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
-async function main() {
-  // Clear existing data
-  await prisma.message.deleteMany({})
-  await prisma.sponsor.deleteMany({})
-  await prisma.zamboniTime.deleteMany({})
-  await prisma.placementGame.deleteMany({})
-  await prisma.playoffRound.deleteMany({})
-  await prisma.game.deleteMany({})
-  await prisma.player.deleteMany({})
-  await prisma.standing.deleteMany({})
-  await prisma.team.deleteMany({})
-  await prisma.group.deleteMany({})
-  await prisma.rink.deleteMany({})
-  await prisma.tournament.deleteMany({})
-  // Create a tournament
+async function createTournament(tournamentName: string) {
   const hashedPassword = await bcrypt.hash('admin', 10)
   const tournament = await prisma.tournament.create({
     data: {
-      name: 'Winter Hockey Cup',
+      name: tournamentName,
       location: 'Ice Arena Central',
       startDate: new Date('2025-01-15'),
       endDate: new Date('2025-01-17'),
@@ -130,6 +116,28 @@ async function main() {
       },
     ],
   })
+}
+
+async function main() {
+  // Clear existing data
+  await prisma.message.deleteMany({})
+  await prisma.sponsor.deleteMany({})
+  await prisma.zamboniTime.deleteMany({})
+  await prisma.placementGame.deleteMany({})
+  await prisma.playoffRound.deleteMany({})
+  await prisma.game.deleteMany({})
+  await prisma.player.deleteMany({})
+  await prisma.standing.deleteMany({})
+  await prisma.team.deleteMany({})
+  await prisma.group.deleteMany({})
+  await prisma.rink.deleteMany({})
+  await prisma.tournament.deleteMany({})
+
+  await createTournament('Winter Hockey Cup')
+  await createTournament('Spring Hockey Challenge')
+  await createTournament('Summer Hockey Showdown')
+  await createTournament('Tournament1')
+  await createTournament('Tournament2')
 
   console.log('✅ Seed completed')
 }
