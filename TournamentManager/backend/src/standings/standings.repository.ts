@@ -378,6 +378,58 @@ async function calculateStandings(tournamentId: string) {
         }
       }
     }
+
+    // Assign teams to playoff games for GROUPS_AND_PLAYOFFS
+    if (
+      allGroupGamesFinishedBool &&
+      tournament?.type === TournamentType.GROUPS_AND_PLAYOFFS
+    ) {
+      // Get all playoff games, ordered by round
+      const playoffGames = await db.game.findMany({
+        where: {
+          tournamentId: tournament.id,
+          type: {
+            in: [
+              GameType.ROUND_OF_16,
+              GameType.QUARTERFINAL,
+              GameType.SEMIFINAL,
+              GameType.FINAL,
+            ],
+          },
+        },
+        orderBy: {
+          date: 'asc',
+        },
+      })
+
+      // Flatten all teams from all groups, sorted by their group position
+      const sortedTeams = tournament.groups
+        .flatMap((group) =>
+          group.teams
+            .map((team) => ({
+              teamId: team?.Standing?.teamId,
+              points: team?.Standing?.points ?? 0,
+              position: team?.Standing?.position ?? 0,
+            }))
+            .filter((t) => t.teamId),
+        )
+        .sort((a, b) => a.position - b.position)
+
+      // Assign teams to playoff games (e.g., top 16 teams for round of 16)
+      const numTeams = sortedTeams.length
+      for (let i = 0; i < playoffGames.length; i++) {
+        const team1 = sortedTeams[i]?.teamId ?? null
+        const team2 = sortedTeams[numTeams - 1 - i]?.teamId ?? null
+
+        await db.game.update({
+          where: { id: playoffGames[i].id },
+          data: {
+            team1Id: team1,
+            team2Id: team2,
+          },
+        })
+      }
+    }
   } catch (err) {
     console.error('[calculateStandings] Error:', err)
     throw err

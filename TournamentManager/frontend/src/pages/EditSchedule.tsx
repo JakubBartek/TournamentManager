@@ -234,29 +234,16 @@ export default function EditSchedule() {
             ))}
           </div>
         )}
-      {fromCreate &&
-        (tournamentType == TournamentType.GROUPS ||
-          tournamentType == TournamentType.GROUPS_AND_PLACEMENT) && (
-          <Button
-            className='mt-4'
-            onClick={handleCreateGroupStagePairings}
-            disabled={
-              schedulingMethod === 'option-two' && unassignedTeams.length > 0
-            }
-          >
-            {t('create_group_stage_pairings')}
-          </Button>
-        )}
-
-      {tournamentType == TournamentType.GROUPS_AND_PLAYOFFS && (
-        // TODO: Implement other tournament types
-        <Card className='w-full mt-8 shadow-lg'>
-          <CardContent>
-            <h2 className='text-xl font-bold mb-4'>
-              {t('tournament_under_development')}
-            </h2>
-          </CardContent>
-        </Card>
+      {fromCreate && (
+        <Button
+          className='mt-4'
+          onClick={handleCreateGroupStagePairings}
+          disabled={
+            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+          }
+        >
+          {t('create_schedule')}
+        </Button>
       )}
     </div>
   )

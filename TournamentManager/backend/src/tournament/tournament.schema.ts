@@ -52,6 +52,7 @@ export const tournamentEditSchema = z.object({
 })
 
 export const tournamentFullSchema = z.object({
+  id: z.string().uuid('Invalid tournament ID format'),
   name: z.string().min(1, 'Tournament name is required'),
   location: z.string().min(1, 'Location is required'),
   startDate: z.coerce.date(),

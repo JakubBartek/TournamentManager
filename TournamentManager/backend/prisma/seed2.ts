@@ -4,7 +4,11 @@ import { createSchedule } from '../src/tournament/tournament.service'
 import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
-async function createTournament(tournamentName: string) {
+async function createTournament(
+  tournamentName: string,
+  tournamentType: 'GROUPS' | 'GROUPS_AND_PLACEMENT' | 'GROUPS_AND_PLAYOFFS',
+  numberOfTeams: number,
+) {
   const hashedPassword = await bcrypt.hash('admin', 10)
   const today = new Date()
   const endDate = new Date(today)
@@ -15,7 +19,7 @@ async function createTournament(tournamentName: string) {
       location: 'Ice Arena Central',
       startDate: today,
       endDate: endDate,
-      type: tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT,
+      type: tournamentType,
       gameDuration: 60,
       breakDuration: 15,
       zamboniDuration: 10,
@@ -50,6 +54,14 @@ async function createTournament(tournamentName: string) {
     'Blizzard Eagles',
     'Arctic Foxes',
     'Frozen Falcons',
+    'Team A',
+    'Team B',
+    'Team C',
+    'Team D',
+    'Team E',
+    'Team F',
+    'Team G',
+    'Team H',
   ]
   const teamCities = [
     'Northville',
@@ -60,9 +72,17 @@ async function createTournament(tournamentName: string) {
     'Hilltop',
     'Riverbend',
     'Forestside',
+    'City A',
+    'City B',
+    'City C',
+    'City D',
+    'City E',
+    'City F',
+    'City G',
+    'City H',
   ]
   const teams: Awaited<ReturnType<typeof prisma.team.create>>[] = []
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < numberOfTeams; i++) {
     const team = await prisma.team.create({
       data: {
         name: teamNames[i],
@@ -125,11 +145,31 @@ async function main() {
   await prisma.rink.deleteMany({})
   await prisma.tournament.deleteMany({})
 
-  await createTournament('Winter Hockey Cup')
-  await createTournament('Spring Hockey Challenge')
-  await createTournament('Summer Hockey Showdown')
-  await createTournament('Tournament1')
-  await createTournament('Tournament2')
+  await createTournament(
+    'Winter Hockey Cup',
+    tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT,
+    8,
+  )
+  await createTournament(
+    'Spring Hockey Challenge',
+    tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS,
+    16,
+  )
+  await createTournament(
+    'Summer Hockey Showdown',
+    tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT,
+    12,
+  )
+  await createTournament(
+    'Tournament1',
+    tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT,
+    7,
+  )
+  await createTournament(
+    'Tournament2',
+    tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS,
+    6,
+  )
 
   console.log('✅ Seed completed')
 }

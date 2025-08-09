@@ -15,6 +15,7 @@ export async function createSchedule(
     where: { id: tournamentId },
   })
   const tournamentFull: TournamentFull = {
+    id: tournament?.id || '',
     name: tournament?.name || '',
     location: tournament?.location || '',
     startDate: tournament?.startDate || new Date(),
@@ -83,13 +84,25 @@ export async function createSchedule(
         numberOfGroups,
       )
 
-    await createGamesForFinalStage(
-      tournamentFull,
-      last_game_t,
-      teams.length,
-      tournamentId,
-      lastZamboniTime,
-    )
+    if (tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT) {
+      await createPlacementGames(
+        tournamentFull,
+        last_game_t,
+        teams.length,
+        tournamentId,
+        lastZamboniTime,
+      )
+    }
+
+    if (tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS) {
+      await createPlayoffGames(
+        tournamentFull,
+        last_game_t,
+        teams.length,
+        tournamentId,
+        lastZamboniTime,
+      )
+    }
     return
   }
 
@@ -127,13 +140,25 @@ export async function createSchedule(
       numberOfGroups,
     )
 
-  await createGamesForFinalStage(
-    tournamentFull,
-    last_game_time,
-    teams.length,
-    tournamentId,
-    last_zamboni_time,
-  )
+  if (tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT) {
+    await createPlacementGames(
+      tournamentFull,
+      last_game_time,
+      teams.length,
+      tournamentId,
+      last_zamboni_time,
+    )
+  }
+
+  if (tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS) {
+    await createPlayoffGames(
+      tournamentFull,
+      last_game_time,
+      teams.length,
+      tournamentId,
+      last_zamboni_time,
+    )
+  }
 
   await standingsRepository.calculateStandings(tournamentId)
 }
@@ -195,7 +220,7 @@ async function createGamesForGroup(
     startHour,
     startMinute,
   )
-  const endTime = new Date(
+  let endTime = new Date(
     today.getFullYear(),
     today.getMonth(),
     today.getDate(),
@@ -218,7 +243,11 @@ async function createGamesForGroup(
       for (let i = 0; i < n / 2; i++) {
         const teamA = teamIds[i]
         const teamB = teamIds[n - 1 - i]
-        if (teamA !== 'BYE' && teamB !== 'BYE') {
+        if (
+          teamA !== 'BYE' &&
+          teamB !== 'BYE' &&
+          teamA !== teamB // Prevent self-pairing
+        ) {
           schedule.push([teamA, teamB])
         }
       }
@@ -227,14 +256,46 @@ async function createGamesForGroup(
     }
 
     let pairingIdx = 0
+    let roundNumber = 0
     while (pairingIdx < schedule.length) {
-      // For each time slot, schedule up to rinks.length games in parallel
+      // Rotate the slotPairings for each round to distribute slots
+      let roundPairings: [string, string][] = []
       for (
-        let rinkIdx = 0;
-        rinkIdx < rinks.length && pairingIdx < schedule.length;
-        rinkIdx++, pairingIdx++
+        let idx = pairingIdx;
+        idx < schedule.length && roundPairings.length < rinks.length;
+        idx++
       ) {
-        const [team1Id, team2Id] = schedule[pairingIdx]
+        roundPairings.push(schedule[idx])
+      }
+
+      // Rotate the pairings array by roundNumber
+      if (roundPairings.length > 1) {
+        const rotateBy = roundNumber % roundPairings.length
+        roundPairings = roundPairings
+          .slice(rotateBy)
+          .concat(roundPairings.slice(0, rotateBy))
+      }
+
+      // Track which teams are scheduled in this time slot
+      const teamsScheduledThisSlot = new Set<string>()
+      let slotPairings: [string, string][] = []
+
+      // Find pairings for this slot that don't conflict
+      for (let i = 0; i < roundPairings.length; i++) {
+        const [team1Id, team2Id] = roundPairings[i]
+        if (
+          !teamsScheduledThisSlot.has(team1Id) &&
+          !teamsScheduledThisSlot.has(team2Id)
+        ) {
+          slotPairings.push([team1Id, team2Id])
+          teamsScheduledThisSlot.add(team1Id)
+          teamsScheduledThisSlot.add(team2Id)
+        }
+      }
+
+      // Actually schedule these games
+      for (let i = 0; i < slotPairings.length; i++) {
+        const [team1Id, team2Id] = slotPairings[i]
         await db.game.create({
           data: {
             team1Id,
@@ -242,20 +303,30 @@ async function createGamesForGroup(
             tournamentId,
             groupId,
             date: new Date(currentGameTime),
-            rinkId: rinks[rinkIdx].id,
-            rinkName: rinks[rinkIdx].name,
+            rinkId: rinks[i].id,
+            rinkName: rinks[i].name,
             type: GameType.GROUP,
             status: GameStatus.SCHEDULED,
           },
         })
       }
+
+      pairingIdx += slotPairings.length
+      roundNumber++
+
       // Advance time for next slot
       currentGameTime = await getNextGameTime(currentGameTime)
-      // If currentTime exceeds endTime, move to next day
       if (currentGameTime >= endTime) {
         currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
         currentGameTime.setHours(startHour, startMinute, 0, 0)
         lastZamboniTime = 0
+        endTime = new Date(
+          currentGameTime.getFullYear(),
+          currentGameTime.getMonth(),
+          currentGameTime.getDate(),
+          endHour,
+          endMinute,
+        )
       }
     }
   }
@@ -267,19 +338,17 @@ async function createGamesForGroup(
   }
 }
 
-async function createGamesForFinalStage(
+async function createPlacementGames(
   tournament: TournamentFull,
   lastGameTime: Date,
   number_of_teams: number,
   tournamentId: string,
   lastZamboniTime: number,
 ) {
-  // Only handle GROUPS_AND_PLACEMENT here
   if (tournament.type !== tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT) {
     return
   }
 
-  // Get rinks for scheduling
   const rinks = await db.rink.findMany({
     where: { tournamentId: tournamentId },
   })
@@ -296,7 +365,6 @@ async function createGamesForFinalStage(
       currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime()
     ) {
       lastZamboniTime = 0
-      // Add zamboni break
       await db.zamboniTime.create({
         data: {
           tournamentId: tournamentId,
@@ -315,10 +383,10 @@ async function createGamesForFinalStage(
     return new Date(current.getTime() + (gameDuration + breakDuration) * 60000)
   }
 
-  // Start scheduling from lastGameTime
   let currentGameTime = new Date(lastGameTime)
+  const [startHour, startMinute] = dailyStart.split(':').map(Number)
   const [endHour, endMinute] = dailyEnd.split(':').map(Number)
-  const endTime = new Date(
+  let endTime = new Date(
     currentGameTime.getFullYear(),
     currentGameTime.getMonth(),
     currentGameTime.getDate(),
@@ -326,18 +394,11 @@ async function createGamesForFinalStage(
     endMinute,
   )
 
-  // For placement: create games for 1st vs 1st, 2nd vs 2nd, etc.
-  const numPlacementGames = number_of_teams / 2
+  // Only create games for pairs; if odd, last team does not play
+  const numPlacementGames = Math.floor(number_of_teams / 2)
   let i = numPlacementGames - 1
-  let justStartedNewDay = false
   while (i >= 0) {
-    // Schedule up to rinks.length games in parallel
-    for (
-      let rinkIdx = 0;
-      rinkIdx < rinks.length && i < numPlacementGames;
-      rinkIdx++
-    ) {
-      // Create the game with team1Id and team2Id as null
+    for (let rinkIdx = 0; rinkIdx < rinks.length && i >= 0; rinkIdx++) {
       const createdGame = await db.game.create({
         data: {
           team1Id: null,
@@ -350,11 +411,10 @@ async function createGamesForFinalStage(
           status: GameStatus.SCHEDULED,
           name: `Zápas o ${(i + 1) * 2 - 1} miesto`,
           type: GameType.FINAL,
-          // placementGame will be linked after PlacementGame is created
         },
       })
+      i--
 
-      // Create the PlacementGame and link it to the game
       const placementGame = await db.placementGame.create({
         data: {
           gameId: createdGame.id,
@@ -362,25 +422,148 @@ async function createGamesForFinalStage(
         },
       })
 
-      // Update the game to link the placementGameId
       await db.game.update({
         where: { id: createdGame.id },
         data: { placementGameId: placementGame.id },
       })
-      i--
     }
-    if (justStartedNewDay) {
-      justStartedNewDay = false
-    } else {
-      currentGameTime = await getNextGameTime(currentGameTime)
-    }
-    // If currentTime exceeds endTime, move to next day
+    currentGameTime = await getNextGameTime(currentGameTime)
     if (currentGameTime >= endTime) {
       currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
-      const [startHour, startMinute] = dailyStart.split(':').map(Number)
       currentGameTime.setHours(startHour, startMinute, 0, 0)
       lastZamboniTime = 0
-      justStartedNewDay = true
+      endTime = new Date(
+        currentGameTime.getFullYear(),
+        currentGameTime.getMonth(),
+        currentGameTime.getDate(),
+        endHour,
+        endMinute,
+      )
     }
+  }
+  // No game for the last team if odd number
+}
+
+async function createPlayoffGames(
+  tournamentFull: TournamentFull,
+  lastGameTime: Date,
+  numberOfTeams: number,
+  tournamentId: string,
+  lastZamboniTime: number,
+) {
+  if (tournamentFull.type !== tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS) {
+    return
+  }
+
+  // Determine starting round based on number of teams
+  let roundTeams = numberOfTeams
+  let teamsToPlay = 0
+  let roundIdx = 0
+  let roundGameTypes: GameType[] = []
+  if (roundTeams >= 16) {
+    roundGameTypes = [
+      GameType.ROUND_OF_16,
+      GameType.QUARTERFINAL,
+      GameType.SEMIFINAL,
+      GameType.FINAL,
+    ]
+    roundIdx = 0
+    teamsToPlay = 16
+  } else if (roundTeams >= 8) {
+    roundGameTypes = [GameType.QUARTERFINAL, GameType.SEMIFINAL, GameType.FINAL]
+    roundIdx = 0
+    teamsToPlay = 8
+  } else if (roundTeams >= 4) {
+    roundGameTypes = [GameType.SEMIFINAL, GameType.FINAL]
+    roundIdx = 0
+    teamsToPlay = 4
+  } else if (roundTeams === 2) {
+    roundGameTypes = [GameType.FINAL]
+    roundIdx = 0
+    teamsToPlay = 2
+  } else {
+    // Not enough teams for playoff
+    return
+  }
+
+  const rinks = await db.rink.findMany({ where: { tournamentId } })
+  const gameDuration = tournamentFull.gameDuration
+  const breakDuration = tournamentFull.breakDuration
+  const zamboniInterval = tournamentFull.zamboniInterval
+  const zamboniDuration = tournamentFull.zamboniDuration
+  const dailyStart = tournamentFull.dailyStartTime
+  const dailyEnd = tournamentFull.dailyEndTime
+
+  async function getNextGameTime(current: Date): Promise<Date> {
+    if (
+      lastZamboniTime + gameDuration >= zamboniInterval &&
+      currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime()
+    ) {
+      lastZamboniTime = 0
+      await db.zamboniTime.create({
+        data: {
+          tournamentId,
+          startTime: new Date(current.getTime() + gameDuration * 60000),
+          endTime: new Date(
+            current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
+          ),
+        },
+      })
+      return new Date(
+        current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
+      )
+    }
+    lastZamboniTime += gameDuration + breakDuration
+    return new Date(current.getTime() + (gameDuration + breakDuration) * 60000)
+  }
+
+  let currentGameTime = new Date(lastGameTime)
+  const [startHour, startMinute] = dailyStart.split(':').map(Number)
+  const [endHour, endMinute] = dailyEnd.split(':').map(Number)
+  let endTime = new Date(
+    currentGameTime.getFullYear(),
+    currentGameTime.getMonth(),
+    currentGameTime.getDate(),
+    endHour,
+    endMinute,
+  )
+
+  // Schedule rounds
+  for (let round = 0; round < roundGameTypes.length; round++) {
+    const numGames = teamsToPlay / 2
+    let i = numGames - 1
+    while (i >= 0) {
+      for (let rinkIdx = 0; rinkIdx < rinks.length && i >= 0; rinkIdx++) {
+        await db.game.create({
+          data: {
+            team1Id: null,
+            team2Id: null,
+            tournamentId,
+            groupId: null,
+            date: new Date(currentGameTime),
+            rinkId: rinks[rinkIdx].id,
+            rinkName: rinks[rinkIdx].name,
+            status: GameStatus.SCHEDULED,
+            name: roundGameTypes[round] + ` ${i + 1}`,
+            type: roundGameTypes[round],
+          },
+        })
+        i--
+      }
+      currentGameTime = await getNextGameTime(currentGameTime)
+      if (currentGameTime >= endTime) {
+        currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
+        currentGameTime.setHours(startHour, startMinute, 0, 0)
+        lastZamboniTime = 0
+        endTime = new Date(
+          currentGameTime.getFullYear(),
+          currentGameTime.getMonth(),
+          currentGameTime.getDate(),
+          endHour,
+          endMinute,
+        )
+      }
+    }
+    teamsToPlay = teamsToPlay / 2
   }
 }
