@@ -9,12 +9,17 @@ import {
 import { useTournaments } from '@/hooks/useTournament'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function TournamentSelectPage() {
   const { t } = useTranslation()
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const { data: tournaments, isLoading, error } = useTournaments()
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
   if (isLoading)
     return (
@@ -56,7 +61,7 @@ export default function TournamentSelectPage() {
         {t('tournament')}
       </h1>
       <Select onValueChange={handleChange}>
-        <SelectTrigger className='w-[300px] mb-16 h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
+        <SelectTrigger className='w-[300px] mb-8 h-12 text-lg border-2 border-blue-400 rounded-lg shadow-md hover:border-blue-600 transition-colors duration-200'>
           <SelectValue placeholder={t('choose_a_tournament')} />
         </SelectTrigger>
         <SelectContent className='bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto'>
@@ -71,6 +76,26 @@ export default function TournamentSelectPage() {
           ))}
         </SelectContent>
       </Select>
+      <div className='flex gap-4 mb-8'>
+        <div>
+          <Label className='block text-sm mb-1'>{t('filter_from_date')}</Label>
+          <Input
+            type='date'
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className='border rounded px-2 py-1'
+          />
+        </div>
+        <div>
+          <Label className='block text-sm mb-1'>{t('filter_to_date')}</Label>
+          <Input
+            type='date'
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className='border rounded px-2 py-1'
+          />
+        </div>
+      </div>
       <Link to='/tournament/create'>
         <Button className='mt-16' size='wide3XL'>
           {t('create_a_new_tournament')}
