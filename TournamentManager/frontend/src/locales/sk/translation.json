@@ -127,5 +127,6 @@
   "filter_to_date": "Do",
   "search_by_name": "Hľadať podľa názvu",
   "click_to_tournament": "Kliknite na prechod na turnaj",
-  "no_tournaments_found": "Žiadne turnaje nenájdené."
+  "no_tournaments_found": "Žiadne turnaje nenájdené.",
+  "edit_game": "Upraviť zápas"
 }
