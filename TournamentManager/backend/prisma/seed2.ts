@@ -6,12 +6,15 @@ const prisma = new PrismaClient()
 
 async function createTournament(tournamentName: string) {
   const hashedPassword = await bcrypt.hash('admin', 10)
+  const today = new Date()
+  const endDate = new Date(today)
+  endDate.setDate(today.getDate() + 2)
   const tournament = await prisma.tournament.create({
     data: {
       name: tournamentName,
       location: 'Ice Arena Central',
-      startDate: new Date('2025-01-15'),
-      endDate: new Date('2025-01-17'),
+      startDate: today,
+      endDate: endDate,
       type: tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT,
       gameDuration: 60,
       breakDuration: 15,
