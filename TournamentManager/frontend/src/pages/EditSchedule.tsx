@@ -75,7 +75,7 @@ export default function EditSchedule() {
     }))
   }
 
-  const handleCreateGroupStagePairings = () => {
+  const handleCreateGroupStagePairings = async () => {
     // If manual, pass manualGroups as assignment
     editTournament({
       id: tournament?.id || '',
@@ -182,58 +182,53 @@ export default function EditSchedule() {
         </Card>
       )}
       {/* Manual group assignment UI */}
-      {fromCreate &&
-        tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS &&
-        schedulingMethod === 'option-two' &&
-        teams && (
-          <div className='w-full mt-8 flex flex-col gap-6'>
-            {[...Array(groupCount)].map((_, groupIdx) => (
-              <Card key={groupIdx} className='w-full shadow-md'>
-                <CardContent>
-                  <h3 className='font-bold mb-2'>
-                    {t('group')} {groupIdx + 1}
-                  </h3>
-                  <div className='flex flex-wrap gap-2 mb-2'>
-                    {(manualGroups[groupIdx] || []).map((teamId) => {
-                      const team = teams.find((t) => t.id === teamId)
-                      return (
-                        <span
-                          key={teamId}
-                          className='px-2 py-1 bg-blue-100 rounded font-semibold flex items-center gap-2'
+      {fromCreate && schedulingMethod === 'option-two' && teams && (
+        <div className='w-full mt-8 flex flex-col gap-6'>
+          {[...Array(groupCount)].map((_, groupIdx) => (
+            <Card key={groupIdx} className='w-full shadow-md'>
+              <CardContent>
+                <h3 className='font-bold mb-2'>
+                  {t('group')} {groupIdx + 1}
+                </h3>
+                <div className='flex flex-wrap gap-2 mb-2'>
+                  {(manualGroups[groupIdx] || []).map((teamId) => {
+                    const team = teams.find((t) => t.id === teamId)
+                    return (
+                      <span
+                        key={teamId}
+                        className='px-2 py-1 bg-blue-100 rounded font-semibold flex items-center gap-2'
+                      >
+                        {team?.name || teamId}
+                        <Button
+                          size='sm'
+                          variant='outline'
+                          onClick={() => handleRemoveTeam(groupIdx, teamId)}
                         >
-                          {team?.name || teamId}
-                          <Button
-                            size='sm'
-                            variant='outline'
-                            onClick={() => handleRemoveTeam(groupIdx, teamId)}
-                          >
-                            ×
-                          </Button>
-                        </span>
-                      )
-                    })}
-                  </div>
-                  <Select
-                    onValueChange={(teamId) =>
-                      handleAssignTeam(groupIdx, teamId)
-                    }
-                  >
-                    <SelectTrigger className='w-full font-bold'>
-                      <SelectValue placeholder={t('add_team_to_group')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {unassignedTeams.map((team) => (
-                        <SelectItem key={team.id} value={team.id}>
-                          {team.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                          ×
+                        </Button>
+                      </span>
+                    )
+                  })}
+                </div>
+                <Select
+                  onValueChange={(teamId) => handleAssignTeam(groupIdx, teamId)}
+                >
+                  <SelectTrigger className='w-full font-bold'>
+                    <SelectValue placeholder={t('add_team_to_group')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unassignedTeams.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
       {fromCreate && (
         <Button
           className='mt-4'

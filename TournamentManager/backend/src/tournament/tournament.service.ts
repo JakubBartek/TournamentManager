@@ -20,11 +20,7 @@ export async function createSchedule(
     location: tournament?.location || '',
     startDate: tournament?.startDate || new Date(),
     endDate: tournament?.endDate || new Date(),
-    type:
-      tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS ||
-      tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT
-        ? tournament?.type
-        : tournamentTypeEnum.Values.GROUPS,
+    type: tournament?.type || tournamentTypeEnum.Values.GROUPS,
     adminPasswordHash: tournament?.adminPasswordHash || '',
     zamboniDuration: tournament?.zamboniDuration || 30,
     dailyStartTime: tournament?.dailyStartTime || '09:00',
