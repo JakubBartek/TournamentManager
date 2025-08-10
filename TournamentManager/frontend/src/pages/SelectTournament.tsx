@@ -36,9 +36,6 @@ export default function TournamentSelectPage() {
     })
   }, [tournaments, fromDate, toDate, search])
 
-  console.log('TESTING_---------__------------_----------')
-  console.log('THIS IS IT: ' + import.meta.env.VITE_API_URL)
-
   // Show only top two tournaments
   const topTournaments = filteredTournaments.slice(0, 2)
 
