@@ -159,6 +159,7 @@ export default function EditMessages() {
         <div className='text-red-500'>Error: {(error as Error).message}</div>
       )}
       {messages &&
+        Array.isArray(messages) &&
         messages.map((msg) => (
           <Card
             key={msg.id}

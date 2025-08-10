@@ -18,9 +18,9 @@ export default function TournamentCreate() {
   const { mutate: createTournament } = useTournamentCreateAndGoToEditTeams()
   const { authenticate } = useTournamentAuth()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    createTournament(
+    await createTournament(
       {
         name,
         location,

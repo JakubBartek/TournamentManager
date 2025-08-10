@@ -19,6 +19,7 @@ export default function Info() {
         <p className='text-gray-500'>No messages found.</p>
       )}
       {messages &&
+        Array.isArray(messages) &&
         messages.map((msg) => (
           <Card
             key={msg.id}

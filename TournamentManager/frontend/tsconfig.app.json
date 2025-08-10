@@ -24,10 +24,8 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "frontend/src/*"
-      ]
+      "@/*": ["frontend/src/*"]
     }
   },
-  "include": ["frontend/src"]
+  "include": ["frontend/src", "src/vite-env.d.ts"]
 }

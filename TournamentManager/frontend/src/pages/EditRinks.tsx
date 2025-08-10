@@ -192,6 +192,7 @@ export default function EditRinks() {
         </Dialog>
       </Card>
       {rinks &&
+        Array.isArray(rinks) &&
         rinks.map((rink) => (
           <Card
             key={rink.id}

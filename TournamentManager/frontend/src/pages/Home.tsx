@@ -43,6 +43,7 @@ export default function Home() {
   })
 
   // Games that are coming up next
+  if (!Array.isArray(games)) return
   const nextGameTimes = games
     .map((game) => new Date(game.date))
     .filter((date) => date > now)
@@ -63,60 +64,65 @@ export default function Home() {
     <div className='flex flex-col gap-2 mb-16 items-center'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
       {/* ALERT messages on top */}
-      {alertMessages.map((msg) => (
-        <Card key={msg.id} className='w-full md:w-lg bg-yellow-100'>
-          <CardContent>
-            <p className='font-semibold text-yellow-800'>{msg.content}</p>
-            <p className='text-xs text-gray-500'>
-              {new Date(msg.createdAt).toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
-      {playingGames.map((game) => {
-        const team1 = game.team1?.name || game.team1Id
-        const team2 = game.team2?.name || game.team2Id
-        return (
-          <Card key={game.id} className='w-full md:w-lg'>
+      {Array.isArray(alertMessages) &&
+        alertMessages.map((msg) => (
+          <Card key={msg.id} className='w-full md:w-lg bg-yellow-100'>
             <CardContent>
-              <p className='font-semibold text-blue-600'>{t('now_playing')}</p>
-              <p>{game.name}</p>
-              <p>
-                {team1} vs {team2}
+              <p className='font-semibold text-yellow-800'>{msg.content}</p>
+              <p className='text-xs text-gray-500'>
+                {new Date(msg.createdAt).toLocaleString()}
               </p>
-              {game.score1 !== undefined && (
-                <p className='text-xl font-bold'>
-                  {game.score1} : {game.score2}
+            </CardContent>
+          </Card>
+        ))}
+      {Array.isArray(playingGames) &&
+        playingGames.map((game) => {
+          const team1 = game.team1?.name || game.team1Id
+          const team2 = game.team2?.name || game.team2Id
+          return (
+            <Card key={game.id} className='w-full md:w-lg'>
+              <CardContent>
+                <p className='font-semibold text-blue-600'>
+                  {t('now_playing')}
                 </p>
-              )}
-              <p className='text-sm text-gray-600'>
-                {format(new Date(game.date), 'HH:mm')} @{' '}
-                {game.rinkName || 'Unknown Rink'}
-              </p>
-            </CardContent>
-          </Card>
-        )
-      })}
+                <p>{game.name}</p>
+                <p>
+                  {team1} vs {team2}
+                </p>
+                {game.score1 !== undefined && (
+                  <p className='text-xl font-bold'>
+                    {game.score1} : {game.score2}
+                  </p>
+                )}
+                <p className='text-sm text-gray-600'>
+                  {format(new Date(game.date), 'HH:mm')} @{' '}
+                  {game.rinkName || 'Unknown Rink'}
+                </p>
+              </CardContent>
+            </Card>
+          )
+        })}
 
-      {nextGames.map((game) => {
-        const team1 = game.team1?.name || game.team1Id
-        const team2 = game.team2?.name || game.team2Id
-        return (
-          <Card key={game.id} className='w-full md:w-lg'>
-            <CardContent>
-              <p className='font-semibold text-gray-800'>{t('next_game')}</p>
-              <p>{game.name}</p>
-              <p>
-                {team1} vs {team2}
-              </p>
-              <p className='text-sm text-gray-600'>
-                {format(new Date(game.date), 'HH:mm')} @{' '}
-                {game.rinkName || 'Unknown Rink'}
-              </p>
-            </CardContent>
-          </Card>
-        )
-      })}
+      {Array.isArray(nextGames) &&
+        nextGames.map((game) => {
+          const team1 = game.team1?.name || game.team1Id
+          const team2 = game.team2?.name || game.team2Id
+          return (
+            <Card key={game.id} className='w-full md:w-lg'>
+              <CardContent>
+                <p className='font-semibold text-gray-800'>{t('next_game')}</p>
+                <p>{game.name}</p>
+                <p>
+                  {team1} vs {team2}
+                </p>
+                <p className='text-sm text-gray-600'>
+                  {format(new Date(game.date), 'HH:mm')} @{' '}
+                  {game.rinkName || 'Unknown Rink'}
+                </p>
+              </CardContent>
+            </Card>
+          )
+        })}
     </div>
   )
 }

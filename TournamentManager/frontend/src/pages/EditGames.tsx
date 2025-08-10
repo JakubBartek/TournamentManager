@@ -130,95 +130,98 @@ export default function EditGames() {
       <Button className='mb-2' onClick={() => setCreateOpen(true)}>
         {t('create_new_game')}
       </Button>
-      {games.map((game: Game) => (
-        <Card key={game.id} className='w-full mb-4'>
-          <CardContent className='flex flex-col gap-2'>
-            <span className='font-semibold'>
-              {game.team1?.name || game.team1Id} vs{' '}
-              {game.team2?.name || game.team2Id}
-            </span>
-            <div className='flex justify-center items-center gap-8'>
-              <div className='flex flex-col items-center'>
-                <div className='flex items-center gap-2'>
-                  <Button
-                    size='sm'
-                    className='w-10 h-10'
-                    onClick={() => handleScoreChange(game, 'team1', -1)}
-                    disabled={game.score1 <= 0}
-                  >
-                    -
-                  </Button>
-                  <span className='text-xl font-bold'>{game.score1}</span>
-                  <Button
-                    size='sm'
-                    className='w-10 h-10'
-                    onClick={() => handleScoreChange(game, 'team1', 1)}
-                  >
-                    +
-                  </Button>
+      {Array.isArray(games) &&
+        games.map((game: Game) => (
+          <Card key={game.id} className='w-full mb-4'>
+            <CardContent className='flex flex-col gap-2'>
+              <span className='font-semibold'>
+                {game.team1?.name || game.team1Id} vs{' '}
+                {game.team2?.name || game.team2Id}
+              </span>
+              <div className='flex justify-center items-center gap-8'>
+                <div className='flex flex-col items-center'>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      size='sm'
+                      className='w-10 h-10'
+                      onClick={() => handleScoreChange(game, 'team1', -1)}
+                      disabled={game.score1 <= 0}
+                    >
+                      -
+                    </Button>
+                    <span className='text-xl font-bold'>{game.score1}</span>
+                    <Button
+                      size='sm'
+                      className='w-10 h-10'
+                      onClick={() => handleScoreChange(game, 'team1', 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+                <div className='flex flex-col items-center'>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      size='sm'
+                      className='w-10 h-10'
+                      onClick={() => handleScoreChange(game, 'team2', -1)}
+                      disabled={game.score2 <= 0}
+                    >
+                      -
+                    </Button>
+                    <span className='text-xl font-bold'>{game.score2}</span>
+                    <Button
+                      size='sm'
+                      className='w-10 h-10'
+                      onClick={() => handleScoreChange(game, 'team2', 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className='flex flex-col items-center'>
-                <div className='flex items-center gap-2'>
-                  <Button
-                    size='sm'
-                    className='w-10 h-10'
-                    onClick={() => handleScoreChange(game, 'team2', -1)}
-                    disabled={game.score2 <= 0}
-                  >
-                    -
-                  </Button>
-                  <span className='text-xl font-bold'>{game.score2}</span>
-                  <Button
-                    size='sm'
-                    className='w-10 h-10'
-                    onClick={() => handleScoreChange(game, 'team2', 1)}
-                  >
-                    +
-                  </Button>
-                </div>
+              <span className='text-sm text-gray-500'>
+                {new Date(game.date).toLocaleString()}
+              </span>
+              {game.status === GameStatus.SCHEDULED && (
+                <Button
+                  onClick={() =>
+                    updateGame({ ...game, status: GameStatus.LIVE })
+                  }
+                >
+                  {t('start_game')}
+                </Button>
+              )}
+              {game.status === GameStatus.LIVE && (
+                <Button
+                  onClick={() =>
+                    updateGame({ ...game, status: GameStatus.FINISHED })
+                  }
+                >
+                  {t('end_game')}
+                </Button>
+              )}
+              <div className='flex gap-2 mt-2'>
+                <Button
+                  variant='outline'
+                  onClick={() => handleEditClick(game)}
+                  className='flex-1'
+                >
+                  <FontAwesomeIcon icon={faEdit} /> {t('edit')}
+                </Button>
+                <Button
+                  variant='outline'
+                  className='flex-1'
+                  onClick={() =>
+                    deleteGame({ id: game.id, tournamentId: game.tournamentId })
+                  }
+                >
+                  <FontAwesomeIcon icon={faTrash} /> {t('delete')}
+                </Button>
               </div>
-            </div>
-            <span className='text-sm text-gray-500'>
-              {new Date(game.date).toLocaleString()}
-            </span>
-            {game.status === GameStatus.SCHEDULED && (
-              <Button
-                onClick={() => updateGame({ ...game, status: GameStatus.LIVE })}
-              >
-                {t('start_game')}
-              </Button>
-            )}
-            {game.status === GameStatus.LIVE && (
-              <Button
-                onClick={() =>
-                  updateGame({ ...game, status: GameStatus.FINISHED })
-                }
-              >
-                {t('end_game')}
-              </Button>
-            )}
-            <div className='flex gap-2 mt-2'>
-              <Button
-                variant='outline'
-                onClick={() => handleEditClick(game)}
-                className='flex-1'
-              >
-                <FontAwesomeIcon icon={faEdit} /> {t('edit')}
-              </Button>
-              <Button
-                variant='outline'
-                className='flex-1'
-                onClick={() =>
-                  deleteGame({ id: game.id, tournamentId: game.tournamentId })
-                }
-              >
-                <FontAwesomeIcon icon={faTrash} /> {t('delete')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        ))}
 
       {/* Drawer for editing a game */}
       <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
@@ -233,11 +236,12 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team1')} />
               </SelectTrigger>
               <SelectContent>
-                {teams.map((team: Team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
+                {Array.isArray(teams) &&
+                  teams.map((team: Team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <label>{t('team2')}</label>
@@ -246,11 +250,12 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team2')} />
               </SelectTrigger>
               <SelectContent>
-                {teams.map((team: Team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
+                {Array.isArray(teams) &&
+                  teams.map((team: Team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <label>{t('start_time')}</label>
@@ -279,11 +284,12 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team')} />
               </SelectTrigger>
               <SelectContent>
-                {teams.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
+                {Array.isArray(teams) &&
+                  teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <Label>Team 2</Label>
@@ -292,11 +298,12 @@ export default function EditGames() {
                 <SelectValue placeholder={t('select_team')} />
               </SelectTrigger>
               <SelectContent>
-                {teams.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
+                {Array.isArray(teams) &&
+                  teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <Label>{t('start_time')}</Label>

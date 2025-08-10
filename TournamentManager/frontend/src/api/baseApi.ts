@@ -1,8 +1,8 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json',
@@ -15,19 +15,18 @@ axiosInstance.interceptors.request.use((config) => {
   const refreshToken = localStorage.getItem('refreshToken')
 
   if (accessToken && refreshToken) {
-    if (!config.headers) {
-      config.headers = {}
-    }
     if (config.url === '/auth/refreshToken') {
       config.headers.Authorization = `Bearer ${refreshToken}`
     } else {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
 
-    // Check token expiration
+    //check if the accessToken is expired
     const decodedToken = jwtDecode(accessToken)
+
     if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
-      // Token expiration handling (currently commented)
+      //token is expired
+      //redirect to login
       // window.location.href = "/login"
     }
   }
@@ -35,50 +34,39 @@ axiosInstance.interceptors.request.use((config) => {
   return config
 })
 
-// Define a local type for configuration
-type RequestConfig = {
-  headers?: Record<string, string>
-  params?: Record<string, unknown>
-  [key: string]: unknown
-}
-
-async function getAll<T>(path: string, config?: RequestConfig) {
-  const resp = await axiosInstance.get<T[]>(path, config)
+async function getAll<T>(path: string, config?: AxiosRequestConfig) {
+  const resp = await axiosInstance.get<Array<T>>(path, config)
   return resp.data
 }
 
-async function getAllPaginated<T>(path: string, config?: RequestConfig) {
+async function getAllPaginated<T>(path: string, config?: AxiosRequestConfig) {
   const resp = await axiosInstance.get<T>(path, config)
   return resp.data
 }
 
-async function getDetail<T>(path: string, config?: RequestConfig) {
-  const resp = await axiosInstance.get<T>(path, config)
+async function getDetail<T>(path: string) {
+  const resp = await axiosInstance.get<T>(path)
   return resp.data
 }
 
-async function create<T>(path: string, data: unknown, config?: RequestConfig) {
-  const resp = await axiosInstance.post<T>(path, data, config)
+async function create<T>(path: string, data: unknown) {
+  const resp = await axiosInstance.post<T>(path, data)
   return resp.data
 }
 
-async function create_send_status<T>(
-  path: string,
-  data: unknown,
-  config?: RequestConfig,
-) {
-  const resp = await axiosInstance.post<T>(path, data, config)
+async function update<T>(path: string, data: unknown) {
+  const resp = await axiosInstance.put<T>(path, data)
+  return resp.data
+}
+
+async function deleteResource<T>(path: string) {
+  const resp = await axiosInstance.delete<T>(path)
+  return resp.data
+}
+
+async function create_send_status<T>(path: string, data: unknown) {
+  const resp = await axiosInstance.post<T>(path, data)
   return resp.status
-}
-
-async function update<T>(path: string, data: unknown, config?: RequestConfig) {
-  const resp = await axiosInstance.put<T>(path, data, config)
-  return resp.data
-}
-
-async function deleteResource<T>(path: string, config?: RequestConfig) {
-  const resp = await axiosInstance.delete<T>(path, config)
-  return resp.data
 }
 
 export default {

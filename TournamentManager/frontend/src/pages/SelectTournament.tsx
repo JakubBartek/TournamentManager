@@ -18,6 +18,7 @@ export default function TournamentSelectPage() {
 
   const filteredTournaments = useMemo(() => {
     if (!tournaments) return []
+    if (!Array.isArray(tournaments)) return []
     return tournaments.filter((tournament) => {
       const start = fromDate ? new Date(fromDate) : null
       const end = toDate ? new Date(toDate) : null
@@ -34,6 +35,9 @@ export default function TournamentSelectPage() {
       return true
     })
   }, [tournaments, fromDate, toDate, search])
+
+  console.log('TESTING_---------__------------_----------')
+  console.log('THIS IS IT: ' + import.meta.env.VITE_API_URL)
 
   // Show only top two tournaments
   const topTournaments = filteredTournaments.slice(0, 2)
@@ -127,22 +131,23 @@ export default function TournamentSelectPage() {
       )}
 
       <div className='flex flex-col items-center gap-4 w-full px-4 max-w-2xl'>
-        {topTournaments.map((tournament) => (
-          <Card
-            key={tournament.id}
-            className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
-            onClick={() => navigate(`/${tournament.id}`)}
-          >
-            <CardContent>
-              <CardHeader>{t('click_to_tournament')}</CardHeader>
-              <p className='font-bold text-lg'>{tournament.name}</p>
-              <p className='text-sm text-gray-600'>
-                {new Date(tournament.startDate).toLocaleDateString()} -{' '}
-                {new Date(tournament.endDate).toLocaleDateString()}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {Array.isArray(topTournaments) &&
+          topTournaments.map((tournament) => (
+            <Card
+              key={tournament.id}
+              className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
+              onClick={() => navigate(`/${tournament.id}`)}
+            >
+              <CardContent>
+                <CardHeader>{t('click_to_tournament')}</CardHeader>
+                <p className='font-bold text-lg'>{tournament.name}</p>
+                <p className='text-sm text-gray-600'>
+                  {new Date(tournament.startDate).toLocaleDateString()} -{' '}
+                  {new Date(tournament.endDate).toLocaleDateString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
       </div>
       <div className='mt-4'></div>
       <Link to='/tournament/create'>

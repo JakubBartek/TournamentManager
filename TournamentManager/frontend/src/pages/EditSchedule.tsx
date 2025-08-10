@@ -128,15 +128,16 @@ export default function EditSchedule() {
                 <SelectValue placeholder={t('select_tournament_type')} />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(TournamentType).map((type) => (
-                  <SelectItem
-                    key={type}
-                    value={type}
-                    onClick={() => setTournamentType(type)}
-                  >
-                    {type.replace(/_/g, ' ')}
-                  </SelectItem>
-                ))}
+                {Array.isArray(Object.values(TournamentType)) &&
+                  Object.values(TournamentType).map((type) => (
+                    <SelectItem
+                      key={type}
+                      value={type}
+                      onClick={() => setTournamentType(type)}
+                    >
+                      {type.replace(/_/g, ' ')}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             {tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS && (
@@ -217,11 +218,12 @@ export default function EditSchedule() {
                     <SelectValue placeholder={t('add_team_to_group')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {unassignedTeams.map((team) => (
-                      <SelectItem key={team.id} value={team.id}>
-                        {team.name}
-                      </SelectItem>
-                    ))}
+                    {Array.isArray(unassignedTeams) &&
+                      unassignedTeams.map((team) => (
+                        <SelectItem key={team.id} value={team.id}>
+                          {team.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </CardContent>

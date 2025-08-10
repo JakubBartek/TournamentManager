@@ -134,15 +134,16 @@ export default function Schedule() {
               >
                 {t('all_teams')}
               </SelectItem>
-              {teams?.map((team) => (
-                <SelectItem
-                  key={team.id}
-                  value={team.id}
-                  className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md'
-                >
-                  {team.name}
-                </SelectItem>
-              ))}
+              {Array.isArray(teams) &&
+                teams?.map((team) => (
+                  <SelectItem
+                    key={team.id}
+                    value={team.id}
+                    className='text-base py-2 px-4 hover:bg-blue-50 cursor-pointer rounded-md'
+                  >
+                    {team.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
@@ -183,111 +184,113 @@ export default function Schedule() {
         {filteredScheduleItems.length === 0 && (
           <p className='text-gray-500'>{t('no_games_found')}</p>
         )}
-        {filteredScheduleItems.map((item, index) => {
-          const start =
-            item.type === 'game'
-              ? new Date(item.game.date)
-              : new Date(item.zamboni.startTime)
-          const duration =
-            item.type === 'game'
-              ? GAME_DURATION_MINUTES
-              : tournament?.zamboniDuration || 10
-          const end = new Date(start.getTime() + duration * 60_000)
-          let gameColor = ''
-          let team1Name = ''
-          let team2Name = ''
-          let score1: number | undefined
-          let score2: number | undefined
-          let rink = ''
+        {Array.isArray(filteredScheduleItems) &&
+          filteredScheduleItems.map((item, index) => {
+            const start =
+              item.type === 'game'
+                ? new Date(item.game.date)
+                : new Date(item.zamboni.startTime)
+            const duration =
+              item.type === 'game'
+                ? GAME_DURATION_MINUTES
+                : tournament?.zamboniDuration || 10
+            const end = new Date(start.getTime() + duration * 60_000)
+            let gameColor = ''
+            let team1Name = ''
+            let team2Name = ''
+            let score1: number | undefined
+            let score2: number | undefined
+            let rink = ''
 
-          if (item.type === 'game') {
-            team1Name =
-              item.game.id == undefined
-                ? 'TBD'
-                : teams?.find((team) => team.id === item.game.team1Id)?.name ||
-                  'TBD'
-            team2Name =
-              item.game.id == undefined
-                ? 'TBD'
-                : teams?.find((team) => team.id === item.game.team2Id)?.name ||
-                  'TBD'
-            score1 = item.game.score1
-            score2 = item.game.score2
-            rink = item.game.rinkName || 'Unknown Rink'
-          } else if (item.type === 'zamboni') {
-            team1Name = 'Zamboni Break'
-            team2Name = ''
-            rink = t('all_rinks')
-          }
+            if (item.type === 'game') {
+              team1Name =
+                item.game.id == undefined
+                  ? 'TBD'
+                  : teams?.find((team) => team.id === item.game.team1Id)
+                      ?.name || 'TBD'
+              team2Name =
+                item.game.id == undefined
+                  ? 'TBD'
+                  : teams?.find((team) => team.id === item.game.team2Id)
+                      ?.name || 'TBD'
+              score1 = item.game.score1
+              score2 = item.game.score2
+              rink = item.game.rinkName || 'Unknown Rink'
+            } else if (item.type === 'zamboni') {
+              team1Name = 'Zamboni Break'
+              team2Name = ''
+              rink = t('all_rinks')
+            }
 
-          if (now >= start && now <= end) {
-            gameColor = 'bg-green-100'
-          } else if (now < start) {
-            gameColor = 'bg-blue-200'
-          } else {
-            gameColor = 'bg-gray-100'
-          }
+            if (now >= start && now <= end) {
+              gameColor = 'bg-green-100'
+            } else if (now < start) {
+              gameColor = 'bg-blue-200'
+            } else {
+              gameColor = 'bg-gray-100'
+            }
 
-          return (
-            <>
-              {item.type === 'game' ? (
-                <Card
-                  key={
-                    item.type === 'game'
-                      ? item.game.id
-                      : `zamboni-${
-                          (item as { type: 'zamboni'; zamboni: ZamboniTime })
-                            .zamboni.id
-                        }`
-                  }
-                  className={`w-full ${gameColor} md:w-lg`}
-                  ref={index === scrollToIndex ? scrollRef : null}
-                >
-                  <CardContent>
-                    <p className='font-bold'>{item.game.name}</p>
-                    <p className='font-bold'>
-                      {team1Name}
-                      {team2Name && ` vs ${team2Name}`}
-                    </p>
-                    {item.type === 'game' &&
-                      score1 !== undefined &&
-                      ((now >= start && now <= end) || now > end) && (
-                        <p className='text-xl font-bold'>
-                          {item.game.status !== 'SCHEDULED' && (
-                            <>
-                              {score1} : {score2}
-                            </>
-                          )}
-                        </p>
-                      )}
-                    <p className='text-sm text-gray-600'>
-                      {format(start, 'yyyy-MM-dd')}
-                    </p>
-                    <p>
-                      {format(start, 'HH:mm')} @ {rink}
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card
-                  key={`zamboni-${item.zamboni.id}`}
-                  className={`w-full bg-white`}
-                  ref={index === scrollToIndex ? scrollRef : null}
-                >
-                  <CardContent>
-                    <p>{t('zamboni_break')}</p>
-                    <p className='text-sm text-gray-600'>
-                      {format(start, 'yyyy-MM-dd')}
-                    </p>
-                    <p>
-                      {format(start, 'HH:mm')} - {format(end, 'HH:mm')} @ {rink}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          )
-        })}
+            return (
+              <>
+                {item.type === 'game' ? (
+                  <Card
+                    key={
+                      item.type === 'game'
+                        ? item.game.id
+                        : `zamboni-${
+                            (item as { type: 'zamboni'; zamboni: ZamboniTime })
+                              .zamboni.id
+                          }`
+                    }
+                    className={`w-full ${gameColor} md:w-lg`}
+                    ref={index === scrollToIndex ? scrollRef : null}
+                  >
+                    <CardContent>
+                      <p className='font-bold'>{item.game.name}</p>
+                      <p className='font-bold'>
+                        {team1Name}
+                        {team2Name && ` vs ${team2Name}`}
+                      </p>
+                      {item.type === 'game' &&
+                        score1 !== undefined &&
+                        ((now >= start && now <= end) || now > end) && (
+                          <p className='text-xl font-bold'>
+                            {item.game.status !== 'SCHEDULED' && (
+                              <>
+                                {score1} : {score2}
+                              </>
+                            )}
+                          </p>
+                        )}
+                      <p className='text-sm text-gray-600'>
+                        {format(start, 'yyyy-MM-dd')}
+                      </p>
+                      <p>
+                        {format(start, 'HH:mm')} @ {rink}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card
+                    key={`zamboni-${item.zamboni.id}`}
+                    className={`w-full bg-white`}
+                    ref={index === scrollToIndex ? scrollRef : null}
+                  >
+                    <CardContent>
+                      <p>{t('zamboni_break')}</p>
+                      <p className='text-sm text-gray-600'>
+                        {format(start, 'yyyy-MM-dd')}
+                      </p>
+                      <p>
+                        {format(start, 'HH:mm')} - {format(end, 'HH:mm')} @{' '}
+                        {rink}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )
+          })}
       </div>
     </>
   )

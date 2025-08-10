@@ -11,13 +11,14 @@ export default function Teams() {
 
   return (
     <div className='grid grid-cols-2 gap-4 max-w-80 w-80 h-32 max-h-32 pb-56'>
-      {teams?.map((team) => (
-        <Card key={team.id} className='h-32'>
-          <CardContent className='flex items-center justify-center h-full'>
-            <h2 className='text-xl font-bold'>{team.name}</h2>
-          </CardContent>
-        </Card>
-      ))}
+      {Array.isArray(teams) &&
+        teams.map((team) => (
+          <Card key={team.id} className='h-32'>
+            <CardContent className='flex items-center justify-center h-full'>
+              <h2 className='text-xl font-bold'>{team.name}</h2>
+            </CardContent>
+          </Card>
+        ))}
     </div>
   )
 }

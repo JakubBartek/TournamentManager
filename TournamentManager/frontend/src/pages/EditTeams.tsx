@@ -230,6 +230,7 @@ export default function EditTeams() {
         </Dialog>
       </Card>
       {teams &&
+        Array.isArray(teams) &&
         teams.map((team) => (
           <Card
             key={team.id}

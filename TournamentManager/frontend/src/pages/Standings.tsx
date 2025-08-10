@@ -46,46 +46,50 @@ export default function Standings() {
   return (
     <div className='p-2 flex flex-col items-center mb-8'>
       <h2 className='text-3xl font-bold mb-6'>{t('standings')}</h2>
-      {groups?.map((group) => (
-        <div key={group.id} className='mb-4'>
-          <Card className='md:w-lg'>
-            <CardContent
-              className='px-4'
-              style={{ overflow: 'auto', scrollbarWidth: 'none' }}
-            >
-              <h3 className='text-xl font-semibold'>{group.name}</h3>
+      {Array.isArray(groups) &&
+        groups.map((group) => (
+          <div key={group.id} className='mb-4'>
+            <Card className='md:w-lg'>
+              <CardContent
+                className='px-4'
+                style={{ overflow: 'auto', scrollbarWidth: 'none' }}
+              >
+                <h3 className='text-xl font-semibold'>{group.name}</h3>
 
-              <Table className='[&::-webkit-scrollbar]:hidden overflow-x-auto'>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className='text-center'>
-                      {t('position')}
-                    </TableHead>
-                    <TableHead className='text-center'>{t('name')}</TableHead>
-                    <TableHead className='text-center'>{t('points')}</TableHead>
-                    <TableHead className='text-center'>+/-</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {group.Standings?.map((standing) => (
-                    <TableRow key={standing.teamId}>
-                      <TableCell className='text-center'>
-                        {standing.position}
-                      </TableCell>
-                      <TableCell className='font-medium text-center'>
-                        {standing.teamName}
-                      </TableCell>
-                      <TableCell className='text-center'>
-                        {standing.points}
-                      </TableCell>
-                      <TableCell className='text-center'>
-                        {standing.goalsFor - standing.goalsAgainst}
-                      </TableCell>
+                <Table className='[&::-webkit-scrollbar]:hidden overflow-x-auto'>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className='text-center'>
+                        {t('position')}
+                      </TableHead>
+                      <TableHead className='text-center'>{t('name')}</TableHead>
+                      <TableHead className='text-center'>
+                        {t('points')}
+                      </TableHead>
+                      <TableHead className='text-center'>+/-</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <style>{`
+                  </TableHeader>
+                  <TableBody>
+                    {Array.isArray(group.Standings) &&
+                      group.Standings?.map((standing) => (
+                        <TableRow key={standing.teamId}>
+                          <TableCell className='text-center'>
+                            {standing.position}
+                          </TableCell>
+                          <TableCell className='font-medium text-center'>
+                            {standing.teamName}
+                          </TableCell>
+                          <TableCell className='text-center'>
+                            {standing.points}
+                          </TableCell>
+                          <TableCell className='text-center'>
+                            {standing.goalsFor - standing.goalsAgainst}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+                <style>{`
               .overflow-x-auto::-webkit-scrollbar {
                 display: none;
               }
@@ -94,10 +98,10 @@ export default function Standings() {
                 scrollbar-width: none;
               }
               `}</style>
-            </CardContent>
-          </Card>
-        </div>
-      ))}
+              </CardContent>
+            </Card>
+          </div>
+        ))}
     </div>
   )
 }
