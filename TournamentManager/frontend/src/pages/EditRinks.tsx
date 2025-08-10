@@ -222,17 +222,17 @@ export default function EditRinks() {
               ) : (
                 <>
                   <span className='text-2xl mb-2'>{rink.name}</span>
-                  <div className='flex gap-2 mt-2'>
+                  <div className='flex gap-2 mt-2 w-full'>
                     <Button
-                      size='sm'
                       variant='outline'
+                      className='flex-1'
                       onClick={() => startEdit(rink)}
                     >
                       <FontAwesomeIcon icon={faEdit} /> {t('edit')}
                     </Button>
                     <Button
-                      size='sm'
-                      variant='destructive'
+                      className='flex-1'
+                      variant='outline'
                       onClick={() => handleDeleteRink(rink.id)}
                     >
                       <FontAwesomeIcon icon={faTrash} /> {t('delete')}

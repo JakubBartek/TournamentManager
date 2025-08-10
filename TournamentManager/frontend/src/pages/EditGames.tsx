@@ -2,7 +2,12 @@ import { NavbarEdit } from '@/components/Navbar/NavbarEdit'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useParams } from 'react-router-dom'
-import { useGames, useGameEdit, useGameCreate } from '@/hooks/useGame'
+import {
+  useGames,
+  useGameEdit,
+  useGameCreate,
+  useGameDelete,
+} from '@/hooks/useGame'
 import { useTranslation } from 'react-i18next'
 import { Game, GameStatus } from '@/types/game'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
@@ -25,6 +30,8 @@ import {
 import { Label } from '@/components/ui/label'
 import { useTeams } from '@/hooks/useTeam'
 import { Team } from '@/types/team'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 export default function EditGames() {
   const { t } = useTranslation()
@@ -32,6 +39,7 @@ export default function EditGames() {
   const { data: games, isLoading, error } = useGames(tournamentId ?? '')
   const { mutate: updateGame } = useGameEdit()
   const { mutate: createGame } = useGameCreate()
+  const { mutate: deleteGame } = useGameDelete()
   const { isAuthenticated } = useTournamentAuth()
   const { data: teams } = useTeams(tournamentId ?? '')
   const navigate = useNavigate()
@@ -190,9 +198,24 @@ export default function EditGames() {
                 {t('end_game')}
               </Button>
             )}
-            <Button variant='outline' onClick={() => handleEditClick(game)}>
-              {t('edit_game')}
-            </Button>
+            <div className='flex gap-2 mt-2'>
+              <Button
+                variant='outline'
+                onClick={() => handleEditClick(game)}
+                className='flex-1'
+              >
+                <FontAwesomeIcon icon={faEdit} /> {t('edit')}
+              </Button>
+              <Button
+                variant='outline'
+                className='flex-1'
+                onClick={() =>
+                  deleteGame({ id: game.id, tournamentId: game.tournamentId })
+                }
+              >
+                <FontAwesomeIcon icon={faTrash} /> {t('delete')}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}

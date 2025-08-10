@@ -166,7 +166,7 @@ export default function EditMessages() {
               msg.type === 'ALERT' ? 'bg-yellow-100' : ''
             }`}
           >
-            <CardContent>
+            <CardContent className='flex flex-col gap-2'>
               {editingId === msg.id ? (
                 <form className='flex flex-col gap-2' onSubmit={handleEdit}>
                   <Input
@@ -215,18 +215,18 @@ export default function EditMessages() {
                   <p className='text-xs text-gray-500'>
                     {new Date(msg.createdAt).toLocaleString()}
                   </p>
-                  <div className='flex gap-2 mt-2'>
+                  <div className='flex gap-2 w-full'>
                     <Button
-                      size='sm'
                       variant='outline'
                       onClick={() => startEdit(msg)}
+                      className='flex-1'
                     >
                       <FontAwesomeIcon icon={faEdit} /> {t('edit')}
                     </Button>
                     <Button
-                      size='sm'
-                      variant='destructive'
+                      variant='outline'
                       onClick={() => handleDelete(msg.id)}
+                      className='flex-1'
                     >
                       <FontAwesomeIcon icon={faTrash} /> {t('delete')}
                     </Button>

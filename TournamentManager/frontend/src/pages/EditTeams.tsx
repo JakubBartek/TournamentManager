@@ -287,15 +287,15 @@ export default function EditTeams() {
                   )}
                   <div className='flex gap-2 mt-2'>
                     <Button
-                      size='sm'
+                      className='flex-1'
                       variant='outline'
                       onClick={() => startEdit(team)}
                     >
                       <FontAwesomeIcon icon={faEdit} /> {t('edit')}
                     </Button>
                     <Button
-                      size='sm'
-                      variant='destructive'
+                      className='flex-1'
+                      variant='outline'
                       onClick={() => handleDeleteTeam(team.id)}
                     >
                       <FontAwesomeIcon icon={faTrash} /> {t('delete')}
