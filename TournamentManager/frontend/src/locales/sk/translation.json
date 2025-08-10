@@ -130,5 +130,7 @@
   "no_tournaments_found": "Žiadne turnaje nenájdené.",
   "edit_game": "Upraviť zápas",
   "create_new_game": "Vytvoriť zápas",
-  "start_time": "Čas začiatku"
+  "start_time": "Čas začiatku",
+  "choose_tournament": "Vybrať turnaj",
+  "edit_tournament": "Upraviť turnaj"
 }

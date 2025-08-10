@@ -130,5 +130,7 @@
   "no_tournaments_found": "No tournaments found.",
   "edit_game": "Edit Game",
   "create_new_game": "Create Game",
-  "start_time": "Start Time"
+  "start_time": "Start Time",
+  "choose_tournament": "Choose Tournament",
+  "edit_tournament": "Edit Tournament"
 }

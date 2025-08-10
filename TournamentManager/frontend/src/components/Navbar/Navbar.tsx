@@ -18,6 +18,7 @@ export function NavbarSimple() {
   const handleWindowResize = () => window.innerWidth >= 960
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const [open, setOpen] = React.useState(false)
+  const { t } = useTranslation()
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
@@ -91,14 +92,14 @@ export function NavbarSimple() {
                     className='text-lg'
                     onClick={handleLinkClickInSheet}
                   >
-                    Choose a Tournament
+                    {t('choose_tournament')}
                   </Link>
                   <Link
                     to={`/${tournamentId}/edit`}
                     className='text-lg'
                     onClick={handleLinkClickInSheet}
                   >
-                    Edit Tournament
+                    {t('edit_tournament')}
                   </Link>
                 </div>
               </SheetContent>
