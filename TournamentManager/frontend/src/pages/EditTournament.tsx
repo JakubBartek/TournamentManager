@@ -57,6 +57,13 @@ export default function EditTeams() {
           </CardContent>
         </Card>
       </Link>
+      <Link to={`/${tournamentId}/edit/schedule`}>
+        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+          <CardContent className='w-full text-3xl'>
+            {t('edit_schedule')}
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   )
 }

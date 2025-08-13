@@ -19,6 +19,9 @@ import { useTournamentCreateSchedule } from '@/hooks/useTournament'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { useGroupDelete, useGroups } from '@/hooks/useGroup'
+import { useGameDelete, useGames } from '@/hooks/useGame'
+import { useZamboniTimeDelete, useZamboniTimes } from '@/hooks/useZamboniTime'
 
 export default function EditSchedule() {
   const { t } = useTranslation()
@@ -27,9 +30,23 @@ export default function EditSchedule() {
   const navigate = useNavigate()
   const { mutate: createSchedule } = useTournamentCreateSchedule()
   const { mutate: editTournament } = useTournamentEdit()
-  const { tournamentId } = useParams()
+  const { tournamentId } = useParams<{ tournamentId: string }>()
   const { data: tournament } = useTournament(tournamentId || '')
-  const { data: teams } = useTeams(tournamentId || '')
+  const { mutate: deleteGame } = useGameDelete()
+  const { mutate: deleteZamboniTime } = useZamboniTimeDelete()
+  const { data: teams } = useTeams(tournamentId ?? '')
+  const { mutate: deleteGroup } = useGroupDelete(tournamentId || '')
+  const {
+    data: games,
+    isLoading: gamesLoading,
+    error: gamesError,
+  } = useGames(tournamentId ?? '')
+  const { data: zamboniTimes } = useZamboniTimes(tournamentId || '')
+  const {
+    data: groups,
+    isLoading: groupsLoading,
+    error: groupsError,
+  } = useGroups(tournamentId || '')
   const [tournamentType, setTournamentType] = useState(
     tournament?.type || TournamentType.GROUPS,
   )
@@ -114,76 +131,91 @@ export default function EditSchedule() {
     )
   }
 
+  if (
+    gamesError ||
+    gamesLoading ||
+    groupsError ||
+    groupsLoading ||
+    !tournamentId
+  ) {
+    return (
+      <div>
+        {gamesLoading && <p>Loading games...</p>}
+        {gamesError && <p>Error loading games</p>}
+        {groupsLoading && <p>Loading groups...</p>}
+        {groupsError && <p>Error loading groups</p>}
+      </div>
+    )
+  }
+
   return (
     <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
       <NavbarEdit />
       <h2 className='text-xl font-bold'>
         {fromCreate && t('5_create_schedule')}
       </h2>
-      {fromCreate && (
-        <Card className='w-full mt-4 shadow-lg'>
-          <CardContent>
-            <Select>
-              <SelectTrigger className='w-full font-bold'>
-                <SelectValue placeholder={t('select_tournament_type')} />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.isArray(Object.values(TournamentType)) &&
-                  Object.values(TournamentType).map((type) => (
+      <Card className='w-full mt-4 shadow-lg'>
+        <CardContent>
+          <Select>
+            <SelectTrigger className='w-full font-bold'>
+              <SelectValue placeholder={t('select_tournament_type')} />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.isArray(Object.values(TournamentType)) &&
+                Object.values(TournamentType).map((type) => (
+                  <SelectItem
+                    key={type}
+                    value={type}
+                    onClick={() => setTournamentType(type)}
+                  >
+                    {type.replace(/_/g, ' ')}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          {tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS && (
+            <>
+              <Select>
+                <SelectTrigger className='w-full font-bold mt-6'>
+                  <SelectValue placeholder={t('select_number_of_groups')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                     <SelectItem
-                      key={type}
-                      value={type}
-                      onClick={() => setTournamentType(type)}
+                      key={num}
+                      value={`group-${num}`}
+                      onClick={() => setGroupCount(num)}
                     >
-                      {type.replace(/_/g, ' ')}
+                      {num}
                     </SelectItem>
                   ))}
-              </SelectContent>
-            </Select>
-            {tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS && (
-              <>
-                <Select>
-                  <SelectTrigger className='w-full font-bold mt-6'>
-                    <SelectValue placeholder={t('select_number_of_groups')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                      <SelectItem
-                        key={num}
-                        value={`group-${num}`}
-                        onClick={() => setGroupCount(num)}
-                      >
-                        {num}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
-            <h3 className='text-m font-semibold mt-4'>
-              {t('choose_scheduling_method')}
-            </h3>
-            <p className='text-xs text-gray-500'>{t('edit_schedule_later')}</p>
-            <RadioGroup
-              value={schedulingMethod}
-              onValueChange={setSchedulingMethod}
-            >
-              <div className='flex items-center space-x-2 mt-2 justify-center gap-8'>
-                <div>
-                  <RadioGroupItem value='option-one' id='option-one' />
-                  <Label htmlFor='option-one'>{t('auto_schedule')}</Label>
-                </div>
-                <div>
-                  <RadioGroupItem value='option-two' id='option-two' />
-                  <Label htmlFor='option-two'>{t('manual_schedule')}</Label>
-                </div>
+                </SelectContent>
+              </Select>
+            </>
+          )}
+          <h3 className='text-m font-semibold mt-4'>
+            {t('choose_scheduling_method')}
+          </h3>
+          <p className='text-xs text-gray-500'>{t('edit_schedule_later')}</p>
+          <RadioGroup
+            value={schedulingMethod}
+            onValueChange={setSchedulingMethod}
+          >
+            <div className='flex items-center space-x-2 mt-2 justify-center gap-8'>
+              <div>
+                <RadioGroupItem value='option-one' id='option-one' />
+                <Label htmlFor='option-one'>{t('auto_schedule')}</Label>
               </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
-      )}
+              <div>
+                <RadioGroupItem value='option-two' id='option-two' />
+                <Label htmlFor='option-two'>{t('manual_schedule')}</Label>
+              </div>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
       {/* Manual group assignment UI */}
-      {fromCreate && schedulingMethod === 'option-two' && teams && (
+      {schedulingMethod === 'option-two' && teams && (
         <div className='w-full mt-8 flex flex-col gap-6'>
           {[...Array(groupCount)].map((_, groupIdx) => (
             <Card key={groupIdx} className='w-full shadow-md'>
@@ -240,6 +272,38 @@ export default function EditSchedule() {
           }
         >
           {t('create_schedule')}
+        </Button>
+      )}
+      {!fromCreate && (
+        <Button
+          className='mt-4'
+          onClick={() => {
+            // delete all games and go back to edit tournament
+            if (games) {
+              ;[...games].forEach((game) => {
+                deleteGame({ id: game.id, tournamentId })
+              })
+            }
+            if (zamboniTimes) {
+              ;[...zamboniTimes].forEach((zamboni) => {
+                deleteZamboniTime({ id: zamboni.id, tournamentId })
+              })
+            }
+
+            if (groups) {
+              ;[...groups].forEach((group) => {
+                deleteGroup(group.id)
+              })
+            }
+
+            handleCreateGroupStagePairings()
+          }}
+          variant='destructive'
+          disabled={
+            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+          }
+        >
+          {t('delete_schedule_and_create')}
         </Button>
       )}
     </div>

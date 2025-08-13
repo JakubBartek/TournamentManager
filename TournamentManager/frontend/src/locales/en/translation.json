@@ -132,5 +132,7 @@
   "create_new_game": "Create Game",
   "start_time": "Start Time",
   "choose_tournament": "Choose Tournament",
-  "edit_tournament": "Edit Tournament"
+  "edit_tournament": "Edit Tournament",
+  "edit_schedule": "Edit Schedule",
+  "delete_schedule": "Delete Schedule and Create New"
 }
