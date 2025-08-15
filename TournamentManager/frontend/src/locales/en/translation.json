@@ -134,5 +134,7 @@
   "choose_tournament": "Choose Tournament",
   "edit_tournament": "Edit Tournament",
   "edit_schedule": "Edit Schedule",
-  "delete_schedule": "Delete Schedule and Create New"
+  "delete_schedule": "Delete Schedule and Create New",
+  "confirm": "Confirm",
+  "confirm_delete": "Confirm Delete"
 }

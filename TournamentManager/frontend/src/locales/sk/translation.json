@@ -134,5 +134,7 @@
   "choose_tournament": "Vybrať turnaj",
   "edit_tournament": "Upraviť turnaj",
   "edit_schedule": "Upraviť rozpis",
-  "delete_schedule_and_create": "Odstrániť rozpis a vytvoriť nový"
+  "delete_schedule_and_create": "Odstrániť rozpis a vytvoriť nový",
+  "confirm": "Potvrdiť",
+  "confirm_delete": "Potvrdiť odstránenie"
 }

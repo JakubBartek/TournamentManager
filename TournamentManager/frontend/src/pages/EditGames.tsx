@@ -32,6 +32,7 @@ import { useTeams } from '@/hooks/useTeam'
 import { Team } from '@/types/team'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { DialogTrigger } from '@radix-ui/react-dialog'
 
 export default function EditGames() {
   const { t } = useTranslation()
@@ -55,6 +56,12 @@ export default function EditGames() {
   const [newTeam1Id, setNewTeam1Id] = useState('')
   const [newTeam2Id, setNewTeam2Id] = useState('')
   const [newStartTime, setNewStartTime] = useState('')
+
+  // Score state for editing and creating
+  const [editScore1, setEditScore1] = useState<number>(0)
+  const [editScore2, setEditScore2] = useState<number>(0)
+  const [newScore1, setNewScore1] = useState<number>(0)
+  const [newScore2, setNewScore2] = useState<number>(0)
 
   useEffect(() => {
     if (!isAuthenticated(tournamentId ?? '')) {
@@ -87,6 +94,8 @@ export default function EditGames() {
     setStartTime(
       game.date ? new Date(game.date).toISOString().slice(0, 16) : '',
     )
+    setEditScore1(game.score1 ?? 0)
+    setEditScore2(game.score2 ?? 0)
     setDrawerOpen(true)
   }
 
@@ -97,6 +106,8 @@ export default function EditGames() {
       team1Id,
       team2Id,
       date: startTime ? new Date(startTime).toISOString() : editGame.date,
+      score1: editScore1,
+      score2: editScore2,
     })
     setDrawerOpen(false)
   }
@@ -109,13 +120,15 @@ export default function EditGames() {
       tournamentId: tournamentId ?? '',
       date: new Date(newStartTime).toISOString(),
       status: GameStatus.SCHEDULED,
-      score1: 0,
-      score2: 0,
+      score1: newScore1,
+      score2: newScore2,
     })
     setCreateOpen(false)
     setNewTeam1Id('')
     setNewTeam2Id('')
     setNewStartTime('')
+    setNewScore1(0)
+    setNewScore2(0)
   }
 
   if (isLoading) return <div>Loading games...</div>
@@ -149,7 +162,18 @@ export default function EditGames() {
                     >
                       -
                     </Button>
-                    <span className='text-xl font-bold'>{game.score1}</span>
+                    <Input
+                      type='number'
+                      min={0}
+                      value={game.score1}
+                      onChange={(e) =>
+                        updateGame({
+                          ...game,
+                          score1: Number(e.target.value),
+                        })
+                      }
+                      className='w-16 text-center'
+                    />
                     <Button
                       size='sm'
                       className='w-10 h-10'
@@ -169,7 +193,18 @@ export default function EditGames() {
                     >
                       -
                     </Button>
-                    <span className='text-xl font-bold'>{game.score2}</span>
+                    <Input
+                      type='number'
+                      min={0}
+                      value={game.score2}
+                      onChange={(e) =>
+                        updateGame({
+                          ...game,
+                          score2: Number(e.target.value),
+                        })
+                      }
+                      className='w-16 text-center'
+                    />
                     <Button
                       size='sm'
                       className='w-10 h-10'
@@ -209,15 +244,36 @@ export default function EditGames() {
                 >
                   <FontAwesomeIcon icon={faEdit} /> {t('edit')}
                 </Button>
-                <Button
-                  variant='outline'
-                  className='flex-1'
-                  onClick={() =>
-                    deleteGame({ id: game.id, tournamentId: game.tournamentId })
-                  }
-                >
-                  <FontAwesomeIcon icon={faTrash} /> {t('delete')}
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant='outline' className='flex-1'>
+                      <FontAwesomeIcon icon={faTrash} /> {t('delete')}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader className='flex items-center mb-8'>
+                      <DialogTitle>{t('confirm_delete')}</DialogTitle>
+                    </DialogHeader>
+                    <div className='flex gap-2 w-full'>
+                      <Button
+                        variant='destructive'
+                        className='flex-1'
+                        onClick={() => {
+                          deleteGame({
+                            id: game.id,
+                            tournamentId: game.tournamentId,
+                          })
+                          close()
+                        }}
+                      >
+                        {t('confirm')}
+                      </Button>
+                      <Button onClick={close} className='flex-1'>
+                        {t('cancel')}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardContent>
           </Card>
@@ -264,6 +320,48 @@ export default function EditGames() {
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
             />
+            <div className='flex flex-col gap-2'>
+              <label>{t('score_team1')}</label>
+              <div className='flex items-center gap-2'>
+                <Button
+                  size='sm'
+                  onClick={() => setEditScore1(Math.max(0, editScore1 - 1))}
+                >
+                  -
+                </Button>
+                <Input
+                  type='number'
+                  min={0}
+                  value={editScore1}
+                  onChange={(e) => setEditScore1(Number(e.target.value))}
+                  className='w-16 text-center'
+                />
+                <Button size='sm' onClick={() => setEditScore1(editScore1 + 1)}>
+                  +
+                </Button>
+              </div>
+            </div>
+            <div className='flex flex-col gap-2'>
+              <label>{t('score_team2')}</label>
+              <div className='flex items-center gap-2'>
+                <Button
+                  size='sm'
+                  onClick={() => setEditScore2(Math.max(0, editScore2 - 1))}
+                >
+                  -
+                </Button>
+                <Input
+                  type='number'
+                  min={0}
+                  value={editScore2}
+                  onChange={(e) => setEditScore2(Number(e.target.value))}
+                  className='w-16 text-center'
+                />
+                <Button size='sm' onClick={() => setEditScore2(editScore2 + 1)}>
+                  +
+                </Button>
+              </div>
+            </div>
             <Button className='mt-4' onClick={handleDrawerSave}>
               {t('save')}
             </Button>
@@ -312,6 +410,48 @@ export default function EditGames() {
               value={newStartTime}
               onChange={(e) => setNewStartTime(e.target.value)}
             />
+            <div className='flex flex-col gap-2 w-full'>
+              <Label>{t('score_team1')}</Label>
+              <div className='flex items-center gap-2'>
+                <Button
+                  size='sm'
+                  onClick={() => setNewScore1(Math.max(0, newScore1 - 1))}
+                >
+                  -
+                </Button>
+                <Input
+                  type='number'
+                  min={0}
+                  value={newScore1}
+                  onChange={(e) => setNewScore1(Number(e.target.value))}
+                  className='w-16 text-center'
+                />
+                <Button size='sm' onClick={() => setNewScore1(newScore1 + 1)}>
+                  +
+                </Button>
+              </div>
+            </div>
+            <div className='flex flex-col gap-2 w-full'>
+              <Label>{t('score_team2')}</Label>
+              <div className='flex items-center gap-2'>
+                <Button
+                  size='sm'
+                  onClick={() => setNewScore2(Math.max(0, newScore2 - 1))}
+                >
+                  -
+                </Button>
+                <Input
+                  type='number'
+                  min={0}
+                  value={newScore2}
+                  onChange={(e) => setNewScore2(Number(e.target.value))}
+                  className='w-16 text-center'
+                />
+                <Button size='sm' onClick={() => setNewScore2(newScore2 + 1)}>
+                  +
+                </Button>
+              </div>
+            </div>
             <Button className='mt-4' onClick={handleCreateGame}>
               {t('save')}
             </Button>
