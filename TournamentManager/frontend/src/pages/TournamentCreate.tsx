@@ -6,6 +6,7 @@ import { useTournamentCreateAndGoToEditTeams } from '@/hooks/useTournament'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { toast } from 'sonner'
 
 // Helper to get today's date in YYYY-MM-DD format
 const getToday = () => new Date().toISOString().slice(0, 10)
@@ -37,6 +38,9 @@ export default function TournamentCreate() {
           navigate(`/${newTournament.id}/edit/teams`, {
             state: { fromCreate: true },
           })
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )
