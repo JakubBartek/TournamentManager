@@ -4,6 +4,7 @@ import { useGames, useGameDelete } from '@/hooks/useGame'
 import { useTeams } from '@/hooks/useTeam'
 import { useParams } from 'react-router-dom'
 import { format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import {
   Select,
   SelectContent,
@@ -263,17 +264,10 @@ export default function Schedule() {
                           </p>
                         )}
                       <p className='text-sm text-gray-600'>
-                        {format(
-                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
-                          'yyyy-MM-dd',
-                        )}
+                        {format(toZonedTime(start, 'CET'), 'yyyy-MM-dd')}
                       </p>
                       <p>
-                        {format(
-                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
-                          'HH:mm',
-                        )}{' '}
-                        @ {rink}
+                        {format(toZonedTime(start, 'CET'), 'HH:mm')} @ {rink}
                       </p>
                     </CardContent>
                   </Card>
@@ -286,22 +280,11 @@ export default function Schedule() {
                     <CardContent>
                       <p>{t('zamboni_break')}</p>
                       <p className='text-sm text-gray-600'>
-                        {format(
-                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
-                          'yyyy-MM-dd',
-                        )}
+                        {format(toZonedTime(start, 'CET'), 'yyyy-MM-dd')}
                       </p>
                       <p>
-                        {format(
-                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
-                          'HH:mm',
-                        )}{' '}
-                        -{' '}
-                        {format(
-                          end.toLocaleString('sk-SK', { timeZone: 'CET' }),
-                          'HH:mm',
-                        )}{' '}
-                        @ {rink}
+                        {format(toZonedTime(start, 'CET'), 'HH:mm')} -{' '}
+                        {format(toZonedTime(end, 'CET'), 'HH:mm')} @ {rink}
                       </p>
                     </CardContent>
                   </Card>

@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import type { Game } from '../types/game.ts'
 import { format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { useGames } from '@/hooks/useGame'
 import { useParams } from 'react-router-dom'
 import { useTournament } from '@/hooks/useTournament.ts'
@@ -97,13 +98,8 @@ export default function Home() {
                   </p>
                 )}
                 <p className='text-sm text-gray-600'>
-                  {format(
-                    new Date(game.date).toLocaleString('sk-SK', {
-                      timeZone: 'CET',
-                    }),
-                    'HH:mm',
-                  )}{' '}
-                  @ {game.rinkName || 'Unknown Rink'}
+                  {format(toZonedTime(new Date(game.date), 'CET'), 'HH:mm')} @{' '}
+                  {game.rinkName || 'Unknown Rink'}
                 </p>
               </CardContent>
             </Card>
@@ -123,13 +119,8 @@ export default function Home() {
                   {team1} vs {team2}
                 </p>
                 <p className='text-sm text-gray-600'>
-                  {format(
-                    new Date(game.date).toLocaleString('sk-SK', {
-                      timeZone: 'CET',
-                    }),
-                    'HH:mm',
-                  )}{' '}
-                  @ {game.rinkName || 'Unknown Rink'}
+                  {format(toZonedTime(new Date(game.date), 'CET'), 'HH:mm')} @{' '}
+                  {game.rinkName || 'Unknown Rink'}
                 </p>
               </CardContent>
             </Card>
