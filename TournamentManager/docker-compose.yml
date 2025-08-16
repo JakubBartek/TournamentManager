@@ -9,6 +9,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=file:./prisma/dev.db
+      - TZ=Europe/Bratislava
 
   frontend:
     build: ./frontend
@@ -17,3 +18,4 @@ services:
     environment:
       - NODE_ENV=production
       - VITE_API_URL=http://localhost:3000
+      - TZ=Europe/Bratislava
