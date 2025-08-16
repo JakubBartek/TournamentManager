@@ -94,7 +94,7 @@ export default function EditSchedule() {
 
   const handleCreateGroupStagePairings = async () => {
     // If manual, pass manualGroups as assignment
-    editTournament({
+    await editTournament({
       id: tournament?.id || '',
       type: tournamentType,
       name: tournament?.name || '',
@@ -157,18 +157,17 @@ export default function EditSchedule() {
       <Card className='w-full mt-4 shadow-lg'>
         <CardContent>
           <Label className='mb-2'>{t('select_tournament_type')}</Label>
-          <Select>
+          <Select
+            value={tournamentType}
+            onValueChange={(val) => setTournamentType(val as TournamentType)}
+          >
             <SelectTrigger className='w-full font-bold'>
               <SelectValue placeholder={t('select_tournament_type')} />
             </SelectTrigger>
             <SelectContent>
               {Array.isArray(Object.values(TournamentType)) &&
                 Object.values(TournamentType).map((type) => (
-                  <SelectItem
-                    key={type}
-                    value={type}
-                    onClick={() => setTournamentType(type)}
-                  >
+                  <SelectItem key={type} value={type}>
                     {type.replace(/_/g, ' ')}
                   </SelectItem>
                 ))}
