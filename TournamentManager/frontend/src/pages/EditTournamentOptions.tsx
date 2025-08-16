@@ -9,6 +9,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
+// Helper to get today's date in YYYY-MM-DD format
+const getToday = () => new Date().toISOString().slice(0, 10)
+
 export default function EditTournamentOptions() {
   const { t } = useTranslation()
   const { tournamentId } = useParams()
@@ -27,8 +30,8 @@ export default function EditTournamentOptions() {
   const [tournamentStartDate, setTournamentStartDate] = useState(new Date())
   const [tournamentEndDate, setTournamentEndDate] = useState(new Date())
   const [adminPassword, setAdminPassword] = useState('')
-  const [dailyStartTime, setDailyStartTime] = useState('')
-  const [dailyEndTime, setDailyEndTime] = useState('')
+  const [dailyStartTime, setDailyStartTime] = useState(getToday())
+  const [dailyEndTime, setDailyEndTime] = useState(getToday())
   const [tournamentStartDateWasSet, setTournamentStartDateWasSet] =
     useState(false)
   const [tournamentEndDateWasSet, setTournamentEndDateWasSet] = useState(false)

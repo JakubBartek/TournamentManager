@@ -7,12 +7,15 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 
+// Helper to get today's date in YYYY-MM-DD format
+const getToday = () => new Date().toISOString().slice(0, 10)
+
 export default function TournamentCreate() {
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  const [startDate, setStartDate] = useState(getToday())
+  const [endDate, setEndDate] = useState(getToday())
   const [adminPassword, setAdminPassword] = useState('')
   const navigate = useNavigate()
   const { mutate: createTournament } = useTournamentCreateAndGoToEditTeams()
