@@ -274,7 +274,7 @@ export default function Schedule() {
                 ) : (
                   <Card
                     key={`zamboni-${item.zamboni.id}`}
-                    className={`w-full bg-white`}
+                    className={`w-full bg-white md:w-lg`}
                     ref={index === scrollToIndex ? scrollRef : null}
                   >
                     <CardContent>
