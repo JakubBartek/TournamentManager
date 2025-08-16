@@ -34,6 +34,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { toast } from 'sonner'
+import { useRinks } from '@/hooks/useRinks'
+import { Rink } from '@/types/rink'
 
 export default function EditGames() {
   const { t } = useTranslation()
@@ -42,6 +44,7 @@ export default function EditGames() {
   const { mutate: updateGame } = useGameEdit()
   const { mutate: createGame } = useGameCreate()
   const { mutate: deleteGame } = useGameDelete()
+  const { data: rinks } = useRinks(tournamentId ?? '')
   const { isAuthenticated } = useTournamentAuth()
   const { data: teams } = useTeams(tournamentId ?? '')
   const navigate = useNavigate()
@@ -51,12 +54,14 @@ export default function EditGames() {
   const [team1Id, setTeam1Id] = useState<string>('')
   const [team2Id, setTeam2Id] = useState<string>('')
   const [startTime, setStartTime] = useState<string>('')
+  const [rinkId, setRinkId] = useState<string>('')
 
   // State for creating a new game
   const [createOpen, setCreateOpen] = useState(false)
   const [newTeam1Id, setNewTeam1Id] = useState('')
   const [newTeam2Id, setNewTeam2Id] = useState('')
   const [newStartTime, setNewStartTime] = useState('')
+  const [newRinkId, setNewRinkId] = useState('')
 
   // Score state for editing and creating
   const [editScore1, setEditScore1] = useState<number>(0)
@@ -104,6 +109,7 @@ export default function EditGames() {
     )
     setEditScore1(game.score1 ?? 0)
     setEditScore2(game.score2 ?? 0)
+    setRinkId(game.rinkId ?? '')
     setDrawerOpen(true)
   }
 
@@ -117,6 +123,7 @@ export default function EditGames() {
         date: startTime ? new Date(startTime).toISOString() : editGame.date,
         score1: editScore1,
         score2: editScore2,
+        rinkId: rinkId,
       },
       {
         onSuccess: () => {
@@ -141,6 +148,7 @@ export default function EditGames() {
         status: GameStatus.SCHEDULED,
         score1: newScore1,
         score2: newScore2,
+        rinkId: newRinkId,
       },
       {
         onSuccess: () => {
@@ -313,12 +321,12 @@ export default function EditGames() {
       <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('edit_game')}</DialogTitle>
+            <DialogTitle className='text-center'>{t('edit_game')}</DialogTitle>
           </DialogHeader>
-          <div className='flex flex-col gap-4 p-4'>
-            <label>{t('team1')}</label>
+          <div className='flex flex-col justify-center items-center gap-2 p-4'>
+            <Label className='text-left w-full ml-2'>Team 1</Label>
             <Select value={team1Id} onValueChange={setTeam1Id}>
-              <SelectTrigger>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder={t('select_team1')} />
               </SelectTrigger>
               <SelectContent>
@@ -330,9 +338,9 @@ export default function EditGames() {
                   ))}
               </SelectContent>
             </Select>
-            <label>{t('team2')}</label>
+            <Label className='text-left w-full ml-2 mt-2'>Team 2</Label>
             <Select value={team2Id} onValueChange={setTeam2Id}>
-              <SelectTrigger>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder={t('select_team2')} />
               </SelectTrigger>
               <SelectContent>
@@ -344,54 +352,30 @@ export default function EditGames() {
                   ))}
               </SelectContent>
             </Select>
-            <label>{t('start_time')}</label>
+            <Label className='text-left w-full ml-2 mt-2'>
+              {t('select_rink')}
+            </Label>
+            <Select value={rinkId} onValueChange={setRinkId}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder={t('select_rink')} />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.isArray(rinks) &&
+                  rinks.map((rink: Rink) => (
+                    <SelectItem key={rink.id} value={rink.id}>
+                      {rink.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <Label className='text-left w-full ml-2 mt-2'>
+              {t('start_time')}
+            </Label>
             <Input
               type='datetime-local'
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
             />
-            <div className='flex flex-col gap-2'>
-              <label>{t('score_team1')}</label>
-              <div className='flex items-center gap-2'>
-                <Button
-                  size='sm'
-                  onClick={() => setEditScore1(Math.max(0, editScore1 - 1))}
-                >
-                  -
-                </Button>
-                <Input
-                  type='number'
-                  min={0}
-                  value={editScore1}
-                  onChange={(e) => setEditScore1(Number(e.target.value))}
-                  className='w-16 text-center'
-                />
-                <Button size='sm' onClick={() => setEditScore1(editScore1 + 1)}>
-                  +
-                </Button>
-              </div>
-            </div>
-            <div className='flex flex-col gap-2'>
-              <label>{t('score_team2')}</label>
-              <div className='flex items-center gap-2'>
-                <Button
-                  size='sm'
-                  onClick={() => setEditScore2(Math.max(0, editScore2 - 1))}
-                >
-                  -
-                </Button>
-                <Input
-                  type='number'
-                  min={0}
-                  value={editScore2}
-                  onChange={(e) => setEditScore2(Number(e.target.value))}
-                  className='w-16 text-center'
-                />
-                <Button size='sm' onClick={() => setEditScore2(editScore2 + 1)}>
-                  +
-                </Button>
-              </div>
-            </div>
             <Button className='mt-4' onClick={handleDrawerSave}>
               {t('save')}
             </Button>
@@ -403,10 +387,12 @@ export default function EditGames() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('create_new_game')}</DialogTitle>
+            <DialogTitle className='text-center'>
+              {t('create_new_game')}
+            </DialogTitle>
           </DialogHeader>
-          <div className='flex flex-col items-center justify-center gap-4 p-4'>
-            <Label>Team 1</Label>
+          <div className='flex flex-col justify-center items-center gap-2 p-4'>
+            <Label className='text-left w-full ml-2'>Team 1</Label>
             <Select value={newTeam1Id} onValueChange={setNewTeam1Id}>
               <SelectTrigger className='w-full'>
                 <SelectValue placeholder={t('select_team')} />
@@ -420,7 +406,7 @@ export default function EditGames() {
                   ))}
               </SelectContent>
             </Select>
-            <Label>Team 2</Label>
+            <Label className='text-left w-full ml-2 mt-2'>Team 2</Label>
             <Select value={newTeam2Id} onValueChange={setNewTeam2Id}>
               <SelectTrigger className='w-full'>
                 <SelectValue placeholder={t('select_team')} />
@@ -434,54 +420,30 @@ export default function EditGames() {
                   ))}
               </SelectContent>
             </Select>
-            <Label>{t('start_time')}</Label>
+            <Label className='text-left w-full ml-2 mt-2'>
+              {t('select_rink')}
+            </Label>
+            <Select value={newRinkId} onValueChange={setNewRinkId}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder={t('select_rink')} />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.isArray(rinks) &&
+                  rinks.map((rink) => (
+                    <SelectItem key={rink.id} value={rink.id}>
+                      {rink.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <Label className='text-left w-full ml-2 mt-2'>
+              {t('start_time')}
+            </Label>
             <Input
               type='datetime-local'
               value={newStartTime}
               onChange={(e) => setNewStartTime(e.target.value)}
             />
-            <div className='flex flex-col gap-2 w-full'>
-              <Label>{t('score_team1')}</Label>
-              <div className='flex items-center gap-2'>
-                <Button
-                  size='sm'
-                  onClick={() => setNewScore1(Math.max(0, newScore1 - 1))}
-                >
-                  -
-                </Button>
-                <Input
-                  type='number'
-                  min={0}
-                  value={newScore1}
-                  onChange={(e) => setNewScore1(Number(e.target.value))}
-                  className='w-16 text-center'
-                />
-                <Button size='sm' onClick={() => setNewScore1(newScore1 + 1)}>
-                  +
-                </Button>
-              </div>
-            </div>
-            <div className='flex flex-col gap-2 w-full'>
-              <Label>{t('score_team2')}</Label>
-              <div className='flex items-center gap-2'>
-                <Button
-                  size='sm'
-                  onClick={() => setNewScore2(Math.max(0, newScore2 - 1))}
-                >
-                  -
-                </Button>
-                <Input
-                  type='number'
-                  min={0}
-                  value={newScore2}
-                  onChange={(e) => setNewScore2(Number(e.target.value))}
-                  className='w-16 text-center'
-                />
-                <Button size='sm' onClick={() => setNewScore2(newScore2 + 1)}>
-                  +
-                </Button>
-              </div>
-            </div>
             <Button className='mt-4' onClick={handleCreateGame}>
               {t('save')}
             </Button>
