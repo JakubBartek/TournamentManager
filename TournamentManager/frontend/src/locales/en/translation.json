@@ -136,5 +136,7 @@
   "edit_schedule": "Edit Schedule",
   "delete_schedule": "Delete Schedule and Create New",
   "confirm": "Confirm",
-  "confirm_delete": "Confirm Delete"
+  "confirm_delete": "Confirm Delete",
+  "show_all_tournaments": "Show All Tournaments",
+  "all_tournaments": "All Tournaments"
 }

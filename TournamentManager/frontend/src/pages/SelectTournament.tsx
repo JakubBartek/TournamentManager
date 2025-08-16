@@ -6,6 +6,13 @@ import { useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export default function TournamentSelectPage() {
   const { t } = useTranslation()
@@ -111,6 +118,49 @@ export default function TournamentSelectPage() {
             >
               {t('reset_filter')}
             </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>{t('show_all_tournaments')}</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle className='text-center font-bold text-xl'>
+                  {t('all_tournaments')}
+                </DialogTitle>
+                <DialogDescription></DialogDescription>
+                {Array.isArray(tournaments) && tournaments.length > 0 ? (
+                  tournaments.map((tournament) => (
+                    <Card
+                      key={tournament.id}
+                      className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
+                    >
+                      <CardContent>
+                        <CardHeader></CardHeader>
+                        <p className='font-bold text-lg'>{tournament.name}</p>
+                        <p className='text-sm text-gray-600'>
+                          {new Date(tournament.startDate).toLocaleString(
+                            'sk-SK',
+                            {
+                              timeZone: 'CET',
+                            },
+                          )}{' '}
+                          -{' '}
+                          {new Date(tournament.endDate).toLocaleString(
+                            'sk-SK',
+                            {
+                              timeZone: 'CET',
+                            },
+                          )}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <p className='text-gray-500 mt-4'>
+                    {t('no_tournaments_found')}
+                  </p>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>

@@ -136,5 +136,7 @@
   "edit_schedule": "Upraviť rozpis",
   "delete_schedule_and_create": "Odstrániť rozpis a vytvoriť nový",
   "confirm": "Potvrdiť",
-  "confirm_delete": "Potvrdiť odstránenie"
+  "confirm_delete": "Potvrdiť odstránenie",
+  "show_all_tournaments": "Zobraziť všetky turnaje",
+  "all_tournaments": "Všetky turnaje"
 }
