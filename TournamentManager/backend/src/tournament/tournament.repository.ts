@@ -61,6 +61,12 @@ const getSingleTournament = async (id: string) => {
       startDate: true,
       endDate: true,
       TournamentManagers: true,
+      dailyEndTime: true,
+      dailyStartTime: true,
+      gameDuration: true,
+      breakDuration: true,
+      zamboniDuration: true,
+      zamboniInterval: true,
     },
     where: {
       id: id,

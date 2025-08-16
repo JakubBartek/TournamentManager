@@ -52,6 +52,7 @@ export default function EditSchedule() {
   )
   const [schedulingMethod, setSchedulingMethod] = useState('option-one')
   const [groupCount, setGroupCount] = useState(2)
+  const [buttonEnabled, setButtonEnabled] = useState(true)
 
   // Manual group assignment state
   const [manualGroups, setManualGroups] = useState<Record<number, string[]>>({})
@@ -94,7 +95,8 @@ export default function EditSchedule() {
 
   const handleCreateGroupStagePairings = async () => {
     // If manual, pass manualGroups as assignment
-    editTournament({
+    setButtonEnabled(false)
+    await editTournament({
       id: tournament?.id || '',
       type: tournamentType,
       name: tournament?.name || '',
@@ -120,6 +122,7 @@ export default function EditSchedule() {
       },
       {
         onSuccess: () => {
+          setButtonEnabled(true)
           navigate(`/${tournamentId}/schedule`, {
             state: { fromCreate: true },
           })
@@ -157,18 +160,17 @@ export default function EditSchedule() {
       <Card className='w-full mt-4 shadow-lg'>
         <CardContent>
           <Label className='mb-2'>{t('select_tournament_type')}</Label>
-          <Select>
+          <Select
+            value={tournamentType}
+            onValueChange={(val) => setTournamentType(val as TournamentType)}
+          >
             <SelectTrigger className='w-full font-bold'>
               <SelectValue placeholder={t('select_tournament_type')} />
             </SelectTrigger>
             <SelectContent>
               {Array.isArray(Object.values(TournamentType)) &&
                 Object.values(TournamentType).map((type) => (
-                  <SelectItem
-                    key={type}
-                    value={type}
-                    onClick={() => setTournamentType(type)}
-                  >
+                  <SelectItem key={type} value={type}>
                     {type.replace(/_/g, ' ')}
                   </SelectItem>
                 ))}
@@ -267,7 +269,8 @@ export default function EditSchedule() {
           className='mt-4'
           onClick={handleCreateGroupStagePairings}
           disabled={
-            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+            (schedulingMethod === 'option-two' && unassignedTeams.length > 0) ||
+            !buttonEnabled
           }
         >
           {t('create_schedule')}
@@ -299,7 +302,8 @@ export default function EditSchedule() {
           }}
           variant='destructive'
           disabled={
-            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+            (schedulingMethod === 'option-two' && unassignedTeams.length > 0) ||
+            !buttonEnabled
           }
         >
           {t('delete_schedule_and_create')}
