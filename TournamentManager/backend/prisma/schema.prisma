@@ -128,7 +128,7 @@ model Team {
   team2Games     Game[]           @relation("Team2Games")
   Game           Game[]
   Standing       Standing?
-  Group          Group?           @relation(fields: [groupId], references: [id])
+  Group          Group?           @relation(fields: [groupId], references: [id], onDelete: SetNull)
   groupId        String?
   FinalPlacement FinalPlacement[]
 }
@@ -152,7 +152,7 @@ model Standing {
   team         Team       @relation(fields: [teamId], references: [id])
   teamId       String     @unique
   teamName     String
-  group        Group      @relation(fields: [groupId], references: [id])
+  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId      String
 
   wins         Int @default(0)
