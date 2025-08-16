@@ -216,7 +216,9 @@ export default function EditGames() {
                 </div>
               </div>
               <span className='text-sm text-gray-500'>
-                {new Date(game.date).toLocaleString()}
+                {new Date(game.date).toLocaleString('sk-SK', {
+                  timeZone: 'CET',
+                })}
               </span>
               {game.status === GameStatus.SCHEDULED && (
                 <Button

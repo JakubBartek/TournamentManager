@@ -30,7 +30,9 @@ export default function Info() {
             <CardContent>
               <p className='text-lg'>{msg.content}</p>
               <p className='text-xs text-gray-500'>
-                {new Date(msg.createdAt).toLocaleString()}
+                {new Date(msg.createdAt).toLocaleString('sk-SK', {
+                  timeZone: 'CET',
+                })}
               </p>
             </CardContent>
           </Card>

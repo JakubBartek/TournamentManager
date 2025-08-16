@@ -70,7 +70,9 @@ export default function Home() {
             <CardContent>
               <p className='font-semibold text-yellow-800'>{msg.content}</p>
               <p className='text-xs text-gray-500'>
-                {new Date(msg.createdAt).toLocaleString()}
+                {new Date(msg.createdAt).toLocaleString('sk-SK', {
+                  timeZone: 'CET',
+                })}
               </p>
             </CardContent>
           </Card>
@@ -95,8 +97,13 @@ export default function Home() {
                   </p>
                 )}
                 <p className='text-sm text-gray-600'>
-                  {format(new Date(game.date), 'HH:mm')} @{' '}
-                  {game.rinkName || 'Unknown Rink'}
+                  {format(
+                    new Date(game.date).toLocaleString('sk-SK', {
+                      timeZone: 'CET',
+                    }),
+                    'HH:mm',
+                  )}{' '}
+                  @ {game.rinkName || 'Unknown Rink'}
                 </p>
               </CardContent>
             </Card>
@@ -116,8 +123,13 @@ export default function Home() {
                   {team1} vs {team2}
                 </p>
                 <p className='text-sm text-gray-600'>
-                  {format(new Date(game.date), 'HH:mm')} @{' '}
-                  {game.rinkName || 'Unknown Rink'}
+                  {format(
+                    new Date(game.date).toLocaleString('sk-SK', {
+                      timeZone: 'CET',
+                    }),
+                    'HH:mm',
+                  )}{' '}
+                  @ {game.rinkName || 'Unknown Rink'}
                 </p>
               </CardContent>
             </Card>

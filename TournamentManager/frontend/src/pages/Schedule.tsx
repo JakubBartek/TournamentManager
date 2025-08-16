@@ -263,10 +263,17 @@ export default function Schedule() {
                           </p>
                         )}
                       <p className='text-sm text-gray-600'>
-                        {format(start, 'yyyy-MM-dd')}
+                        {format(
+                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
+                          'yyyy-MM-dd',
+                        )}
                       </p>
                       <p>
-                        {format(start, 'HH:mm')} @ {rink}
+                        {format(
+                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
+                          'HH:mm',
+                        )}{' '}
+                        @ {rink}
                       </p>
                     </CardContent>
                   </Card>
@@ -279,11 +286,22 @@ export default function Schedule() {
                     <CardContent>
                       <p>{t('zamboni_break')}</p>
                       <p className='text-sm text-gray-600'>
-                        {format(start, 'yyyy-MM-dd')}
+                        {format(
+                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
+                          'yyyy-MM-dd',
+                        )}
                       </p>
                       <p>
-                        {format(start, 'HH:mm')} - {format(end, 'HH:mm')} @{' '}
-                        {rink}
+                        {format(
+                          start.toLocaleString('sk-SK', { timeZone: 'CET' }),
+                          'HH:mm',
+                        )}{' '}
+                        -{' '}
+                        {format(
+                          end.toLocaleString('sk-SK', { timeZone: 'CET' }),
+                          'HH:mm',
+                        )}{' '}
+                        @ {rink}
                       </p>
                     </CardContent>
                   </Card>

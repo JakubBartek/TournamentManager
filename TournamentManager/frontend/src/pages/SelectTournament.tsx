@@ -139,8 +139,13 @@ export default function TournamentSelectPage() {
                 <CardHeader>{t('click_to_tournament')}</CardHeader>
                 <p className='font-bold text-lg'>{tournament.name}</p>
                 <p className='text-sm text-gray-600'>
-                  {new Date(tournament.startDate).toLocaleDateString()} -{' '}
-                  {new Date(tournament.endDate).toLocaleDateString()}
+                  {new Date(tournament.startDate).toLocaleString('sk-SK', {
+                    timeZone: 'CET',
+                  })}{' '}
+                  -{' '}
+                  {new Date(tournament.endDate).toLocaleString('sk-SK', {
+                    timeZone: 'CET',
+                  })}
                 </p>
               </CardContent>
             </Card>
