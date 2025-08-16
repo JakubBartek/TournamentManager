@@ -152,8 +152,8 @@ model Standing {
   team         Team       @relation(fields: [teamId], references: [id])
   teamId       String     @unique
   teamName     String
-  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId      String
+  group        Group?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  groupId      String?
 
   wins         Int @default(0)
   draws        Int @default(0)
