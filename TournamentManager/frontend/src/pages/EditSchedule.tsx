@@ -52,6 +52,7 @@ export default function EditSchedule() {
   )
   const [schedulingMethod, setSchedulingMethod] = useState('option-one')
   const [groupCount, setGroupCount] = useState(2)
+  const [buttonEnabled, setButtonEnabled] = useState(true)
 
   // Manual group assignment state
   const [manualGroups, setManualGroups] = useState<Record<number, string[]>>({})
@@ -94,6 +95,7 @@ export default function EditSchedule() {
 
   const handleCreateGroupStagePairings = async () => {
     // If manual, pass manualGroups as assignment
+    setButtonEnabled(false)
     await editTournament({
       id: tournament?.id || '',
       type: tournamentType,
@@ -120,6 +122,7 @@ export default function EditSchedule() {
       },
       {
         onSuccess: () => {
+          setButtonEnabled(true)
           navigate(`/${tournamentId}/schedule`, {
             state: { fromCreate: true },
           })
@@ -266,7 +269,8 @@ export default function EditSchedule() {
           className='mt-4'
           onClick={handleCreateGroupStagePairings}
           disabled={
-            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+            (schedulingMethod === 'option-two' && unassignedTeams.length > 0) ||
+            !buttonEnabled
           }
         >
           {t('create_schedule')}
@@ -298,7 +302,8 @@ export default function EditSchedule() {
           }}
           variant='destructive'
           disabled={
-            schedulingMethod === 'option-two' && unassignedTeams.length > 0
+            (schedulingMethod === 'option-two' && unassignedTeams.length > 0) ||
+            !buttonEnabled
           }
         >
           {t('delete_schedule_and_create')}
