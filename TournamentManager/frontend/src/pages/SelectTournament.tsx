@@ -52,14 +52,6 @@ export default function TournamentSelectPage() {
       </div>
     )
 
-  if (!tournaments || tournaments.length === 0) {
-    return (
-      <div className='flex items-center justify-center min-h-screen'>
-        {t('no_tournaments_found')}
-      </div>
-    )
-  }
-
   const changeLanguage = (lng: 'sk' | 'en') => {
     i18n.changeLanguage?.(lng)
   }
