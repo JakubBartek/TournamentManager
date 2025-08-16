@@ -10,6 +10,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -156,6 +157,7 @@ export default function EditSchedule() {
       </h2>
       <Card className='w-full mt-4 shadow-lg'>
         <CardContent>
+          <Label className='mb-2'>{t('select_tournament_type')}</Label>
           <Select>
             <SelectTrigger className='w-full font-bold'>
               <SelectValue placeholder={t('select_tournament_type')} />
@@ -173,26 +175,24 @@ export default function EditSchedule() {
                 ))}
             </SelectContent>
           </Select>
-          {tournamentType !== TournamentType.GROUPS_AND_PLAYOFFS && (
-            <>
-              <Select>
-                <SelectTrigger className='w-full font-bold mt-6'>
-                  <SelectValue placeholder={t('select_number_of_groups')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                    <SelectItem
-                      key={num}
-                      value={`group-${num}`}
-                      onClick={() => setGroupCount(num)}
-                    >
-                      {num}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          )}
+          <Label className='mt-4'>{t('select_number_of_groups')}</Label>
+          <Select
+            value={`group-${groupCount}`}
+            onValueChange={(val) =>
+              setGroupCount(Number(val.replace('group-', '')))
+            }
+          >
+            <SelectTrigger className='w-full font-bold mt-2'>
+              <SelectValue placeholder={t('select_number_of_groups')} />
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                <SelectItem key={num} value={`group-${num}`}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <h3 className='text-m font-semibold mt-4'>
             {t('choose_scheduling_method')}
           </h3>
