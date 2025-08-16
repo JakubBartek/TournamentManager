@@ -128,11 +128,12 @@ async function calculateStandings(tournamentId: string) {
             goalsAgainst: 0,
             position: 0,
             teamName: team.name,
+            groupId: team.groupId || null,
           },
           create: {
             tournamentId,
             teamId: team.id,
-            groupId: team.groupId || '',
+            groupId: team.groupId || null,
             points: 0,
             wins: 0,
             draws: 0,
@@ -149,7 +150,7 @@ async function calculateStandings(tournamentId: string) {
 
     const standingsMap = new Map<string, Standings>()
 
-    for (const game of finishedGames) {
+    for (const game of games) {
       const { team1Id, team2Id, score1, score2 } = game
 
       if (!team1Id || !team2Id) {
@@ -187,6 +188,10 @@ async function calculateStandings(tournamentId: string) {
           position: 0,
           teamName: '',
         })
+      }
+
+      if (game.status !== GameStatus.FINISHED) {
+        continue
       }
 
       const team1Stats = standingsMap.get(team1Id)!
