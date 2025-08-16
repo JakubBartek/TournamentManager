@@ -1,0 +1,6 @@
+# Unused files in build process
+.env.example
+README.md
+# Artifacts that will be created
+node_modules
+public

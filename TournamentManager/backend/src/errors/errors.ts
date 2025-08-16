@@ -1,0 +1,1 @@
+// export class ExampleError extends Error {}
