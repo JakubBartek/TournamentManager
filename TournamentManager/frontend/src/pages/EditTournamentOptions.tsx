@@ -8,9 +8,7 @@ import { useTournament } from '@/hooks/useTournament'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
-
-// Helper to get today's date in YYYY-MM-DD format
-const getToday = () => new Date().toISOString().slice(0, 10)
+import { toast } from 'sonner'
 
 export default function EditTournamentOptions() {
   const { t } = useTranslation()
@@ -30,8 +28,10 @@ export default function EditTournamentOptions() {
   const [tournamentStartDate, setTournamentStartDate] = useState(new Date())
   const [tournamentEndDate, setTournamentEndDate] = useState(new Date())
   const [adminPassword, setAdminPassword] = useState('')
-  const [dailyStartTime, setDailyStartTime] = useState(getToday())
-  const [dailyEndTime, setDailyEndTime] = useState(getToday())
+  const [dailyStartTime, setDailyStartTime] = useState(
+    tournament?.dailyStartTime,
+  )
+  const [dailyEndTime, setDailyEndTime] = useState(tournament?.dailyEndTime)
   const [tournamentStartDateWasSet, setTournamentStartDateWasSet] =
     useState(false)
   const [tournamentEndDateWasSet, setTournamentEndDateWasSet] = useState(false)
@@ -43,6 +43,25 @@ export default function EditTournamentOptions() {
       navigate(`/${tournamentId}/enter-password`)
     }
   }, [isAuthenticated, navigate, tournamentId])
+
+  useEffect(() => {
+    if (tournament) {
+      setTournamentName(tournament.name || '')
+      setTournamentLocation(tournament.location || '')
+      setTournamentStartDate(
+        tournament.startDate ? new Date(tournament.startDate) : new Date(),
+      )
+      setTournamentEndDate(
+        tournament.endDate ? new Date(tournament.endDate) : new Date(),
+      )
+      setGameDuration(tournament.gameDuration ?? 20)
+      setBreakDuration(tournament.breakDuration ?? 5)
+      setZamboniDuration(tournament.zamboniDuration ?? 10)
+      setZamboniInterval(tournament.zamboniInterval ?? 90)
+      setDailyStartTime(tournament.dailyStartTime || '09:00')
+      setDailyEndTime(tournament.dailyEndTime || '18:00')
+    }
+  }, [tournament])
 
   if (!isAuthenticated(tournamentId ?? '')) return null
 
@@ -77,6 +96,9 @@ export default function EditTournamentOptions() {
             navigate(`/${tournamentId}/edit/schedule`, {
               state: { fromOptions: true },
             })
+          } else {
+            navigate(`/${tournamentId}/edit`)
+            toast.success(t('tournament_updated'))
           }
         },
       },
