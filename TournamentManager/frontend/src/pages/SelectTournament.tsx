@@ -141,6 +141,7 @@ export default function TournamentSelectPage() {
                       <Card
                         key={tournament.id}
                         className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white mb-2'
+                        onClick={() => navigate(`/${tournament.id}`)}
                       >
                         <CardContent>
                           <CardHeader></CardHeader>
