@@ -127,38 +127,59 @@ export default function TournamentSelectPage() {
                   {t('all_tournaments')}
                 </DialogTitle>
                 <DialogDescription></DialogDescription>
-                {Array.isArray(tournaments) && tournaments.length > 0 ? (
-                  tournaments.map((tournament) => (
-                    <Card
-                      key={tournament.id}
-                      className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white'
-                    >
-                      <CardContent>
-                        <CardHeader></CardHeader>
-                        <p className='font-bold text-lg'>{tournament.name}</p>
-                        <p className='text-sm text-gray-600'>
-                          {new Date(tournament.startDate).toLocaleString(
-                            'sk-SK',
-                            {
-                              timeZone: 'CET',
-                            },
-                          )}{' '}
-                          -{' '}
-                          {new Date(tournament.endDate).toLocaleString(
-                            'sk-SK',
-                            {
-                              timeZone: 'CET',
-                            },
-                          )}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <p className='text-gray-500 mt-4'>
-                    {t('no_tournaments_found')}
-                  </p>
-                )}
+                <div
+                  style={{
+                    maxHeight: '60vh',
+                    overflowY: 'auto',
+                    scrollbarWidth: 'none', // Firefox
+                    msOverflowStyle: 'none', // IE/Edge
+                  }}
+                  className='hide-scrollbar'
+                >
+                  {Array.isArray(tournaments) && tournaments.length > 0 ? (
+                    tournaments.map((tournament) => (
+                      <Card
+                        key={tournament.id}
+                        className='w-full cursor-pointer hover:shadow-lg transition-shadow bg-white mb-2'
+                      >
+                        <CardContent>
+                          <CardHeader></CardHeader>
+                          <p className='font-bold text-lg'>{tournament.name}</p>
+                          <p className='text-sm text-gray-600'>
+                            {new Date(tournament.startDate).toLocaleString(
+                              'sk-SK',
+                              {
+                                timeZone: 'CET',
+                              },
+                            )}{' '}
+                            -{' '}
+                            {new Date(tournament.endDate).toLocaleString(
+                              'sk-SK',
+                              {
+                                timeZone: 'CET',
+                              },
+                            )}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <p className='text-gray-500 mt-4'>
+                      {t('no_tournaments_found')}
+                    </p>
+                  )}
+                </div>
+                <style>
+                  {`
+                .hide-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+                .hide-scrollbar {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
+                }
+                `}
+                </style>
               </DialogContent>
             </Dialog>
           </div>
