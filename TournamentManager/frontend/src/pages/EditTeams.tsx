@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next'
 import { Team } from '@/types/team'
 import { useStandings } from '@/hooks/useStandings'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { toast } from 'sonner'
 
 export default function EditTeams() {
   const { t } = useTranslation()
@@ -89,6 +90,10 @@ export default function EditTeams() {
           setDescription('')
           setLogoUrl('')
           setOpen(false)
+          toast.success(t('team_created'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )

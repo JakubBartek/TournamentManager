@@ -33,6 +33,7 @@ import { Team } from '@/types/team'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { DialogTrigger } from '@radix-ui/react-dialog'
+import { toast } from 'sonner'
 
 export default function EditGames() {
   const { t } = useTranslation()
@@ -80,11 +81,18 @@ export default function EditGames() {
     team: 'team1' | 'team2',
     delta: number,
   ) => {
-    updateGame({
-      ...game,
-      score1: team === 'team1' ? game.score1 + delta : game.score1,
-      score2: team === 'team2' ? game.score2 + delta : game.score2,
-    })
+    updateGame(
+      {
+        ...game,
+        score1: team === 'team1' ? game.score1 + delta : game.score1,
+        score2: team === 'team2' ? game.score2 + delta : game.score2,
+      },
+      {
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   const handleEditClick = (game: Game) => {
@@ -101,34 +109,54 @@ export default function EditGames() {
 
   const handleDrawerSave = () => {
     if (!editGame) return
-    updateGame({
-      ...editGame,
-      team1Id,
-      team2Id,
-      date: startTime ? new Date(startTime).toISOString() : editGame.date,
-      score1: editScore1,
-      score2: editScore2,
-    })
-    setDrawerOpen(false)
+    updateGame(
+      {
+        ...editGame,
+        team1Id,
+        team2Id,
+        date: startTime ? new Date(startTime).toISOString() : editGame.date,
+        score1: editScore1,
+        score2: editScore2,
+      },
+      {
+        onSuccess: () => {
+          setDrawerOpen(false)
+          toast.success(t('game_updated'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   const handleCreateGame = () => {
     if (!newTeam1Id || !newTeam2Id || !newStartTime) return
-    createGame({
-      team1Id: newTeam1Id,
-      team2Id: newTeam2Id,
-      tournamentId: tournamentId ?? '',
-      date: new Date(newStartTime).toISOString(),
-      status: GameStatus.SCHEDULED,
-      score1: newScore1,
-      score2: newScore2,
-    })
-    setCreateOpen(false)
-    setNewTeam1Id('')
-    setNewTeam2Id('')
-    setNewStartTime('')
-    setNewScore1(0)
-    setNewScore2(0)
+    createGame(
+      {
+        team1Id: newTeam1Id,
+        team2Id: newTeam2Id,
+        tournamentId: tournamentId ?? '',
+        date: new Date(newStartTime).toISOString(),
+        status: GameStatus.SCHEDULED,
+        score1: newScore1,
+        score2: newScore2,
+      },
+      {
+        onSuccess: () => {
+          setCreateOpen(false)
+          setNewTeam1Id('')
+          setNewTeam2Id('')
+          setNewStartTime('')
+          setNewScore1(0)
+          setNewScore2(0)
+          toast.success(t('game_created'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   if (isLoading) return <div>Loading games...</div>

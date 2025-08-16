@@ -138,5 +138,14 @@
   "confirm": "Confirm",
   "confirm_delete": "Confirm Delete",
   "show_all_tournaments": "Show All Tournaments",
-  "all_tournaments": "All Tournaments"
+  "all_tournaments": "All Tournaments",
+  "you_can_edit": "You can now edit the tournament",
+  "game_updated": "Game updated successfully",
+  "game_deleted": "Game deleted successfully",
+  "rink_updated": "Rink updated successfully",
+  "rink_deleted": "Rink deleted successfully",
+  "game_created": "Game created successfully",
+  "rink_created": "Rink created successfully",
+  "pairings_created": "Pairings created successfully",
+  "team_edited": "Team edited successfully"
 }

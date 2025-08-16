@@ -101,6 +101,9 @@ export default function EditTournamentOptions() {
             toast.success(t('tournament_updated'))
           }
         },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
       },
     )
   }

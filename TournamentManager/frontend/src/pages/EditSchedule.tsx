@@ -126,9 +126,10 @@ export default function EditSchedule() {
           navigate(`/${tournamentId}/schedule`, {
             state: { fromCreate: true },
           })
-          toast.success(
-            'Group stage pairings created successfully! You can edit them later.',
-          )
+          toast.success(t('pairings_created'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )

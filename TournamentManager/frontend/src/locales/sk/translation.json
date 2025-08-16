@@ -138,5 +138,14 @@
   "confirm": "Potvrdiť",
   "confirm_delete": "Potvrdiť odstránenie",
   "show_all_tournaments": "Zobraziť všetky turnaje",
-  "all_tournaments": "Všetky turnaje"
+  "all_tournaments": "Všetky turnaje",
+  "you_can_edit": "Teraz môžete upravovať turnaj",
+  "game_updated": "Zápas bol úspešne aktualizovaný",
+  "game_deleted": "Zápas bol úspešne odstránený",
+  "rink_updated": "Hracia plocha bola úspešne aktualizovaná",
+  "rink_deleted": "Hracia plocha bola úspešne odstránená",
+  "game_created": "Zápas bol úspešne vytvorený",
+  "rink_created": "Hracia plocha bola úspešne vytvorená",
+  "pairings_created": "Párovanie bolo úspešne vytvorené",
+  "team_edited": "Tím bol úspešne upravený"
 }

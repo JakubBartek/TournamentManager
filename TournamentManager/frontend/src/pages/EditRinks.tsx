@@ -29,6 +29,7 @@ import { useLocation } from 'react-router-dom'
 import { Navbar } from '@material-tailwind/react'
 import { useTranslation } from 'react-i18next'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
+import { toast } from 'sonner'
 
 export default function EditRinks() {
   const { t } = useTranslation()
@@ -73,6 +74,10 @@ export default function EditRinks() {
         onSuccess: () => {
           setName('')
           setOpen(false)
+          toast.success(t('rink_created'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )
@@ -96,6 +101,10 @@ export default function EditRinks() {
         onSuccess: () => {
           setEditingId(null)
           setEditName('')
+          toast.success(t('rink_updated'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )
@@ -108,6 +117,10 @@ export default function EditRinks() {
         onSuccess: () => {
           setEditingId(null)
           setEditName('')
+          toast.success(t('rink_deleted'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
         },
       },
     )

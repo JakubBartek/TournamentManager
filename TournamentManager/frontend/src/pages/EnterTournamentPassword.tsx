@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export default function EnterTournamentPassword() {
   const { tournamentId } = useParams()
@@ -18,6 +19,7 @@ export default function EnterTournamentPassword() {
     const success = await authenticate(tournamentId!, password)
     if (success) {
       navigate(`/${tournamentId}/edit`)
+      toast.success(t('you_can_edit'))
     } else {
       setError('Invalid password')
     }

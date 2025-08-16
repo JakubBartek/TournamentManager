@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next'
 import { Message, MessageType } from '@/types/message'
 import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 export default function EditMessages() {
   const { t } = useTranslation()
@@ -60,16 +61,26 @@ export default function EditMessages() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newContent) return
-    createMessage.mutate({
-      tournamentId: tournamentId ?? '',
-      content: newContent,
-      type: newType,
-      priority: newPriority,
-    })
-    setNewContent('')
-    setNewType(MessageType.INFO)
-    setNewPriority(1)
-    setOpen(false)
+    createMessage.mutate(
+      {
+        tournamentId: tournamentId ?? '',
+        content: newContent,
+        type: newType,
+        priority: newPriority,
+      },
+      {
+        onSuccess: () => {
+          setNewContent('')
+          setNewType(MessageType.INFO)
+          setNewPriority(1)
+          setOpen(false)
+          toast.success(t('message_created'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   const startEdit = (msg: Message) => {
@@ -82,23 +93,43 @@ export default function EditMessages() {
   const handleEdit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingId) return
-    updateMessage.mutate({
-      id: editingId,
-      tournamentId: tournamentId ?? '',
-      content: editContent,
-      type: editType,
-      priority: editPriority,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
-    setEditingId(null)
-    setEditContent('')
-    setEditType(MessageType.INFO)
-    setEditPriority(1)
+    updateMessage.mutate(
+      {
+        id: editingId,
+        tournamentId: tournamentId ?? '',
+        content: editContent,
+        type: editType,
+        priority: editPriority,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        onSuccess: () => {
+          setEditingId(null)
+          setEditContent('')
+          setEditType(MessageType.INFO)
+          setEditPriority(1)
+          toast.success(t('message_updated'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   const handleDelete = (id: string) => {
-    deleteMessage.mutate({ tournamentId: tournamentId ?? '', id })
+    deleteMessage.mutate(
+      { tournamentId: tournamentId ?? '', id },
+      {
+        onSuccess: () => {
+          toast.success(t('message_deleted'))
+        },
+        onError: (error: Error) => {
+          toast.error('Error: ' + error.message)
+        },
+      },
+    )
   }
 
   return (
