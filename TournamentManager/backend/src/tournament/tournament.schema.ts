@@ -4,6 +4,7 @@ export const tournamentTypeEnum = z.enum([
   'GROUPS',
   'GROUPS_AND_PLAYOFFS',
   'GROUPS_AND_PLACEMENT', // 1vs1, 3v3, etc.
+  'GROUPS_AND_PLACEMENT_IN_GROUP', // Teams play in groups, then top teams advance to placement matches
 ])
 
 export const playOffRoundEnum = z.enum([

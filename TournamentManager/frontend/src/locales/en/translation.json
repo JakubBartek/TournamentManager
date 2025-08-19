@@ -151,5 +151,9 @@
   "team_info": "Information for teams",
   "click_for_redirect": "Click to redirect",
   "room_number": "Room Number",
-  "enter_room_number": "Enter room number (optional)"
+  "enter_room_number": "Enter room number (optional)",
+  "GROUPS": "Groups",
+  "GROUPS_AND_PLACEMENT_IN_GROUP": "Groups and Placement Matches in Group",
+  "GROUPS_AND_PLAYOFFS": "Groups and Playoffs",
+  "GROUPS_AND_PLACEMENT": "Groups and Placement Matches Between Groups"
 }

@@ -179,7 +179,7 @@ export default function EditSchedule() {
               {Array.isArray(Object.values(TournamentType)) &&
                 Object.values(TournamentType).map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type.replace(/_/g, ' ')}
+                    {t(type)}
                   </SelectItem>
                 ))}
             </SelectContent>

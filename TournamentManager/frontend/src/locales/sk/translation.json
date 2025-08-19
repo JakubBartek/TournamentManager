@@ -151,5 +151,9 @@
   "team_info": "Informácie pre družstvá",
   "click_for_redirect": "Kliknite pre presmerovanie",
   "room_number": "Číslo šatne",
-  "enter_room_number": "Zadajte číslo šatne (voliteľné)"
+  "enter_room_number": "Zadajte číslo šatne (voliteľné)",
+  "GROUPS": "Skupiny",
+  "GROUPS_AND_PLACEMENT_IN_GROUP": "Skupiny a finálne zápasy v skupine",
+  "GROUPS_AND_PLAYOFFS": "Skupiny a play-off",
+  "GROUPS_AND_PLACEMENT": "Skupiny a finálne zápasy medzi skupinami"
 }

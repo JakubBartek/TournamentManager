@@ -99,6 +99,21 @@ export async function createSchedule(
         lastZamboniTime,
       )
     }
+
+    if (
+      tournament?.type ===
+      tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT_IN_GROUP
+    ) {
+      await createPlacementInGroupGames(
+        tournamentFull,
+        last_game_t,
+        teams.length,
+        tournamentId,
+        lastZamboniTime,
+      )
+    }
+
+    await standingsRepository.calculateStandings(tournamentId)
     return
   }
 
@@ -148,6 +163,18 @@ export async function createSchedule(
 
   if (tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLAYOFFS) {
     await createPlayoffGames(
+      tournamentFull,
+      last_game_time,
+      teams.length,
+      tournamentId,
+      last_zamboni_time,
+    )
+  }
+
+  if (
+    tournament?.type === tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT_IN_GROUP
+  ) {
+    await createPlacementInGroupGames(
       tournamentFull,
       last_game_time,
       teams.length,
@@ -561,5 +588,132 @@ async function createPlayoffGames(
       }
     }
     teamsToPlay = teamsToPlay / 2
+  }
+}
+
+async function createPlacementInGroupGames(
+  tournamentFull: TournamentFull,
+  lastGameTime: Date,
+  numberOfTeams: number,
+  tournamentId: string,
+  lastZamboniTime: number,
+) {
+  if (
+    tournamentFull.type !==
+    tournamentTypeEnum.Values.GROUPS_AND_PLACEMENT_IN_GROUP
+  ) {
+    return
+  }
+
+  const rinks = await db.rink.findMany({
+    where: { tournamentId },
+  })
+  const gameDuration = tournamentFull.gameDuration
+  const breakDuration = tournamentFull.breakDuration
+  const zamboniInterval = tournamentFull.zamboniInterval
+  const zamboniDuration = tournamentFull.zamboniDuration
+  const dailyStart = tournamentFull.dailyStartTime
+  const dailyEnd = tournamentFull.dailyEndTime
+
+  if (!dailyStart || !dailyEnd || !gameDuration || !breakDuration) {
+    throw new Error('Tournament scheduling parameters are not set')
+  }
+
+  async function getNextGameTime(current: Date): Promise<Date> {
+    if (
+      lastZamboniTime + gameDuration >= zamboniInterval &&
+      current.getTime() + gameDuration * 60000 < endTime.getTime()
+    ) {
+      lastZamboniTime = 0
+      await db.zamboniTime.create({
+        data: {
+          tournamentId,
+          startTime: new Date(current.getTime() + gameDuration * 60000),
+          endTime: new Date(
+            current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
+          ),
+        },
+      })
+      return new Date(
+        current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
+      )
+    }
+
+    lastZamboniTime += gameDuration + breakDuration
+    return new Date(current.getTime() + (gameDuration + breakDuration) * 60000)
+  }
+
+  let currentGameTime = new Date(lastGameTime)
+  const [startHour, startMinute] = dailyStart.split(':').map(Number)
+  const [endHour, endMinute] = dailyEnd.split(':').map(Number)
+  let endTime = new Date(
+    currentGameTime.getFullYear(),
+    currentGameTime.getMonth(),
+    currentGameTime.getDate(),
+    endHour,
+    endMinute,
+  )
+
+  // Fetch groups for this tournament
+  const groups = await db.group.findMany({ where: { tournamentId } })
+
+  // For each group create placement games: 1st vs 2nd, 3rd vs 4th, ...
+  for (const group of groups) {
+    const groupTeams = await db.team.findMany({
+      where: { tournamentId, groupId: group.id },
+      select: { id: true }, // we only need count here; teams will be assigned later
+    })
+
+    const numPlacementGames = Math.floor(groupTeams.length / 2)
+    // create games from highest placement down similar to createPlacementGames
+    let i = numPlacementGames - 1
+    while (i >= 0) {
+      for (let rinkIdx = 0; rinkIdx < rinks.length && i >= 0; rinkIdx++) {
+        const createdGame = await db.game.create({
+          data: {
+            team1Id: null,
+            team2Id: null,
+            tournamentId,
+            groupId: group.id,
+            date: new Date(currentGameTime),
+            rinkId: rinks[rinkIdx].id,
+            rinkName: rinks[rinkIdx].name,
+            status: GameStatus.SCHEDULED,
+            // name indicates group and placement (e.g. "Group A - Zápas o 1. miesto")
+            name: `${group.name} - Zápas o ${(i + 1) * 2 - 1} miesto`,
+            type: GameType.FINAL,
+          },
+        })
+
+        const placementGame = await db.placementGame.create({
+          data: {
+            gameId: createdGame.id,
+            placement: (i + 1) * 2 - 1,
+          },
+        })
+
+        await db.game.update({
+          where: { id: createdGame.id },
+          data: { placementGameId: placementGame.id },
+        })
+
+        i--
+      }
+
+      currentGameTime = await getNextGameTime(currentGameTime)
+      if (currentGameTime >= endTime) {
+        currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
+        currentGameTime.setHours(startHour, startMinute, 0, 0)
+        lastZamboniTime = 0
+        endTime = new Date(
+          currentGameTime.getFullYear(),
+          currentGameTime.getMonth(),
+          currentGameTime.getDate(),
+          endHour,
+          endMinute,
+        )
+      }
+    }
+    // continue to next group (games for different groups will be scheduled sequentially)
   }
 }
