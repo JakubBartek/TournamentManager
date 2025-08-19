@@ -9,7 +9,7 @@ export default function Info() {
   const { data: messages, isLoading, error } = useMessages(tournamentId ?? '')
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen gap-4 mb-16'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <h1 className='text-4xl font-bold mb-4'>{t('info')}</h1>
       {isLoading && <p>Loading messages...</p>}
       {error && (

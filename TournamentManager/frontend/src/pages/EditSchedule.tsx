@@ -153,12 +153,12 @@ export default function EditSchedule() {
   }
 
   return (
-    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       <h2 className='text-xl font-bold'>
         {fromCreate && t('5_create_schedule')}
       </h2>
-      <Card className='w-full mt-4 shadow-lg'>
+      <Card className='w-full max-w-xl md:w-lg'>
         <CardContent>
           <Label className='mb-2'>{t('select_tournament_type')}</Label>
           <Select
@@ -218,9 +218,9 @@ export default function EditSchedule() {
       </Card>
       {/* Manual group assignment UI */}
       {schedulingMethod === 'option-two' && teams && (
-        <div className='w-full mt-8 flex flex-col gap-6'>
+        <div className='flex flex-col gap-3 items-center'>
           {[...Array(groupCount)].map((_, groupIdx) => (
-            <Card key={groupIdx} className='w-full shadow-md'>
+            <Card key={groupIdx} className='w-full max-w-xl md:w-lg'>
               <CardContent>
                 <h3 className='font-bold mb-2'>
                   {t('group')} {groupIdx + 1}

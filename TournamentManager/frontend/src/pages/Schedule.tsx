@@ -150,7 +150,7 @@ export default function Schedule() {
         </div>
       </div>
 
-      <div className='flex flex-col items-center gap-2 mb-16 mt-4'>
+      <div className='flex flex-col gap-3 mb-16 items-center'>
         <h1 className='text-4xl font-bold mb-4'>{t('schedule')}</h1>
         {fromCreate && (
           <Button

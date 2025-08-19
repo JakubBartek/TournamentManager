@@ -172,7 +172,7 @@ export default function EditGames() {
   if (!games) return <div>No games found.</div>
 
   return (
-    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       <h2 className='text-2xl font-bold mb-2'>{t('edit_games')}</h2>
       {/* Button to create a new game */}
@@ -181,7 +181,7 @@ export default function EditGames() {
       </Button>
       {Array.isArray(games) &&
         games.map((game: Game) => (
-          <Card key={game.id} className='w-full mb-4'>
+          <Card key={game.id} className='w-full max-w-xl md:w-lg'>
             <CardContent className='flex flex-col gap-2'>
               <span className='font-semibold'>
                 {game.team1?.name || game.team1Id} vs{' '}

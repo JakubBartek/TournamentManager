@@ -47,7 +47,7 @@ export default function TournamentCreate() {
   }
 
   return (
-    <div className='max-w-xl mx-auto mt-10 flex flex-col items-center'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <Card className='mt-6 shadow-lg'>
         <CardHeader>
           <CardTitle>{t('create_a_new_tournament')}</CardTitle>

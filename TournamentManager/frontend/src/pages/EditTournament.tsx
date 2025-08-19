@@ -20,45 +20,45 @@ export default function EditTeams() {
 
   if (!isAuthenticated(tournamentId ?? '')) return null
   return (
-    <div>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       <Link to={`/${tournamentId}/edit/games`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('edit_games')}
           </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/messages`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('edit_messages')}
           </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/rinks`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('edit_rinks')}
           </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/teams`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('edit_teams')}
           </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/tournament`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('tournament_options')}
           </CardContent>
         </Card>
       </Link>
       <Link to={`/${tournamentId}/edit/schedule`}>
-        <Card className='max-w-xl mx-auto my-6 flex flex-col items-center'>
+        <Card className='w-full max-w-xl md:w-lg'>
           <CardContent className='w-full text-3xl'>
             {t('edit_schedule')}
           </CardContent>

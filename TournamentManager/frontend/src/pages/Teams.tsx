@@ -12,7 +12,7 @@ export default function Teams() {
   if (error) return <div>Error: {(error as Error).message}</div>
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen gap-4 mb-16'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       {Array.isArray(teams) &&
         teams.map((team) => (
           <Card key={team.id} className='w-full max-w-xl md:w-lg'>

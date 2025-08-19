@@ -133,10 +133,10 @@ export default function EditMessages() {
   }
 
   return (
-    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       <h2 className='text-2xl font-bold mb-6'>{t('edit_messages')}</h2>
-      <Card className='w-full mb-6'>
+      <Card className='w-full max-w-xl md:w-lg'>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <CardContent className='cursor-pointer flex justify-center items-center'>
@@ -194,7 +194,7 @@ export default function EditMessages() {
         messages.map((msg) => (
           <Card
             key={msg.id}
-            className={`w-full mb-4 ${
+            className={`w-full max-w-xl md:w-lg ${
               msg.type === 'ALERT' ? 'bg-yellow-100' : ''
             }`}
           >

@@ -62,12 +62,12 @@ export default function Home() {
   }
 
   return (
-    <div className='flex flex-col gap-2 mb-16 items-center'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <p className='text-xl font-bold mb-4'>{tournament.name}</p>
       {/* ALERT messages on top */}
       {Array.isArray(alertMessages) &&
         alertMessages.map((msg) => (
-          <Card key={msg.id} className='w-full md:w-lg bg-yellow-100'>
+          <Card key={msg.id} className='w-full max-w-xl md:w-lg bg-yellow-100'>
             <CardContent>
               <p className='font-semibold text-yellow-800'>{msg.content}</p>
               <p className='text-xs text-gray-500'>
@@ -83,7 +83,7 @@ export default function Home() {
           const team1 = game.team1?.name || game.team1Id
           const team2 = game.team2?.name || game.team2Id
           return (
-            <Card key={game.id} className='w-full md:w-lg'>
+            <Card key={game.id} className='w-full max-w-xl md:w-lg'>
               <CardContent>
                 <p className='font-semibold text-blue-600'>
                   {t('now_playing')}
@@ -111,7 +111,7 @@ export default function Home() {
           const team1 = game.team1?.name || game.team1Id
           const team2 = game.team2?.name || game.team2Id
           return (
-            <Card key={game.id} className='w-full md:w-lg'>
+            <Card key={game.id} className='w-full max-w-xl md:w-lg'>
               <CardContent>
                 <p className='font-semibold text-gray-800'>{t('next_game')}</p>
                 <p>{game.name}</p>

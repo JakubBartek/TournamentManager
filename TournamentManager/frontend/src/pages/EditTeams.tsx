@@ -164,7 +164,7 @@ export default function EditTeams() {
   }
 
   return (
-    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full mb-16'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       {fromCreate && (
         <div className='fixed top-4 md:top-100 right-0 z-50'>
@@ -193,7 +193,7 @@ export default function EditTeams() {
           2. {t('add_teams_to_your_tournament')}
         </h2>
       )}
-      <Card className='max-w-3xl w-full mx-auto shadow-lg'>
+      <Card className='w-full max-w-xl md:w-lg'>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <CardContent className='cursor-pointer flex justify-center items-center'>
@@ -249,10 +249,7 @@ export default function EditTeams() {
       {teams &&
         Array.isArray(teams) &&
         teams.map((team) => (
-          <Card
-            key={team.id}
-            className='max-w-3xl w-full mx-auto mt-4 shadow-lg'
-          >
+          <Card key={team.id} className='w-full max-w-xl md:w-lg'>
             <CardContent>
               {editingId === team.id ? (
                 <form className='flex flex-col gap-2' onSubmit={handleEditTeam}>

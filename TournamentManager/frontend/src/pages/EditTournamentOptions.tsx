@@ -109,14 +109,14 @@ export default function EditTournamentOptions() {
   }
 
   return (
-    <div className='max-w-xl mx-auto my-16 flex flex-col items-center w-full'>
+    <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
       {fromCreate && (
         <h2 className='text-xl font-bold'>
           4. {t('adjust_tournament_options')}
         </h2>
       )}
-      <Card className='w-full mt-8 shadow-lg'>
+      <Card className='w-full max-w-xl md:w-lg'>
         <CardContent>
           <form className='flex flex-col gap-6' onSubmit={handleSubmit}>
             {!fromCreate && (
