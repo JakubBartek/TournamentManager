@@ -76,6 +76,7 @@ export async function createSchedule(
           ...team,
           logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
           description: team.description === null ? undefined : team.description,
+          roomNumber: team.roomNumber === null ? undefined : team.roomNumber,
         })),
         numberOfGroups,
       )
@@ -147,6 +148,7 @@ export async function createSchedule(
         ...team,
         logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
         description: team.description === null ? undefined : team.description,
+        roomNumber: team.roomNumber === null ? undefined : team.roomNumber,
       })),
       numberOfGroups,
     )

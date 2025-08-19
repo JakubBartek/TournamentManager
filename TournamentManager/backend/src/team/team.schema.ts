@@ -6,6 +6,7 @@ export const teamSchema = z.object({
   tournamentId: z.string().uuid('Invalid tournament ID format'),
   logoUrl: z.string().url('Invalid URL format').optional(),
   description: z.string().optional(),
+  roomNumber: z.string().optional(),
 })
 
 export const teamEditSchema = z.object({
@@ -14,6 +15,7 @@ export const teamEditSchema = z.object({
   tournamentId: z.string(),
   logoUrl: z.string().url('Invalid URL format').optional(),
   description: z.string().optional(),
+  roomNumber: z.string().optional(),
 })
 
 export const teamPaginationQuerySchema = z.object({
