@@ -48,6 +48,7 @@ export default function EnterTournamentPassword() {
         <Input
           type='password'
           value={password}
+          className='bg-white'
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t('enter_tournament_password')}
         />
