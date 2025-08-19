@@ -151,7 +151,7 @@ export default function Schedule() {
       </div>
 
       <div className='flex flex-col gap-3 mb-16 items-center'>
-        <h1 className='text-4xl font-bold mb-4'>{t('schedule')}</h1>
+        <h1 className='text-4xl font-bold mb-4 mt-3'>{t('schedule')}</h1>
         {fromCreate && (
           <Button
             onClick={() => {
