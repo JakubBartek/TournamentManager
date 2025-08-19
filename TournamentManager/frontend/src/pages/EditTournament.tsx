@@ -22,48 +22,48 @@ export default function EditTeams() {
   return (
     <div className='flex flex-col gap-3 mb-16 items-center'>
       <NavbarEdit />
-      <Link to={`/${tournamentId}/edit/games`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/games`}>
           <CardContent className='w-full text-3xl'>
             {t('edit_games')}
           </CardContent>
-        </Card>
-      </Link>
-      <Link to={`/${tournamentId}/edit/messages`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+        </Link>
+      </Card>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/messages`}>
           <CardContent className='w-full text-3xl'>
             {t('edit_messages')}
           </CardContent>
-        </Card>
-      </Link>
-      <Link to={`/${tournamentId}/edit/rinks`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+        </Link>
+      </Card>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/rinks`}>
           <CardContent className='w-full text-3xl'>
             {t('edit_rinks')}
           </CardContent>
-        </Card>
-      </Link>
-      <Link to={`/${tournamentId}/edit/teams`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+        </Link>
+      </Card>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/teams`}>
           <CardContent className='w-full text-3xl'>
             {t('edit_teams')}
           </CardContent>
-        </Card>
-      </Link>
-      <Link to={`/${tournamentId}/edit/tournament`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+        </Link>
+      </Card>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/tournament`}>
           <CardContent className='w-full text-3xl'>
             {t('tournament_options')}
           </CardContent>
-        </Card>
-      </Link>
-      <Link to={`/${tournamentId}/edit/schedule`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+        </Link>
+      </Card>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/edit/schedule`}>
           <CardContent className='w-full text-3xl'>
             {t('edit_schedule')}
           </CardContent>
-        </Card>
-      </Link>
+        </Link>
+      </Card>
     </div>
   )
 }

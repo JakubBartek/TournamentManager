@@ -18,14 +18,14 @@ export default function Info() {
       {messages && messages.length === 0 && (
         <p className='text-gray-500'>No messages found.</p>
       )}
-      <Link to={`/${tournamentId}/teams`}>
-        <Card className='w-full max-w-xl md:w-lg'>
+      <Card className='w-full max-w-xl md:w-lg'>
+        <Link to={`/${tournamentId}/teams`}>
           <CardContent>
             <h2 className='text-xl font-bold'>{t('team_info')}</h2>
             <p className='text-sm text-gray-500'>{t('click_for_redirect')}</p>
           </CardContent>
-        </Card>
-      </Link>
+        </Link>
+      </Card>
       {messages &&
         Array.isArray(messages) &&
         messages.map((msg) => (
