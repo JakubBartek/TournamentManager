@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { useMessages } from '@/hooks/useMessage'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 export default function Info() {
@@ -9,7 +9,7 @@ export default function Info() {
   const { data: messages, isLoading, error } = useMessages(tournamentId ?? '')
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen gap-4'>
+    <div className='flex flex-col items-center justify-center min-h-screen gap-4 mb-16'>
       <h1 className='text-4xl font-bold mb-4'>{t('info')}</h1>
       {isLoading && <p>Loading messages...</p>}
       {error && (
@@ -18,12 +18,20 @@ export default function Info() {
       {messages && messages.length === 0 && (
         <p className='text-gray-500'>No messages found.</p>
       )}
+      <Link to={`/${tournamentId}/teams`}>
+        <Card className='w-full max-w-xl md:w-lg'>
+          <CardContent>
+            <h2 className='text-xl font-bold'>{t('team_info')}</h2>
+            <p className='text-sm text-gray-500'>{t('click_for_redirect')}</p>
+          </CardContent>
+        </Card>
+      </Link>
       {messages &&
         Array.isArray(messages) &&
         messages.map((msg) => (
           <Card
             key={msg.id}
-            className={`w-full max-w-xl ${
+            className={`w-full max-w-xl md:w-lg ${
               msg.type === 'ALERT' ? 'bg-yellow-100' : ''
             }`}
           >

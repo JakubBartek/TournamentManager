@@ -131,6 +131,7 @@ model Team {
   Group          Group?           @relation(fields: [groupId], references: [id], onDelete: SetNull)
   groupId        String?
   FinalPlacement FinalPlacement[]
+  roomNumber     String?
 }
 
 model Player {

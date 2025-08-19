@@ -54,6 +54,7 @@ export default function EditTeams() {
   const [city, setCity] = useState('')
   const [description, setDescription] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
+  const [roomNumber, setRoomNumber] = useState('')
   const [open, setOpen] = useState(false)
 
   // Edit state
@@ -62,6 +63,7 @@ export default function EditTeams() {
   const [editCity, setEditCity] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editLogoUrl, setEditLogoUrl] = useState('')
+  const [editRoomNumber, setEditRoomNumber] = useState('')
 
   const { isAuthenticated } = useTournamentAuth()
 
@@ -82,6 +84,7 @@ export default function EditTeams() {
         tournamentId,
         description: description || undefined,
         logoUrl: logoUrl || undefined,
+        roomNumber: roomNumber || undefined,
       },
       {
         onSuccess: () => {
@@ -89,6 +92,7 @@ export default function EditTeams() {
           setCity('')
           setDescription('')
           setLogoUrl('')
+          setRoomNumber('')
           setOpen(false)
           toast.success(t('team_created'))
         },
@@ -105,6 +109,7 @@ export default function EditTeams() {
     setEditCity(team.city)
     setEditDescription(team.description || '')
     setEditLogoUrl(team.logoUrl || '')
+    setEditRoomNumber(team.roomNumber || '')
   }
 
   const handleEditTeam = (e: React.FormEvent) => {
@@ -119,6 +124,7 @@ export default function EditTeams() {
         description: editDescription || undefined,
         logoUrl: editLogoUrl || undefined,
         standing: standings?.find((s) => s.teamId === editingId) || null,
+        roomNumber: editRoomNumber || undefined,
       },
       {
         onSuccess: () => {
@@ -127,6 +133,7 @@ export default function EditTeams() {
           setEditCity('')
           setEditDescription('')
           setEditLogoUrl('')
+          setEditRoomNumber('')
         },
       },
     )
@@ -218,6 +225,11 @@ export default function EditTeams() {
                 required
               />
               <Input
+                placeholder={t('enter_room_number')}
+                value={roomNumber}
+                onChange={(e) => setRoomNumber(e.target.value)}
+              />
+              <Input
                 placeholder={t('enter_description')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -255,6 +267,11 @@ export default function EditTeams() {
                     onChange={(e) => setEditCity(e.target.value)}
                     placeholder={t('enter_city')}
                     required
+                  />
+                  <Input
+                    value={editRoomNumber}
+                    onChange={(e) => setEditRoomNumber(e.target.value)}
+                    placeholder={t('enter_room_number')}
                   />
                   <Input
                     value={editDescription}

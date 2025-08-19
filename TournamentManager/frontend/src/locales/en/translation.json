@@ -147,5 +147,9 @@
   "game_created": "Game created successfully",
   "rink_created": "Rink created successfully",
   "pairings_created": "Pairings created successfully",
-  "team_edited": "Team edited successfully"
+  "team_edited": "Team edited successfully",
+  "team_info": "Information for teams",
+  "click_for_redirect": "Click to redirect",
+  "room_number": "Room Number",
+  "enter_room_number": "Enter room number (optional)"
 }

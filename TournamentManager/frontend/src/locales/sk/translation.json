@@ -147,5 +147,9 @@
   "game_created": "Zápas bol úspešne vytvorený",
   "rink_created": "Hracia plocha bola úspešne vytvorená",
   "pairings_created": "Párovanie bolo úspešne vytvorené",
-  "team_edited": "Tím bol úspešne upravený"
+  "team_edited": "Tím bol úspešne upravený",
+  "team_info": "Informácie pre družstvá",
+  "click_for_redirect": "Kliknite pre presmerovanie",
+  "room_number": "Číslo šatne",
+  "enter_room_number": "Zadajte číslo šatne (voliteľné)"
 }

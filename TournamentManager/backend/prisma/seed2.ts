@@ -88,6 +88,7 @@ async function createTournament(
         name: teamNames[i],
         city: teamCities[i],
         tournamentId: tournament.id,
+        roomNumber: `Room ${i + 1}`,
       },
     })
     teams.push(team)

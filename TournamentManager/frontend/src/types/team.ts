@@ -11,6 +11,7 @@ export type Team = {
   standing: Standings | null
   groupId?: string
   group?: Group
+  roomNumber?: string
 }
 
 export type TeamCreate = {
@@ -19,6 +20,7 @@ export type TeamCreate = {
   tournamentId: string
   logoUrl?: string
   description?: string
+  roomNumber?: string
 }
 
 export type TeamQuery = {
