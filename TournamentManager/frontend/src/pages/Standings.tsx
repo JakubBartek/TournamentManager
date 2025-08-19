@@ -83,7 +83,7 @@ export default function Standings() {
                             {standing.points}
                           </TableCell>
                           <TableCell className='text-center'>
-                            {standing.goalsFor - standing.goalsAgainst}
+                            {standing.goalsFor}/{standing.goalsAgainst}
                           </TableCell>
                         </TableRow>
                       ))}
