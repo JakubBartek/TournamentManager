@@ -21,6 +21,7 @@ import {
   faPlus,
   faEdit,
   faTrash,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -143,29 +144,55 @@ export default function EditRinks() {
   }
 
   return (
-    <div className='flex flex-col gap-3 mb-16 items-center'>
-      <NavbarEdit />
+    <div
+      className={`flex flex-col gap-3 mb-16 items-center${
+        fromCreate ? ' mt-8' : ''
+      }`}
+    >
+      {!fromCreate && <NavbarEdit />}
       {fromCreate && (
-        <div className='fixed top-4 md:top-100 right-0 z-50'>
-          {/* @ts-expect-error Suppress missing props warning */}
-          <Navbar
-            className='bg-white shadow-md px-6 py-3 w-auto rounded-r-none border-gray-400'
-            placeholder={undefined}
-            onResize={undefined}
-            onResizeCapture={undefined}
-            onClick={() =>
-              navigate(`/${tournamentId}/edit/tournament`, {
-                state: { fromEditRinks: true },
-              })
-            }
-          >
-            <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
-              <Button variant='white' size='full'>
-                <FontAwesomeIcon icon={faArrowRight} />
-              </Button>
-            </div>
-          </Navbar>
-        </div>
+        <>
+          <div className='fixed top-4 md:top-100 left-0 z-50'>
+            {/* @ts-expect-error Suppress missing props warning */}
+            <Navbar
+              className='bg-white shadow-md px-6 py-3 w-auto rounded-l-none border-gray-400'
+              placeholder={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+              onClick={() =>
+                navigate(`/${tournamentId}/edit/teams`, {
+                  state: { fromCreate: true },
+                })
+              }
+            >
+              <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
+                <Button variant='white' size='full'>
+                  <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>
+              </div>
+            </Navbar>
+          </div>
+          <div className='fixed top-4 md:top-100 right-0 z-50'>
+            {/* @ts-expect-error Suppress missing props warning */}
+            <Navbar
+              className='bg-white shadow-md px-6 py-3 w-auto rounded-r-none border-gray-400'
+              placeholder={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+              onClick={() =>
+                navigate(`/${tournamentId}/edit/tournament`, {
+                  state: { fromEditRinks: true },
+                })
+              }
+            >
+              <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
+                <Button variant='white' size='full'>
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </Button>
+              </div>
+            </Navbar>
+          </div>
+        </>
       )}
       {fromCreate && (
         <h2 className='text-xl font-bold mb-4'>

@@ -22,6 +22,9 @@ import { useTournamentAuth } from '@/components/Auth/TournamentAuthContext'
 import { useGroupDelete, useGroups } from '@/hooks/useGroup'
 import { useGameDelete, useGames } from '@/hooks/useGame'
 import { useZamboniTimeDelete, useZamboniTimes } from '@/hooks/useZamboniTime'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { Navbar } from '@material-tailwind/react'
 
 export default function EditSchedule() {
   const { t } = useTranslation()
@@ -160,8 +163,34 @@ export default function EditSchedule() {
   }
 
   return (
-    <div className='flex flex-col gap-3 mb-16 items-center'>
-      <NavbarEdit />
+    <div
+      className={`flex flex-col gap-3 mb-16 items-center${
+        fromCreate ? ' mt-8' : ''
+      }`}
+    >
+      {!fromCreate && <NavbarEdit />}
+      {fromCreate && (
+        <div className='fixed top-4 md:top-100 left-0 z-50'>
+          {/* @ts-expect-error Suppress missing props warning */}
+          <Navbar
+            className='bg-white shadow-md px-6 py-3 w-auto rounded-l-none border-gray-400'
+            placeholder={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
+            onClick={() =>
+              navigate(`/${tournamentId}/edit/tournament`, {
+                state: { fromEditRinks: true },
+              })
+            }
+          >
+            <div className='flex justify-between items-center w-full px-2 py-2 gap-8 text-3xl'>
+              <Button variant='white' size='full'>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </Button>
+            </div>
+          </Navbar>
+        </div>
+      )}
       <h2 className='text-xl font-bold'>
         {fromCreate && t('5_create_schedule')}
       </h2>

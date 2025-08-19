@@ -155,5 +155,6 @@
   "GROUPS": "Groups",
   "GROUPS_AND_PLACEMENT_IN_GROUP": "Groups and Placement Matches in Group",
   "GROUPS_AND_PLAYOFFS": "Groups and Playoffs",
-  "GROUPS_AND_PLACEMENT": "Groups and Placement Matches Between Groups"
+  "GROUPS_AND_PLACEMENT": "Groups and Placement Matches Between Groups",
+  "tournament_settings": "Tournament Settings"
 }
