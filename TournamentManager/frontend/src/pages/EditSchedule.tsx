@@ -96,40 +96,47 @@ export default function EditSchedule() {
   const handleCreateGroupStagePairings = async () => {
     // If manual, pass manualGroups as assignment
     setButtonEnabled(false)
-    await editTournament({
-      id: tournament?.id || '',
-      type: tournamentType,
-      name: tournament?.name || '',
-      gameDuration: tournament?.gameDuration || 30,
-      startDate: tournament?.startDate || new Date(),
-      endDate: tournament?.endDate || new Date(),
-      location: tournament?.location || '',
-    })
-    createSchedule(
+    editTournament(
       {
-        tournamentId: tournament?.id || '',
-        numberOfGroups: groupCount,
-        autoCreate: schedulingMethod === 'option-one',
-        manualGroups:
-          schedulingMethod === 'option-two'
-            ? Object.entries(manualGroups).flatMap(([groupIdx, teamIds]) =>
-                teamIds.map((teamId) => ({
-                  groupNumber: Number(groupIdx) + 1,
-                  teamId,
-                })),
-              )
-            : undefined,
+        id: tournament?.id || '',
+        type: tournamentType,
+        name: tournament?.name || '',
+        gameDuration: tournament?.gameDuration || 30,
+        startDate: tournament?.startDate || new Date(),
+        endDate: tournament?.endDate || new Date(),
+        location: tournament?.location || '',
       },
       {
         onSuccess: () => {
-          setButtonEnabled(true)
-          navigate(`/${tournamentId}/schedule`, {
-            state: { fromCreate: true },
-          })
-          toast.success(t('pairings_created'))
-        },
-        onError: (error: Error) => {
-          toast.error('Error: ' + error.message)
+          createSchedule(
+            {
+              tournamentId: tournament?.id || '',
+              numberOfGroups: groupCount,
+              autoCreate: schedulingMethod === 'option-one',
+              manualGroups:
+                schedulingMethod === 'option-two'
+                  ? Object.entries(manualGroups).flatMap(
+                      ([groupIdx, teamIds]) =>
+                        teamIds.map((teamId) => ({
+                          groupNumber: Number(groupIdx) + 1,
+                          teamId,
+                        })),
+                    )
+                  : undefined,
+            },
+            {
+              onSuccess: () => {
+                setButtonEnabled(true)
+                navigate(`/${tournamentId}/schedule`, {
+                  state: { fromCreate: true },
+                })
+                toast.success(t('pairings_created'))
+              },
+              onError: (error: Error) => {
+                toast.error('Error: ' + error.message)
+              },
+            },
+          )
         },
       },
     )
