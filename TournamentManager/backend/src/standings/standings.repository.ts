@@ -435,6 +435,77 @@ async function calculateStandings(tournamentId: string) {
         })
       }
     }
+
+    if (
+      allGroupGamesFinishedBool &&
+      tournament?.type === TournamentType.GROUPS_AND_PLACEMENT_IN_GROUP
+    ) {
+      // Fetch all placement games for this tournament (those created for placements within groups)
+      const placementGames = await db.game.findMany({
+        where: {
+          tournamentId: tournament.id,
+          placementGameId: { not: null },
+        },
+        include: { placementGame: true },
+        orderBy: { date: 'desc' },
+      })
+
+      // Re-fetch groups with up-to-date standings (we just upserted standings above)
+      const groups = await db.group.findMany({
+        where: { tournamentId: tournament.id },
+        include: { teams: { include: { Standing: true } } },
+      })
+
+      // For each group, pair bottom teams: (last vs second-last), then (third-last vs fourth-last), ...
+      for (const group of groups) {
+        const teamsWithStanding = (group.teams || [])
+          .filter((t) => t && t.Standing)
+          .map((t) => ({
+            id: t.id,
+            position: t.Standing?.position ?? Number.MAX_SAFE_INTEGER,
+          }))
+
+        // sort ascending by position (1 = best)
+        teamsWithStanding.sort((a, b) => a.position - b.position)
+
+        const numTeams = teamsWithStanding.length
+        const numPairs = Math.floor(numTeams / 2)
+        if (numPairs <= 0) continue
+
+        // For each pair index (0 = bottom-most pair), find the game's placement value and update that group's game
+        for (let pairIdx = 0; pairIdx < numPairs; pairIdx++) {
+          // bottom pair indices
+          const team1Index = numTeams - 1 - pairIdx * 2
+          const team2Index = numTeams - 2 - pairIdx * 2
+          const team1Id = teamsWithStanding[team1Index]?.id ?? null
+          const team2Id = teamsWithStanding[team2Index]?.id ?? null
+
+          // placement value used when creating placement-in-group games: (idx+1)*2 - 1
+          const placementValue = (numPairs - pairIdx) * 2 - 1
+
+          // find the placement game for this group & placement value
+          const gameForGroup = placementGames.find(
+            (g) =>
+              g.groupId === group.id &&
+              g.placementGame &&
+              g.placementGame.placement === placementValue,
+          )
+
+          if (!gameForGroup) {
+            // no corresponding game created (maybe scheduling mismatch) — skip
+            continue
+          }
+
+          await db.game.update({
+            where: { id: gameForGroup.id },
+            data: {
+              team1Id,
+              team2Id,
+            },
+          })
+        }
+      }
+    }
   } catch (err) {
     console.error('[calculateStandings] Error:', err)
     throw err

@@ -654,66 +654,88 @@ async function createPlacementInGroupGames(
     endMinute,
   )
 
-  // Fetch groups for this tournament
+  // Fetch groups for this tournament and compute how many placement games each needs
   const groups = await db.group.findMany({ where: { tournamentId } })
 
-  // For each group create placement games: 1st vs 2nd, 3rd vs 4th, ...
-  for (const group of groups) {
-    const groupTeams = await db.team.findMany({
-      where: { tournamentId, groupId: group.id },
-      select: { id: true }, // we only need count here; teams will be assigned later
-    })
-
-    const numPlacementGames = Math.floor(groupTeams.length / 2)
-    // create games from highest placement down similar to createPlacementGames
-    let i = numPlacementGames - 1
-    while (i >= 0) {
-      for (let rinkIdx = 0; rinkIdx < rinks.length && i >= 0; rinkIdx++) {
-        const createdGame = await db.game.create({
-          data: {
-            team1Id: null,
-            team2Id: null,
-            tournamentId,
-            groupId: group.id,
-            date: new Date(currentGameTime),
-            rinkId: rinks[rinkIdx].id,
-            rinkName: rinks[rinkIdx].name,
-            status: GameStatus.SCHEDULED,
-            // name indicates group and placement (e.g. "Group A - Zápas o 1. miesto")
-            name: `${group.name} - Zápas o ${(i + 1) * 2 - 1} miesto`,
-            type: GameType.FINAL,
-          },
-        })
-
-        const placementGame = await db.placementGame.create({
-          data: {
-            gameId: createdGame.id,
-            placement: (i + 1) * 2 - 1,
-          },
-        })
-
-        await db.game.update({
-          where: { id: createdGame.id },
-          data: { placementGameId: placementGame.id },
-        })
-
-        i--
+  const groupsInfo = await Promise.all(
+    groups.map(async (group) => {
+      const groupTeams = await db.team.findMany({
+        where: { tournamentId, groupId: group.id },
+        select: { id: true },
+      })
+      const numPlacementGames = Math.floor(groupTeams.length / 2)
+      return {
+        id: group.id,
+        name: group.name,
+        nextIndex: numPlacementGames - 1, // start from highest index (lowest placement)
       }
+    }),
+  )
 
-      currentGameTime = await getNextGameTime(currentGameTime)
-      if (currentGameTime >= endTime) {
-        currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
-        currentGameTime.setHours(startHour, startMinute, 0, 0)
-        lastZamboniTime = 0
-        endTime = new Date(
-          currentGameTime.getFullYear(),
-          currentGameTime.getMonth(),
-          currentGameTime.getDate(),
-          endHour,
-          endMinute,
-        )
-      }
+  // If no groups or no placement games at all, exit early
+  if (!groupsInfo.some((g) => g.nextIndex >= 0)) return
+
+  // Cycle through groups, scheduling one placement game per group per slot,
+  // filling rinks across groups, and scheduling lower placement games first
+  while (groupsInfo.some((g) => g.nextIndex >= 0)) {
+    // Track which groups were scheduled in this time slot to avoid multiple games per group in one slot
+    const scheduledThisSlot = new Set<string>()
+
+    for (let rinkIdx = 0; rinkIdx < rinks.length; rinkIdx++) {
+      // find next group with remaining placement game and not scheduled in this slot
+      const groupToSchedule = groupsInfo.find(
+        (g) => g.nextIndex >= 0 && !scheduledThisSlot.has(g.id),
+      )
+      if (!groupToSchedule) break
+
+      const idx = groupToSchedule.nextIndex
+      const placementValue = (idx + 1) * 2 - 1 // same formula as elsewhere
+
+      const createdGame = await db.game.create({
+        data: {
+          team1Id: null,
+          team2Id: null,
+          tournamentId,
+          groupId: groupToSchedule.id,
+          date: new Date(currentGameTime),
+          rinkId: rinks[rinkIdx].id,
+          rinkName: rinks[rinkIdx].name,
+          status: GameStatus.SCHEDULED,
+          name: `${groupToSchedule.name} - Zápas o ${placementValue} miesto`,
+          type: GameType.FINAL,
+        },
+      })
+
+      const placementGame = await db.placementGame.create({
+        data: {
+          gameId: createdGame.id,
+          placement: placementValue,
+        },
+      })
+
+      await db.game.update({
+        where: { id: createdGame.id },
+        data: { placementGameId: placementGame.id },
+      })
+
+      // mark this group scheduled in this slot and decrement its index
+      scheduledThisSlot.add(groupToSchedule.id)
+      groupToSchedule.nextIndex--
     }
-    // continue to next group (games for different groups will be scheduled sequentially)
+
+    // Advance time for next slot
+    currentGameTime = await getNextGameTime(currentGameTime)
+    if (currentGameTime >= endTime) {
+      currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
+      currentGameTime.setHours(startHour, startMinute, 0, 0)
+      lastZamboniTime = 0
+      endTime = new Date(
+        currentGameTime.getFullYear(),
+        currentGameTime.getMonth(),
+        currentGameTime.getDate(),
+        endHour,
+        endMinute,
+      )
+    }
   }
 }
