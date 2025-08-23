@@ -153,7 +153,7 @@ async function calculateStandings(tournamentId: string) {
     for (const game of games) {
       const { team1Id, team2Id, score1, score2 } = game
 
-      if (!team1Id || !team2Id) {
+      if (!team1Id || !team2Id || game.type !== GameType.GROUP) {
         continue
       }
 
