@@ -202,8 +202,16 @@ export default function Schedule() {
             let score1: number | undefined
             let score2: number | undefined
             let rink = ''
+            let team1Color = ''
+            let team2Color = ''
 
             if (item.type === 'game') {
+              team1Color =
+                teams?.find((team) => team.id === item.game.team1Id)
+                  ?.teamColor || ''
+              team2Color =
+                teams?.find((team) => team.id === item.game.team2Id)
+                  ?.teamColor || ''
               team1Name =
                 item.game.id == undefined
                   ? 'TBD'
@@ -249,8 +257,36 @@ export default function Schedule() {
                     <CardContent>
                       <p className='font-bold'>{item.game.name}</p>
                       <p className='font-bold'>
+                        {team1Color && (
+                          <span
+                            style={{
+                              backgroundColor: team1Color,
+                              display: 'inline-block',
+                              width: 16,
+                              height: 16,
+                              verticalAlign: 'middle',
+                              marginRight: 8,
+                              border: '1px solid rgba(0,0,0,0.15)',
+                              borderRadius: 2,
+                            }}
+                          />
+                        )}
                         {team1Name}
-                        {team2Name && ` vs ${team2Name}`}
+                        {team2Name && ` vs ${team2Name}`}{' '}
+                        {team2Color && (
+                          <span
+                            style={{
+                              backgroundColor: team2Color,
+                              display: 'inline-block',
+                              width: 16,
+                              height: 16,
+                              verticalAlign: 'middle',
+                              marginRight: 8,
+                              border: '1px solid rgba(0,0,0,0.15)',
+                              borderRadius: 2,
+                            }}
+                          />
+                        )}
                       </p>
                       {item.type === 'game' &&
                         score1 !== undefined &&

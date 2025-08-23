@@ -55,6 +55,7 @@ export default function EditTeams() {
   const [description, setDescription] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
   const [roomNumber, setRoomNumber] = useState('')
+  const [teamColor, setTeamColor] = useState('')
   const [open, setOpen] = useState(false)
 
   // Edit state
@@ -64,6 +65,7 @@ export default function EditTeams() {
   const [editDescription, setEditDescription] = useState('')
   const [editLogoUrl, setEditLogoUrl] = useState('')
   const [editRoomNumber, setEditRoomNumber] = useState('')
+  const [editTeamColor, setEditTeamColor] = useState('')
 
   const { isAuthenticated } = useTournamentAuth()
 
@@ -85,6 +87,7 @@ export default function EditTeams() {
         description: description || undefined,
         logoUrl: logoUrl || undefined,
         roomNumber: roomNumber || undefined,
+        teamColor: teamColor || undefined,
       },
       {
         onSuccess: () => {
@@ -93,6 +96,7 @@ export default function EditTeams() {
           setDescription('')
           setLogoUrl('')
           setRoomNumber('')
+          setTeamColor('')
           setOpen(false)
           toast.success(t('team_created'))
         },
@@ -110,6 +114,7 @@ export default function EditTeams() {
     setEditDescription(team.description || '')
     setEditLogoUrl(team.logoUrl || '')
     setEditRoomNumber(team.roomNumber || '')
+    setEditTeamColor(team.teamColor || '')
   }
 
   const handleEditTeam = (e: React.FormEvent) => {
@@ -125,6 +130,7 @@ export default function EditTeams() {
         logoUrl: editLogoUrl || undefined,
         standing: standings?.find((s) => s.teamId === editingId) || null,
         roomNumber: editRoomNumber || undefined,
+        teamColor: editTeamColor || undefined,
       },
       {
         onSuccess: () => {
@@ -134,6 +140,7 @@ export default function EditTeams() {
           setEditDescription('')
           setEditLogoUrl('')
           setEditRoomNumber('')
+          setEditTeamColor('')
         },
       },
     )
@@ -271,6 +278,24 @@ export default function EditTeams() {
                     placeholder={t('enter_city')}
                     required
                   />
+                  <div className='flex items-center gap-3'>
+                    <label className='sr-only' htmlFor='team-color-edit'>
+                      {t('team_color')}
+                    </label>
+                    <input
+                      id='team-color-edit'
+                      type='color'
+                      value={editTeamColor || '#ffffff'}
+                      onChange={(e) => setEditTeamColor(e.target.value)}
+                      className='w-10 h-10 p-0 border rounded'
+                      aria-label={t('team_color')}
+                    />
+                    <Input
+                      value={editTeamColor}
+                      onChange={(e) => setEditTeamColor(e.target.value)}
+                      placeholder={t('enter_team_color')}
+                    />
+                  </div>
                   <Input
                     value={editRoomNumber}
                     onChange={(e) => setEditRoomNumber(e.target.value)}

@@ -133,6 +133,7 @@ model Team {
   groupId        String?
   FinalPlacement FinalPlacement[]
   roomNumber     String?
+  teamColor      String?
 }
 
 model Player {

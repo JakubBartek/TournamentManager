@@ -89,6 +89,7 @@ async function createTournament(
         city: teamCities[i],
         tournamentId: tournament.id,
         roomNumber: `Room ${i + 1}`,
+        teamColor: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
       },
     })
     teams.push(team)

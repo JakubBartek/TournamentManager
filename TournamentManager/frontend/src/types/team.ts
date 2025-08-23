@@ -12,6 +12,7 @@ export type Team = {
   groupId?: string
   group?: Group
   roomNumber?: string
+  teamColor?: string
 }
 
 export type TeamCreate = {
@@ -21,6 +22,7 @@ export type TeamCreate = {
   logoUrl?: string
   description?: string
   roomNumber?: string
+  teamColor?: string
 }
 
 export type TeamQuery = {
