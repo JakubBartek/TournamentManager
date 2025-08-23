@@ -254,22 +254,35 @@ async function createGamesForGroup(
     endHour,
     endMinute,
   )
+
+  // Build per-group schedules using the circle method (like before),
+  // but keep them separate so we can interleave games across groups.
+  type GroupSchedule = {
+    id: string
+    name?: string
+    schedule: [string, string][]
+    ptr: number
+  }
+
+  const groupSchedules: GroupSchedule[] = []
+
   for (const groupId of groupIds) {
     const groupTeams = teams.filter(
       (_, idx) => groupIds[idx % numberOfGroups] === groupId,
     )
-
-    // Use round-robin "circle method" for better distribution
     const n = groupTeams.length
-    const rounds = n - 1 + (n % 2) // If odd, add a dummy team
     const teamIds = [...groupTeams.map((t) => t.id)]
-    if (n % 2 === 1) teamIds.push('BYE') // Add dummy team for odd number
+    if (n % 2 === 1) teamIds.push('BYE') // add dummy to make even
+    const rounds = n - 1 + (n % 2) // same as previous logic
 
     const schedule: [string, string][] = []
+    const working = [...teamIds]
+    const workingCount = working.length
+
     for (let round = 0; round < rounds; round++) {
-      for (let i = 0; i < n / 2; i++) {
-        const teamA = teamIds[i]
-        const teamB = teamIds[n - 1 - i]
+      for (let i = 0; i < workingCount / 2; i++) {
+        const teamA = working[i]
+        const teamB = working[workingCount - 1 - i]
         if (
           teamA !== 'BYE' &&
           teamB !== 'BYE' &&
@@ -279,82 +292,63 @@ async function createGamesForGroup(
         }
       }
       // Rotate teams (except the first)
-      teamIds.splice(1, 0, teamIds.pop() as string)
+      working.splice(1, 0, working.pop() as string)
     }
 
-    let pairingIdx = 0
-    let roundNumber = 0
-    while (pairingIdx < schedule.length) {
-      // Rotate the slotPairings for each round to distribute slots
-      let roundPairings: [string, string][] = []
-      for (
-        let idx = pairingIdx;
-        idx < schedule.length && roundPairings.length < rinks.length;
-        idx++
-      ) {
-        roundPairings.push(schedule[idx])
-      }
+    groupSchedules.push({
+      id: groupId,
+      schedule,
+      ptr: 0,
+    })
+  }
 
-      // Rotate the pairings array by roundNumber
-      if (roundPairings.length > 1) {
-        const rotateBy = roundNumber % roundPairings.length
-        roundPairings = roundPairings
-          .slice(rotateBy)
-          .concat(roundPairings.slice(0, rotateBy))
-      }
+  // Interleave scheduling across groups:
+  // Each time slot we schedule up to rinks.length games, choosing at most one game per group per slot.
+  while (groupSchedules.some((g) => g.ptr < g.schedule.length)) {
+    const scheduledThisSlot = new Set<string>()
 
-      // Track which teams are scheduled in this time slot
-      const teamsScheduledThisSlot = new Set<string>()
-      let slotPairings: [string, string][] = []
+    for (let rinkIdx = 0; rinkIdx < rinks.length; rinkIdx++) {
+      // find next group with remaining games and not scheduled in this slot
+      const groupToUse = groupSchedules.find(
+        (g) => g.ptr < g.schedule.length && !scheduledThisSlot.has(g.id),
+      )
+      if (!groupToUse) break
 
-      // Find pairings for this slot that don't conflict
-      for (let i = 0; i < roundPairings.length; i++) {
-        const [team1Id, team2Id] = roundPairings[i]
-        if (
-          !teamsScheduledThisSlot.has(team1Id) &&
-          !teamsScheduledThisSlot.has(team2Id)
-        ) {
-          slotPairings.push([team1Id, team2Id])
-          teamsScheduledThisSlot.add(team1Id)
-          teamsScheduledThisSlot.add(team2Id)
-        }
-      }
-
-      // Actually schedule these games
-      for (let i = 0; i < slotPairings.length; i++) {
-        const [team1Id, team2Id] = slotPairings[i]
+      const [team1Id, team2Id] = groupToUse.schedule[groupToUse.ptr]
+      // create game only if both teams exist (no BYE)
+      if (team1Id && team2Id) {
         await db.game.create({
           data: {
             team1Id,
             team2Id,
             tournamentId,
-            groupId,
+            groupId: groupToUse.id,
             date: new Date(currentGameTime),
-            rinkId: rinks[i].id,
-            rinkName: rinks[i].name,
+            rinkId: rinks[rinkIdx].id,
+            rinkName: rinks[rinkIdx].name,
             type: GameType.GROUP,
             status: GameStatus.SCHEDULED,
           },
         })
       }
 
-      pairingIdx += slotPairings.length
-      roundNumber++
+      groupToUse.ptr++
+      scheduledThisSlot.add(groupToUse.id)
+    }
 
-      // Advance time for next slot
-      currentGameTime = await getNextGameTime(currentGameTime)
-      if (currentGameTime >= endTime) {
-        currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
-        currentGameTime.setHours(startHour, startMinute, 0, 0)
-        lastZamboniTime = 0
-        endTime = new Date(
-          currentGameTime.getFullYear(),
-          currentGameTime.getMonth(),
-          currentGameTime.getDate(),
-          endHour,
-          endMinute,
-        )
-      }
+    // Advance time for next slot
+    currentGameTime = await getNextGameTime(currentGameTime)
+    if (currentGameTime >= endTime) {
+      currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
+      currentGameTime.setHours(startHour, startMinute, 0, 0)
+      lastZamboniTime = 0
+      endTime = new Date(
+        currentGameTime.getFullYear(),
+        currentGameTime.getMonth(),
+        currentGameTime.getDate(),
+        endHour,
+        endMinute,
+      )
     }
   }
 
