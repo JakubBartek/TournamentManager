@@ -17,7 +17,38 @@ export default function Teams() {
         teams.map((team) => (
           <Card key={team.id} className='w-full max-w-xl md:w-lg'>
             <CardContent className=''>
-              <h2 className='text-xl font-bold'>{team.name}</h2>
+              <h2 className='text-xl font-bold'>
+                {' '}
+                {team.teamColor && (
+                  <span
+                    style={{
+                      backgroundColor: team.teamColor,
+                      display: 'inline-block',
+                      width: 16,
+                      height: 16,
+                      verticalAlign: 'middle',
+                      marginRight: 8,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
+                {team.name}{' '}
+                {team.teamColor && (
+                  <span
+                    style={{
+                      backgroundColor: team.teamColor,
+                      display: 'inline-block',
+                      width: 16,
+                      height: 16,
+                      verticalAlign: 'middle',
+                      marginRight: 8,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
+              </h2>
               <p className='text-sm text-gray-500'>{team.city}</p>
               <p className='text-sm text-gray-500'>{team.description}</p>
               <p className='font-semibold'>

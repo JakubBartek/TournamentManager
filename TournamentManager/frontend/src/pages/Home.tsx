@@ -82,6 +82,8 @@ export default function Home() {
         playingGames.map((game) => {
           const team1 = game.team1?.name || game.team1Id
           const team2 = game.team2?.name || game.team2Id
+          const team1Color = game.team1?.teamColor || ''
+          const team2Color = game.team2?.teamColor || ''
           return (
             <Card key={game.id} className='w-full max-w-xl md:w-lg'>
               <CardContent>
@@ -90,7 +92,35 @@ export default function Home() {
                 </p>
                 <p>{game.name}</p>
                 <p>
-                  {team1} vs {team2}
+                  {team1Color && (
+                    <span
+                      style={{
+                        backgroundColor: team1Color,
+                        display: 'inline-block',
+                        width: 16,
+                        height: 16,
+                        verticalAlign: 'middle',
+                        marginRight: 8,
+                        border: '1px solid rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
+                  {team1} vs {team2}{' '}
+                  {team2Color && (
+                    <span
+                      style={{
+                        backgroundColor: team2Color,
+                        display: 'inline-block',
+                        width: 16,
+                        height: 16,
+                        verticalAlign: 'middle',
+                        marginRight: 8,
+                        border: '1px solid rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
                 </p>
                 {game.score1 !== undefined && (
                   <p className='text-xl font-bold'>
@@ -110,13 +140,43 @@ export default function Home() {
         nextGames.map((game) => {
           const team1 = game.team1?.name || game.team1Id
           const team2 = game.team2?.name || game.team2Id
+          const team1Color = game.team1?.teamColor || ''
+          const team2Color = game.team2?.teamColor || ''
           return (
             <Card key={game.id} className='w-full max-w-xl md:w-lg'>
               <CardContent>
                 <p className='font-semibold text-gray-800'>{t('next_game')}</p>
                 <p>{game.name}</p>
                 <p>
-                  {team1} vs {team2}
+                  {team1Color && (
+                    <span
+                      style={{
+                        backgroundColor: team1Color,
+                        display: 'inline-block',
+                        width: 16,
+                        height: 16,
+                        verticalAlign: 'middle',
+                        marginRight: 8,
+                        border: '1px solid rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
+                  {team1} vs {team2}{' '}
+                  {team2Color && (
+                    <span
+                      style={{
+                        backgroundColor: team2Color,
+                        display: 'inline-block',
+                        width: 16,
+                        height: 16,
+                        verticalAlign: 'middle',
+                        marginRight: 8,
+                        border: '1px solid rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
                 </p>
                 <p className='text-sm text-gray-600'>
                   {format(toZonedTime(new Date(game.date), 'CET'), 'HH:mm')} @{' '}

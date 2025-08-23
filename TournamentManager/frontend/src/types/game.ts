@@ -8,6 +8,7 @@ type GameTeam = {
   id: string
   name: string
   groupId: string
+  teamColor?: string
 }
 
 export type Game = {

@@ -184,8 +184,36 @@ export default function EditGames() {
           <Card key={game.id} className='w-full max-w-xl md:w-lg'>
             <CardContent className='flex flex-col gap-2'>
               <span className='font-semibold'>
+                {game.team1?.teamColor && (
+                  <span
+                    style={{
+                      backgroundColor: game.team1.teamColor,
+                      display: 'inline-block',
+                      width: 16,
+                      height: 16,
+                      verticalAlign: 'middle',
+                      marginRight: 8,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
                 {game.team1?.name || game.team1Id} vs{' '}
-                {game.team2?.name || game.team2Id}
+                {game.team2?.name || game.team2Id}{' '}
+                {game.team2?.teamColor && (
+                  <span
+                    style={{
+                      backgroundColor: game.team2.teamColor,
+                      display: 'inline-block',
+                      width: 16,
+                      height: 16,
+                      verticalAlign: 'middle',
+                      marginRight: 8,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
               </span>
               <div className='flex justify-center items-center gap-8'>
                 <div className='flex flex-col items-center'>

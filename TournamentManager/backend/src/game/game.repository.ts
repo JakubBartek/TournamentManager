@@ -70,6 +70,7 @@ const getAllGames = async (tournamentId: string) => {
           id: true,
           name: true,
           groupId: true,
+          teamColor: true,
         },
       },
       team2: {
@@ -77,6 +78,7 @@ const getAllGames = async (tournamentId: string) => {
           id: true,
           name: true,
           groupId: true,
+          teamColor: true,
         },
       },
       status: true,
