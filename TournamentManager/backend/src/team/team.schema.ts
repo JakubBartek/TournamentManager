@@ -7,6 +7,7 @@ export const teamSchema = z.object({
   logoUrl: z.string().url('Invalid URL format').optional(),
   description: z.string().optional(),
   roomNumber: z.string().optional(),
+  teamColor: z.string().optional(),
 })
 
 export const teamEditSchema = z.object({
