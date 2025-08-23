@@ -324,7 +324,38 @@ export default function EditTeams() {
                 </form>
               ) : (
                 <>
-                  <p className='text-2xl font-bold'>{team.name}</p>
+                  <p className='text-2xl font-bold'>
+                    {' '}
+                    {team.teamColor && (
+                      <span
+                        style={{
+                          backgroundColor: team.teamColor,
+                          display: 'inline-block',
+                          width: 16,
+                          height: 16,
+                          verticalAlign: 'middle',
+                          marginRight: 8,
+                          border: '1px solid rgba(0,0,0,0.15)',
+                          borderRadius: 2,
+                        }}
+                      />
+                    )}
+                    {team.name}{' '}
+                    {team.teamColor && (
+                      <span
+                        style={{
+                          backgroundColor: team.teamColor,
+                          display: 'inline-block',
+                          width: 16,
+                          height: 16,
+                          verticalAlign: 'middle',
+                          marginRight: 8,
+                          border: '1px solid rgba(0,0,0,0.15)',
+                          borderRadius: 2,
+                        }}
+                      />
+                    )}
+                  </p>
                   <p className='text-base text-gray-700'>{team.city}</p>
                   {team.description && (
                     <p className='text-sm text-gray-500'>{team.description}</p>
