@@ -184,7 +184,7 @@ export default function EditGames() {
           <Card key={game.id} className='w-full max-w-xl md:w-lg'>
             <CardContent className='flex flex-col gap-2'>
               <span className='font-semibold'>
-                {!game.team1?.name && !game.team2?.name && game.name}
+                {game.name}
                 {game.team1?.teamColor && (
                   <span
                     style={{
