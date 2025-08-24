@@ -24,7 +24,7 @@ The easiest way to get the application running is by using Docker Compose.
 1. Clone the repository.
 2. Create a `.env` file in the `backend` directory by copying the example file:
    ```bash
-   copy backend\.env.example backend\.env
+   cp backend\.env.example backend\.env
    ```
 3. From the root directory of the project, run the following command:
    ```bash
