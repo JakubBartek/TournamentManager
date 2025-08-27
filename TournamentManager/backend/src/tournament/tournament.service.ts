@@ -255,13 +255,11 @@ async function createGamesForGroup(
     endMinute,
   )
 
-  // Build per-group schedules using the circle method (like before),
-  // but keep them separate so we can interleave games across groups.
+  // Build per-group schedules using the circle method,
+  // keep schedules as mutable arrays so specific matches can be consumed out-of-order
   type GroupSchedule = {
     id: string
-    name?: string
-    schedule: [string, string][]
-    ptr: number
+    schedule: [string, string][] // remaining matches
   }
 
   const groupSchedules: GroupSchedule[] = []
@@ -273,11 +271,11 @@ async function createGamesForGroup(
     const n = groupTeams.length
     const teamIds = [...groupTeams.map((t) => t.id)]
     if (n % 2 === 1) teamIds.push('BYE') // add dummy to make even
-    const rounds = n - 1 + (n % 2) // same as previous logic
-
-    const schedule: [string, string][] = []
     const working = [...teamIds]
     const workingCount = working.length
+    const rounds = workingCount - 1
+
+    const schedule: [string, string][] = []
 
     for (let round = 0; round < rounds; round++) {
       for (let i = 0; i < workingCount / 2; i++) {
@@ -298,42 +296,58 @@ async function createGamesForGroup(
     groupSchedules.push({
       id: groupId,
       schedule,
-      ptr: 0,
     })
   }
 
-  // Interleave scheduling across groups:
-  // Each time slot we schedule up to rinks.length games, choosing at most one game per group per slot.
-  while (groupSchedules.some((g) => g.ptr < g.schedule.length)) {
-    const scheduledThisSlot = new Set<string>()
+  // Interleave scheduling across groups while using as many rinks as possible.
+  // Ensure no team plays two games in the same time slot.
+  while (groupSchedules.some((g) => g.schedule.length > 0)) {
+    const scheduledTeams = new Set<string>()
 
     for (let rinkIdx = 0; rinkIdx < rinks.length; rinkIdx++) {
-      // find next group with remaining games and not scheduled in this slot
-      const groupToUse = groupSchedules.find(
-        (g) => g.ptr < g.schedule.length && !scheduledThisSlot.has(g.id),
-      )
-      if (!groupToUse) break
+      // find a group and the earliest match in its schedule where both teams are free this slot
+      let chosenGroupIndex = -1
+      let chosenMatchIndex = -1
 
-      const [team1Id, team2Id] = groupToUse.schedule[groupToUse.ptr]
-      // create game only if both teams exist (no BYE)
-      if (team1Id && team2Id) {
-        await db.game.create({
-          data: {
-            team1Id,
-            team2Id,
-            tournamentId,
-            groupId: groupToUse.id,
-            date: new Date(currentGameTime),
-            rinkId: rinks[rinkIdx].id,
-            rinkName: rinks[rinkIdx].name,
-            type: GameType.GROUP,
-            status: GameStatus.SCHEDULED,
-          },
-        })
+      for (let gi = 0; gi < groupSchedules.length; gi++) {
+        const gs = groupSchedules[gi]
+        // find first match index in this group's schedule where teams are free
+        const mi = gs.schedule.findIndex(
+          ([a, b]) => !scheduledTeams.has(a) && !scheduledTeams.has(b),
+        )
+        if (mi >= 0) {
+          chosenGroupIndex = gi
+          chosenMatchIndex = mi
+          break // choose the earliest available group-match (keeps fairness)
+        }
       }
 
-      groupToUse.ptr++
-      scheduledThisSlot.add(groupToUse.id)
+      if (chosenGroupIndex === -1) {
+        // no available match can be scheduled on this slot (teams conflict), try next rink or end
+        break
+      }
+
+      const gs = groupSchedules[chosenGroupIndex]
+      const [team1Id, team2Id] = gs.schedule.splice(chosenMatchIndex, 1)[0]
+
+      // create game
+      await db.game.create({
+        data: {
+          team1Id,
+          team2Id,
+          tournamentId,
+          groupId: gs.id,
+          date: new Date(currentGameTime),
+          rinkId: rinks[rinkIdx].id,
+          rinkName: rinks[rinkIdx].name,
+          type: GameType.GROUP,
+          status: GameStatus.SCHEDULED,
+        },
+      })
+
+      // mark teams as scheduled this slot
+      scheduledTeams.add(team1Id)
+      scheduledTeams.add(team2Id)
     }
 
     // Advance time for next slot
