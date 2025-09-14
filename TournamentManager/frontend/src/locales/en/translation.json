@@ -157,5 +157,6 @@
   "GROUPS_AND_PLAYOFFS": "Groups and Playoffs",
   "GROUPS_AND_PLACEMENT": "Groups and Placement Matches Between Groups",
   "tournament_settings": "Tournament Settings",
-  "diff": "Difference"
+  "diff": "Difference",
+  "full_schedule_view": "View Full Schedule"
 }

@@ -17,6 +17,7 @@ import EditRinks from './pages/EditRinks'
 import EditGames from './pages/EditGames'
 import EditMessages from './pages/EditMessages'
 import EnterTournamentPassword from './pages/EnterTournamentPassword'
+import FullSchedule from './pages/FullSchedule'
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: 'edit/messages',
         Component: EditMessages,
+      },
+      {
+        path: 'full-schedule',
+        Component: FullSchedule,
       },
     ],
   },

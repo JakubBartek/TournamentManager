@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '@material-tailwind/react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCalendarDays,
@@ -19,6 +19,12 @@ export function NavbarSimple() {
   const { tournamentId } = useParams<{ tournamentId: string }>()
   const [open, setOpen] = React.useState(false)
   const { t } = useTranslation()
+  const location = useLocation()
+
+  // Define routes where the Navbar should be hidden
+  const hiddenRoutes = [`/${tournamentId}/full-schedule`]
+
+  const isHidden = hiddenRoutes.includes(location.pathname)
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
@@ -30,6 +36,8 @@ export function NavbarSimple() {
   const changeLanguage = (lng: 'sk' | 'en') => {
     i18n.changeLanguage?.(lng)
   }
+
+  if (isHidden) return null
 
   return (
     // @ts-expect-error Suppress missing props warning
@@ -100,6 +108,13 @@ export function NavbarSimple() {
                     onClick={handleLinkClickInSheet}
                   >
                     {t('edit_tournament')}
+                  </Link>
+                  <Link
+                    to={`/${tournamentId}/full-schedule`}
+                    className='text-lg'
+                    onClick={handleLinkClickInSheet}
+                  >
+                    {t('full_schedule_view')}
                   </Link>
                 </div>
               </SheetContent>
