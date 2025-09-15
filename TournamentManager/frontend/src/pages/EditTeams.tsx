@@ -237,6 +237,24 @@ export default function EditTeams() {
                 onChange={(e) => setCity(e.target.value)}
                 required
               />
+              <div className='flex items-center gap-3'>
+                <label className='sr-only' htmlFor='team-color-edit'>
+                  {t('team_color')}
+                </label>
+                <input
+                  id='team-color-edit'
+                  type='color'
+                  value={editTeamColor || '#ffffff'}
+                  onChange={(e) => setEditTeamColor(e.target.value)}
+                  className='w-10 h-10 p-0 border rounded'
+                  aria-label={t('team_color')}
+                />
+                <Input
+                  value={editTeamColor}
+                  onChange={(e) => setEditTeamColor(e.target.value)}
+                  placeholder={t('enter_team_color')}
+                />
+              </div>
               <Input
                 placeholder={t('enter_room_number')}
                 value={roomNumber}

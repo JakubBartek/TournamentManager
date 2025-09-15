@@ -158,5 +158,6 @@
   "GROUPS_AND_PLACEMENT": "Skupiny a finálne zápasy medzi skupinami",
   "tournament_settings": "Možnosti turnaja",
   "diff": "Rozdieľ",
-  "full_schedule_view": "Zobraziť celý rozpis"
+  "full_schedule_view": "Zobraziť celý rozpis",
+  "enter_team_color": "Zadajte farbu tímu (voliteľné)"
 }
