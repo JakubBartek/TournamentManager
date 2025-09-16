@@ -244,14 +244,14 @@ export default function EditTeams() {
                 <input
                   id='team-color-edit'
                   type='color'
-                  value={editTeamColor || '#ffffff'}
-                  onChange={(e) => setEditTeamColor(e.target.value)}
+                  value={teamColor || '#ffffff'}
+                  onChange={(e) => setTeamColor(e.target.value)}
                   className='w-10 h-10 p-0 border rounded'
                   aria-label={t('team_color')}
                 />
                 <Input
-                  value={editTeamColor}
-                  onChange={(e) => setEditTeamColor(e.target.value)}
+                  value={teamColor}
+                  onChange={(e) => setTeamColor(e.target.value)}
                   placeholder={t('enter_team_color')}
                 />
               </div>
