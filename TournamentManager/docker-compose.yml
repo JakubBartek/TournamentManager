@@ -5,10 +5,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./backend/prisma/dev.db:/app/prisma/dev.db
+      - ./backend/prisma:/app/prisma
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=file:./prisma/dev.db
+      - DATABASE_URL=file:./prisma/prisma/dev.db
       - TZ=Europe/Bratislava
     expose:
       - "3000"
