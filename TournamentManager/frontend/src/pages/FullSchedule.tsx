@@ -1,3 +1,4 @@
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useGames } from '@/hooks/useGame'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,7 +9,17 @@ export default function FullSchedule() {
     data: games,
     isLoading: loading,
     error,
+    refetch,
   } = useGames(tournamentId || '')
+
+  // Refetch every 60 seconds while this page is open
+  React.useEffect(() => {
+    if (!tournamentId) return
+    const id = setInterval(() => {
+      refetch()
+    }, 60_000)
+    return () => clearInterval(id)
+  }, [tournamentId, refetch])
 
   if (!games || loading) {
     return (
