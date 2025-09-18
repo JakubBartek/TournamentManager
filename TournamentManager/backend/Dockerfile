@@ -14,6 +14,7 @@ RUN npm run build
 
 # entrypoint will run prisma generate & migrations
 COPY ./entrypoint.sh /app/entrypoint.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh || true
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
