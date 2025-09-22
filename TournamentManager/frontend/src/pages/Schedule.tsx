@@ -255,7 +255,15 @@ export default function Schedule() {
                     ref={index === scrollToIndex ? scrollRef : null}
                   >
                     <CardContent>
-                      <p className='font-bold'>{item.game.name}</p>
+                      <p className='font-bold'>
+                        {(() => {
+                          const idx = sortedGames.findIndex(
+                            (g) => g.id === item.game.id,
+                          )
+                          return idx >= 0 ? `${idx + 1}. ` : ''
+                        })()}
+                        {item.game.name}
+                      </p>
                       <p className='font-bold'>
                         {team1Color && (
                           <span

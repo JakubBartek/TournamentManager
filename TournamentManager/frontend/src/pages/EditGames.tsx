@@ -184,7 +184,13 @@ export default function EditGames() {
           <Card key={game.id} className='w-full max-w-xl md:w-lg'>
             <CardContent className='flex flex-col gap-2'>
               <span className='font-semibold'>
-                {game.name}
+                <p className='font-bold'>
+                  {(() => {
+                    const idx = games.findIndex((g) => g.id === game.id)
+                    return idx >= 0 ? `${idx + 1}. ` : ''
+                  })()}
+                  {game.name}
+                </p>
                 {game.team1?.teamColor && (
                   <span
                     style={{

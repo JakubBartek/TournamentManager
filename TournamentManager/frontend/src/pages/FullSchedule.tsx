@@ -38,7 +38,13 @@ export default function FullSchedule() {
         <Card key={game.id} className='w-sm h-xs m-0 p-1'>
           <CardContent>
             <h2 className='text-lg font-bold text-nowrap'>
-              {game.name}
+              <p className='font-bold'>
+                {(() => {
+                  const idx = games.findIndex((g) => g.id === game.id)
+                  return idx >= 0 ? `${idx + 1}. ` : ''
+                })()}
+                {game.name}
+              </p>
               {game.team1?.teamColor && (
                 <span
                   style={{
