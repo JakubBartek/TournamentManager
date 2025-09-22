@@ -67,6 +67,7 @@ const getSingleTournament = async (id: string) => {
       breakDuration: true,
       zamboniDuration: true,
       zamboniInterval: true,
+      groupGamesInARow: true,
     },
     where: {
       id: id,

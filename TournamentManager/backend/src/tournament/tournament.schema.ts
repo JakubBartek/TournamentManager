@@ -50,6 +50,11 @@ export const tournamentEditSchema = z.object({
   playOffRound: playOffRoundEnum.optional(),
   dailyStartTime: z.string().optional(), // HH:mm format
   dailyEndTime: z.string().optional(), // HH:mm format
+  groupGamesInARow: z
+    .number()
+    .int()
+    .min(1, 'There must be at least 1 group game in a row')
+    .optional(),
 })
 
 export const tournamentFullSchema = z.object({
@@ -78,6 +83,10 @@ export const tournamentFullSchema = z.object({
   type: tournamentTypeEnum,
   dailyStartTime: z.string(), // HH:mm format
   dailyEndTime: z.string(), // HH:mm format
+  groupGamesInARow: z
+    .number()
+    .int()
+    .min(1, 'There must be at least 1 group game in a row'),
 })
 
 export const tournamentCreateSchema = z.object({

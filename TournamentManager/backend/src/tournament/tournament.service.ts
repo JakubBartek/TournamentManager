@@ -22,12 +22,13 @@ export async function createSchedule(
     endDate: tournament?.endDate || new Date(),
     type: tournament?.type || tournamentTypeEnum.Values.GROUPS,
     adminPasswordHash: tournament?.adminPasswordHash || '',
-    zamboniDuration: tournament?.zamboniDuration || 30,
+    zamboniDuration: tournament?.zamboniDuration || 0,
     dailyStartTime: tournament?.dailyStartTime || '09:00',
     dailyEndTime: tournament?.dailyEndTime || '18:00',
-    gameDuration: tournament?.gameDuration || 30,
-    breakDuration: tournament?.breakDuration || 10,
-    zamboniInterval: tournament?.zamboniInterval || 5,
+    gameDuration: tournament?.gameDuration || 0,
+    breakDuration: tournament?.breakDuration || 0,
+    zamboniInterval: tournament?.zamboniInterval || 0,
+    groupGamesInARow: tournament?.groupGamesInARow || 0,
   }
   const teams = await db.team.findMany({ where: { tournamentId } })
 
@@ -330,20 +331,26 @@ async function createGamesForGroup(
       const gs = groupSchedules[chosenGroupIndex]
       const [team1Id, team2Id] = gs.schedule.splice(chosenMatchIndex, 1)[0]
 
-      // create game
-      await db.game.create({
-        data: {
-          team1Id,
-          team2Id,
-          tournamentId,
-          groupId: gs.id,
-          date: new Date(currentGameTime),
-          rinkId: rinks[rinkIdx].id,
-          rinkName: rinks[rinkIdx].name,
-          type: GameType.GROUP,
-          status: GameStatus.SCHEDULED,
-        },
-      })
+      // create games
+      let _time = new Date(currentGameTime)
+      for (let g = 0; g < tournamentFull.groupGamesInARow; g++) {
+        await db.game.create({
+          data: {
+            team1Id,
+            team2Id,
+            tournamentId,
+            groupId: gs.id,
+            date: new Date(_time),
+            rinkId: rinks[rinkIdx].id,
+            rinkName: rinks[rinkIdx].name,
+            type: GameType.GROUP,
+            status: GameStatus.SCHEDULED,
+          },
+        })
+        _time = new Date(
+          _time.getTime() + (gameDuration + breakDuration) * 60000,
+        )
+      }
 
       // mark teams as scheduled this slot
       scheduledTeams.add(team1Id)
@@ -351,7 +358,9 @@ async function createGamesForGroup(
     }
 
     // Advance time for next slot
-    currentGameTime = await getNextGameTime(currentGameTime)
+    for (let i = 0; i < tournamentFull.groupGamesInARow; i++) {
+      currentGameTime = await getNextGameTime(currentGameTime)
+    }
     if (currentGameTime >= endTime) {
       currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
       currentGameTime.setHours(startHour, startMinute, 0, 0)

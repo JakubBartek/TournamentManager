@@ -228,6 +228,7 @@ model Tournament {
   type               TournamentType @default(GROUPS)
   teams              Team[]
   games              Game[]
+  groupGamesInARow   Int            @default(1)
   sponsors           Sponsor[]
   Player             Player[]
   createdAt          DateTime       @default(now())

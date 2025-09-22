@@ -15,6 +15,7 @@ export type Tournament = {
   type?: TournamentType
   dailyStartTime?: string // HH:mm format
   dailyEndTime?: string // HH:mm format
+  groupGamesInARow?: number
 }
 
 export enum TournamentType {

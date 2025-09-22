@@ -159,5 +159,6 @@
   "tournament_settings": "Tournament Settings",
   "diff": "Difference",
   "full_schedule_view": "View Full Schedule",
-  "enter_team_color": "Enter team color (optional)"
+  "enter_team_color": "Enter team color (optional)",
+  "group_games_in_a_row": "Number of group games in a row"
 }

@@ -38,6 +38,7 @@ export default function EditTournamentOptions() {
   const [tournamentStartDateWasSet, setTournamentStartDateWasSet] =
     useState(false)
   const [tournamentEndDateWasSet, setTournamentEndDateWasSet] = useState(false)
+  const [groupGamesInARow, setGroupGamesInARow] = useState(1)
 
   const { isAuthenticated } = useTournamentAuth()
 
@@ -63,6 +64,7 @@ export default function EditTournamentOptions() {
       setZamboniInterval(tournament.zamboniInterval ?? 0)
       setDailyStartTime(tournament.dailyStartTime || '09:00')
       setDailyEndTime(tournament.dailyEndTime || '18:00')
+      setGroupGamesInARow(tournament.groupGamesInARow || 1)
     }
   }, [tournament])
 
@@ -92,6 +94,7 @@ export default function EditTournamentOptions() {
         zamboniInterval: zamboniInterval || tournament?.zamboniInterval || 0,
         dailyStartTime: dailyStartTime || tournament?.dailyStartTime || '09:00',
         dailyEndTime: dailyEndTime || tournament?.dailyEndTime || '18:00',
+        groupGamesInARow: groupGamesInARow || tournament?.groupGamesInARow || 1,
       },
       {
         onSuccess: () => {
@@ -303,6 +306,20 @@ export default function EditTournamentOptions() {
                 name='dailyEndTime'
                 value={dailyEndTime || '16:00'}
                 onChange={(e) => setDailyEndTime(e.target.value)}
+              />
+            </label>
+            <label className='flex flex-col gap-1'>
+              <span className='text-sm font-medium text-gray-700'>
+                {t('group_games_in_a_row')}
+              </span>
+              <Input
+                type='number'
+                id='groupGamesInARow'
+                name='groupGamesInARow'
+                min={1}
+                placeholder={t('enter_group_games_in_a_row')}
+                value={groupGamesInARow}
+                onChange={(e) => setGroupGamesInARow(Number(e.target.value))}
               />
             </label>
             <Button type='submit' className='w-full mt-4'>
