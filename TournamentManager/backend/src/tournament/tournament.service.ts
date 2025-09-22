@@ -212,25 +212,33 @@ async function createGamesForGroup(
   }
 
   let lastZamboniTime = 0
+  let lastZamboni = 0
   async function getNextGameTime(current: Date): Promise<Date> {
     if (
       lastZamboniTime + gameDuration >= zamboniInterval &&
-      currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime()
+      currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime() &&
+      lastZamboni !== current.getTime()
     ) {
+      lastZamboni = current.getTime()
       lastZamboniTime = 0
-      // Add zamboni break
-      await db.zamboniTime.create({
-        data: {
-          tournamentId,
-          startTime: new Date(current.getTime() + gameDuration * 60000),
-          endTime: new Date(
-            current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
-          ),
-        },
-      })
-      return new Date(
+      // Add zamboni break if not already scheduled for this start time
+      const zStart = new Date(current.getTime() + gameDuration * 60000)
+      const zEnd = new Date(
         current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
       )
+      const existing = await db.zamboniTime.findFirst({
+        where: { tournamentId, startTime: zStart },
+      })
+      if (!existing) {
+        await db.zamboniTime.create({
+          data: {
+            tournamentId,
+            startTime: zStart,
+            endTime: zEnd,
+          },
+        })
+      }
+      return zEnd
     }
 
     lastZamboniTime += gameDuration + breakDuration
@@ -347,9 +355,7 @@ async function createGamesForGroup(
             status: GameStatus.SCHEDULED,
           },
         })
-        _time = new Date(
-          _time.getTime() + (gameDuration + breakDuration) * 60000,
-        )
+        _time = await getNextGameTime(_time)
       }
 
       // mark teams as scheduled this slot
@@ -409,18 +415,23 @@ async function createPlacementGames(
       currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime()
     ) {
       lastZamboniTime = 0
-      await db.zamboniTime.create({
-        data: {
-          tournamentId: tournamentId,
-          startTime: new Date(current.getTime() + gameDuration * 60000),
-          endTime: new Date(
-            current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
-          ),
-        },
-      })
-      return new Date(
+      const zStart = new Date(current.getTime() + gameDuration * 60000)
+      const zEnd = new Date(
         current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
       )
+      const existingZ = await db.zamboniTime.findFirst({
+        where: { tournamentId: tournamentId, startTime: zStart },
+      })
+      if (!existingZ) {
+        await db.zamboniTime.create({
+          data: {
+            tournamentId: tournamentId,
+            startTime: zStart,
+            endTime: zEnd,
+          },
+        })
+      }
+      return zEnd
     }
 
     lastZamboniTime += gameDuration + breakDuration
@@ -544,18 +555,19 @@ async function createPlayoffGames(
       currentGameTime.getTime() + gameDuration * 60000 < endTime.getTime()
     ) {
       lastZamboniTime = 0
-      await db.zamboniTime.create({
-        data: {
-          tournamentId,
-          startTime: new Date(current.getTime() + gameDuration * 60000),
-          endTime: new Date(
-            current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
-          ),
-        },
-      })
-      return new Date(
+      const zStart = new Date(current.getTime() + gameDuration * 60000)
+      const zEnd = new Date(
         current.getTime() + zamboniDuration * 60000 + gameDuration * 60000,
       )
+      const existingZ = await db.zamboniTime.findFirst({
+        where: { tournamentId, startTime: zStart },
+      })
+      if (!existingZ) {
+        await db.zamboniTime.create({
+          data: { tournamentId, startTime: zStart, endTime: zEnd },
+        })
+      }
+      return zEnd
     }
     lastZamboniTime += gameDuration + breakDuration
     return new Date(current.getTime() + (gameDuration + breakDuration) * 60000)
