@@ -22,10 +22,10 @@ export default function EditTournamentOptions() {
   const navigate = useNavigate()
   const fromCreate = site_location.state?.fromEditRinks
   // Form state for tournament options
-  const [gameDuration, setGameDuration] = useState(20)
-  const [breakDuration, setBreakDuration] = useState(5)
-  const [zamboniDuration, setZamboniDuration] = useState(10)
-  const [zamboniInterval, setZamboniInterval] = useState(90)
+  const [gameDuration, setGameDuration] = useState(0)
+  const [breakDuration, setBreakDuration] = useState(0)
+  const [zamboniDuration, setZamboniDuration] = useState(0)
+  const [zamboniInterval, setZamboniInterval] = useState(0)
   const [tournamentName, setTournamentName] = useState('')
   const [tournamentLocation, setTournamentLocation] = useState('')
   const [tournamentStartDate, setTournamentStartDate] = useState(new Date())
@@ -57,10 +57,10 @@ export default function EditTournamentOptions() {
       setTournamentEndDate(
         tournament.endDate ? new Date(tournament.endDate) : new Date(),
       )
-      setGameDuration(tournament.gameDuration ?? 20)
-      setBreakDuration(tournament.breakDuration ?? 5)
-      setZamboniDuration(tournament.zamboniDuration ?? 10)
-      setZamboniInterval(tournament.zamboniInterval ?? 90)
+      setGameDuration(tournament.gameDuration ?? 0)
+      setBreakDuration(tournament.breakDuration ?? 0)
+      setZamboniDuration(tournament.zamboniDuration ?? 0)
+      setZamboniInterval(tournament.zamboniInterval ?? 0)
       setDailyStartTime(tournament.dailyStartTime || '09:00')
       setDailyEndTime(tournament.dailyEndTime || '18:00')
     }
@@ -86,10 +86,10 @@ export default function EditTournamentOptions() {
         name: tournamentName || tournament?.name || '',
         adminPassword: adminPassword || tournament?.adminPassword || '',
         startDate: tournamentStartDateToUse,
-        gameDuration: gameDuration || tournament?.gameDuration || 20,
-        breakDuration: breakDuration || tournament?.breakDuration || 5,
-        zamboniDuration: zamboniDuration || tournament?.zamboniDuration || 10,
-        zamboniInterval: zamboniInterval || tournament?.zamboniInterval || 90,
+        gameDuration: gameDuration || tournament?.gameDuration || 0,
+        breakDuration: breakDuration || tournament?.breakDuration || 0,
+        zamboniDuration: zamboniDuration || tournament?.zamboniDuration || 0,
+        zamboniInterval: zamboniInterval || tournament?.zamboniInterval || 0,
         dailyStartTime: dailyStartTime || tournament?.dailyStartTime || '09:00',
         dailyEndTime: dailyEndTime || tournament?.dailyEndTime || '18:00',
       },
@@ -277,7 +277,7 @@ export default function EditTournamentOptions() {
                 name='zamboniInterval'
                 min={0}
                 placeholder={t('enter_zamboni_interval')}
-                value={zamboniInterval || 90}
+                value={zamboniInterval}
                 onChange={(e) => setZamboniInterval(Number(e.target.value))}
               />
             </label>

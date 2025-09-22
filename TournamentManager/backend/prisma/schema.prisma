@@ -240,10 +240,10 @@ model Tournament {
   groups             Group[]
   adminPasswordHash  String?
   Rinks              Rink[]
-  gameDuration       Int?           @default(20) // Duration in minutes
-  breakDuration      Int?           @default(5) // Break duration in minutes
-  zamboniDuration    Int?           @default(10) // Zamboni duration in minutes
-  zamboniInterval    Int?           @default(90) // Interval in minutes
+  gameDuration       Int?           @default(0) // Duration in minutes
+  breakDuration      Int?           @default(0) // Break duration in minutes
+  zamboniDuration    Int?           @default(0) // Zamboni duration in minutes
+  zamboniInterval    Int?           @default(0) // Interval in minutes
   dailyStartTime     String? // Daily start time in HH:mm format
   dailyEndTime       String? // Daily end time in HH:mm format
 
