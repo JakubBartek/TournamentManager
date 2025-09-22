@@ -150,6 +150,10 @@ export default function EditTeams() {
     deleteTeam(id, {
       onSuccess: () => {
         setEditingId(null)
+        toast.success(t('team_deleted'))
+      },
+      onError: (error: Error) => {
+        toast.error('Error: ' + error.message)
       },
     })
   }

@@ -141,7 +141,7 @@ model Player {
   name         String
   position     String
   teamId       String
-  team         Team        @relation(fields: [teamId], references: [id])
+  team         Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
@@ -152,7 +152,7 @@ model Standing {
   id           String     @id @default(uuid())
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
   tournamentId String
-  team         Team       @relation(fields: [teamId], references: [id])
+  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId       String     @unique
   teamName     String
   group        Group?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
@@ -181,7 +181,7 @@ model FinalPlacement {
   tournamentId String
   Tournament   Tournament @relation(fields: [tournamentId], references: [id])
   teamId       String
-  team         Team       @relation(fields: [teamId], references: [id])
+  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   placement    Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
