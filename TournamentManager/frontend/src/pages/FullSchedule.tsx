@@ -37,7 +37,7 @@ export default function FullSchedule() {
       {games.map((game) => (
         <Card key={game.id} className='w-sm h-xs m-0 p-1'>
           <CardContent>
-            <h2 className='text-lg font-bold text-nowrap'>
+            <h2 className='text-lg font-bold'>
               <p className='font-bold'>
                 {(() => {
                   const idx = games.findIndex((g) => g.id === game.id)
