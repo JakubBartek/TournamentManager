@@ -54,7 +54,7 @@ export default function EditSchedule() {
     tournament?.type || TournamentType.GROUPS,
   )
   const [schedulingMethod, setSchedulingMethod] = useState('option-one')
-  const [groupCount, setGroupCount] = useState(2)
+  const [groupCount, setGroupCount] = useState(1)
   const [buttonEnabled, setButtonEnabled] = useState(true)
 
   // Manual group assignment state
