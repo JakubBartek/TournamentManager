@@ -42,6 +42,7 @@ const getAllTeams = async (tournamentId: string) => {
       tournamentId: true,
       roomNumber: true,
       teamColor: true,
+      groupId: true,
     },
     where: {
       tournamentId: tournamentId,
