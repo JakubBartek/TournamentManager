@@ -295,7 +295,12 @@ async function createGamesForGroup(
           teamB !== 'BYE' &&
           teamA !== teamB // Prevent self-pairing
         ) {
-          schedule.push([teamA, teamB])
+          // push the match repeated times into the schedule so each match appears
+          // groupGamesInARow times in a row (the scheduler will consume one entry per slot)
+          const repeats = tournamentFull.groupGamesInARow || 1
+          for (let rr = 0; rr < repeats; rr++) {
+            schedule.push([teamA, teamB])
+          }
         }
       }
       // Rotate teams (except the first)
@@ -339,34 +344,31 @@ async function createGamesForGroup(
       const gs = groupSchedules[chosenGroupIndex]
       const [team1Id, team2Id] = gs.schedule.splice(chosenMatchIndex, 1)[0]
 
-      // create games
-      let _time = new Date(currentGameTime)
-      for (let g = 0; g < tournamentFull.groupGamesInARow; g++) {
-        await db.game.create({
-          data: {
-            team1Id,
-            team2Id,
-            tournamentId,
-            groupId: gs.id,
-            date: new Date(_time),
-            rinkId: rinks[rinkIdx].id,
-            rinkName: rinks[rinkIdx].name,
-            type: GameType.GROUP,
-            status: GameStatus.SCHEDULED,
-          },
-        })
-        _time = await getNextGameTime(_time)
-      }
+      // create a single game for this schedule entry; repeated entries were inserted
+      // into the group's schedule earlier so they'll be scheduled in consecutive slots
+      await db.game.create({
+        data: {
+          team1Id,
+          team2Id,
+          tournamentId,
+          groupId: gs.id,
+          date: new Date(currentGameTime),
+          rinkId: rinks[rinkIdx].id,
+          rinkName: rinks[rinkIdx].name,
+          type: GameType.GROUP,
+          status: GameStatus.SCHEDULED,
+        },
+      })
 
       // mark teams as scheduled this slot
       scheduledTeams.add(team1Id)
       scheduledTeams.add(team2Id)
     }
 
-    // Advance time for next slot
-    for (let i = 0; i < tournamentFull.groupGamesInARow; i++) {
-      currentGameTime = await getNextGameTime(currentGameTime)
-    }
+    // Advance time for next slot (one slot per iteration). Repeated matches are
+    // represented by multiple entries in schedules and will be consumed on
+    // subsequent iterations.
+    currentGameTime = await getNextGameTime(currentGameTime)
     if (currentGameTime >= endTime) {
       currentGameTime = new Date(currentGameTime.getTime() + 24 * 60 * 60000)
       currentGameTime.setHours(startHour, startMinute, 0, 0)
@@ -648,7 +650,7 @@ async function createPlacementInGroupGames(
   const dailyStart = tournamentFull.dailyStartTime
   const dailyEnd = tournamentFull.dailyEndTime
 
-  if (!dailyStart || !dailyEnd || !gameDuration || !breakDuration) {
+  if (!dailyStart || !dailyEnd || !gameDuration) {
     throw new Error('Tournament scheduling parameters are not set')
   }
 
