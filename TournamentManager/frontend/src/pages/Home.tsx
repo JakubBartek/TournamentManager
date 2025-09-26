@@ -152,7 +152,13 @@ export default function Home() {
             <Card key={game.id} className='w-full max-w-xl md:w-lg'>
               <CardContent>
                 <p className='font-semibold text-gray-800'>{t('next_game')}</p>
-                <p>{game.name}</p>
+                <p className='font-bold'>
+                  {(() => {
+                    const idx = games.findIndex((g) => g.id === game.id)
+                    return idx >= 0 ? `${idx + 1}. ` : ''
+                  })()}
+                  {game.name}
+                </p>
                 <p>
                   {team1Color && (
                     <span
