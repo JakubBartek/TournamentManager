@@ -207,7 +207,7 @@ async function createGamesForGroup(
   const zamboniInterval = tournamentFull.zamboniInterval // after how many games
   const zamboniDuration = tournamentFull.zamboniDuration // in minutes
 
-  if (!dailyStart || !dailyEnd || !gameDuration || !breakDuration) {
+  if (!dailyStart || !dailyEnd || !gameDuration) {
     throw new Error('Tournament scheduling parameters are not set')
   }
 
