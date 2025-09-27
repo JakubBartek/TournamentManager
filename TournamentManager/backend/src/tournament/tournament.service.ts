@@ -4,6 +4,7 @@ import { Team } from '../team/team.types'
 import { tournamentTypeEnum } from './tournament.schema'
 import { TournamentFull } from './tournament.types'
 import standingsRepository from '../standings/standings.repository'
+import { group } from 'node:console'
 
 export async function createSchedule(
   tournamentId: string,
@@ -341,6 +342,11 @@ async function createGamesForGroup(
 
   // Interleave scheduling across groups while using as many rinks as possible.
   // Ensure no team plays two games in the same time slot.
+  // We'll iterate slots and for each slot try to schedule one match per rink.
+  // To ensure games cycle across groups (A, B, A...), we'll maintain a rotating
+  // start index into groupSchedules and attempt groups in order starting from
+  // that pointer each slot.
+  let groupStartPointer = 0
   while (groupSchedules.some((g) => g.schedule.length > 0)) {
     const scheduledTeams = new Set<string>()
 
@@ -349,16 +355,17 @@ async function createGamesForGroup(
       let chosenGroupIndex = -1
       let chosenMatchIndex = -1
 
-      for (let gi = 0; gi < groupSchedules.length; gi++) {
+      // try groups starting from groupStartPointer to implement round-robin across groups
+      for (let offset = 0; offset < groupSchedules.length; offset++) {
+        const gi = (groupStartPointer + offset) % groupSchedules.length
         const gs = groupSchedules[gi]
-        // find first match index in this group's schedule where teams are free
         const mi = gs.schedule.findIndex(
           ([a, b]) => !scheduledTeams.has(a) && !scheduledTeams.has(b),
         )
         if (mi >= 0) {
           chosenGroupIndex = gi
           chosenMatchIndex = mi
-          break // choose the earliest available group-match (keeps fairness)
+          break
         }
       }
 
@@ -372,6 +379,9 @@ async function createGamesForGroup(
 
       // create a single game for this schedule entry; repeated entries were inserted
       // into the group's schedule earlier so they'll be scheduled in consecutive slots
+      console.log('Scheduling game', {
+        groupId: gs.id,
+      })
       await db.game.create({
         data: {
           team1Id,
@@ -389,6 +399,9 @@ async function createGamesForGroup(
       // mark teams as scheduled this slot
       scheduledTeams.add(team1Id)
       scheduledTeams.add(team2Id)
+
+      // advance the group start pointer after each game so next game tries next group
+      groupStartPointer = (groupStartPointer + 1) % groupSchedules.length
     }
 
     // Advance time for next slot (one slot per iteration). Repeated matches are
