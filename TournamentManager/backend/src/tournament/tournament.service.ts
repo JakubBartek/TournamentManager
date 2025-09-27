@@ -67,19 +67,28 @@ export async function createSchedule(
       )
     }
 
-    // Create games for manual groups
+    // Refetch teams so we pick up the updated groupId values set above
+    const teamsAfterAssign = await db.team.findMany({ where: { tournamentId } })
+
+    // Create games for manual groups using updated team.groupId
     const { lastGameTime: last_game_t, lastZamboniTime } =
       await createGamesForGroup(
         tournamentFull,
         groupIdsM,
         tournamentId,
-        teams.map((team) => ({
-          ...team,
-          logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
-          description: team.description === null ? undefined : team.description,
-          roomNumber: team.roomNumber === null ? undefined : team.roomNumber,
-          teamColor: team.teamColor === null ? undefined : team.teamColor,
-        })),
+        teamsAfterAssign.map(
+          (team) =>
+            ({
+              ...team,
+              logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
+              description:
+                team.description === null ? undefined : team.description,
+              roomNumber:
+                team.roomNumber === null ? undefined : team.roomNumber,
+              teamColor: team.teamColor === null ? undefined : team.teamColor,
+              groupId: team.groupId === null ? undefined : team.groupId,
+            } as unknown as Team),
+        ),
         numberOfGroups,
       )
 
@@ -146,13 +155,18 @@ export async function createSchedule(
       tournamentFull,
       groupIds,
       tournamentId,
-      teams.map((team) => ({
-        ...team,
-        logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
-        description: team.description === null ? undefined : team.description,
-        roomNumber: team.roomNumber === null ? undefined : team.roomNumber,
-        teamColor: team.teamColor === null ? undefined : team.teamColor,
-      })),
+      teams.map(
+        (team) =>
+          ({
+            ...team,
+            logoUrl: team.logoUrl === null ? undefined : team.logoUrl,
+            description:
+              team.description === null ? undefined : team.description,
+            roomNumber: team.roomNumber === null ? undefined : team.roomNumber,
+            teamColor: team.teamColor === null ? undefined : team.teamColor,
+            groupId: team.groupId === null ? undefined : team.groupId,
+          } as unknown as Team),
+      ),
       numberOfGroups,
     )
 
@@ -273,10 +287,22 @@ async function createGamesForGroup(
 
   const groupSchedules: GroupSchedule[] = []
 
+  // Determine if any team already has groupId set (manual assignment mode)
+  const anyTeamHasGroup = teams.some(
+    (t) => 'groupId' in t && (t as any).groupId,
+  )
   for (const groupId of groupIds) {
-    const groupTeams = teams.filter(
-      (_, idx) => groupIds[idx % numberOfGroups] === groupId,
-    )
+    // If teams already have groupId set (manual assignment), prefer that.
+    let groupTeams: Team[]
+    if (anyTeamHasGroup) {
+      groupTeams = teams.filter(
+        (t) => String((t as any).groupId ?? '') === String(groupId),
+      )
+    } else {
+      groupTeams = teams.filter(
+        (_, idx) => groupIds[idx % numberOfGroups] === groupId,
+      )
+    }
     const n = groupTeams.length
     const teamIds = [...groupTeams.map((t) => t.id)]
     if (n % 2 === 1) teamIds.push('BYE') // add dummy to make even

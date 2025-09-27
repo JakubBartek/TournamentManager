@@ -8,6 +8,7 @@ export const teamSchema = z.object({
   description: z.string().optional(),
   roomNumber: z.string().optional(),
   teamColor: z.string().optional(),
+  groupId: z.string().uuid().optional(),
 })
 
 export const teamEditSchema = z.object({
